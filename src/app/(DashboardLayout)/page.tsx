@@ -8,7 +8,7 @@ import RecentTransactions from '@/app/(DashboardLayout)/components/dashboard/Rec
 import ProductPerformance from '@/app/(DashboardLayout)/components/dashboard/ProductPerformance';
 import Blog from '@/app/(DashboardLayout)/components/dashboard/Blog';
 import MonthlyEarnings from '@/app/(DashboardLayout)/components/dashboard/MonthlyEarnings';
-import Keyboard from '@/app/(DashboardLayout)/components/shared/Keyboard';
+import TypingPractice from '@/app/(DashboardLayout)/components/shared/TypingPractice';
 import { Container, Typography } from "@mui/material";
 
 const Dashboard = () => {
@@ -16,7 +16,7 @@ const Dashboard = () => {
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Container sx={{ mt: 4 }}>
         
-        <Keyboard />
+        <TypingPractice />
       </Container>
     </PageContainer>
   );

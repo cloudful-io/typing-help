@@ -18,11 +18,11 @@ const Menuitems = [
 
   {
     id: uniqueId(),
-    title: "Dashboard",
+    title: "Typing Practice",
     icon: IconLayoutDashboard,
     href: "/",
   },
-  {
+/*  {
     navlabel: true,
     subheader: "UTILITIES",
   },
@@ -69,7 +69,7 @@ const Menuitems = [
     title: "Sample Page",
     icon: IconAperture,
     href: "/sample-page",
-  },
+  },*/
 
 ];
 

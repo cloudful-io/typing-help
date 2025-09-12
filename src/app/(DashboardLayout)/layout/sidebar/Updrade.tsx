@@ -5,7 +5,7 @@ import Link from 'next/link';
 export const Upgrade = () => {
     return (
         <Box
-            display='flex'
+            display='none'
             alignItems="center"
             gap={2}
             sx={{ mt: 3, p: 3, bgcolor: 'primary.light', borderRadius: '8px' }}
