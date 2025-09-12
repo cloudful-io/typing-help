@@ -8,52 +8,16 @@ import RecentTransactions from '@/app/(DashboardLayout)/components/dashboard/Rec
 import ProductPerformance from '@/app/(DashboardLayout)/components/dashboard/ProductPerformance';
 import Blog from '@/app/(DashboardLayout)/components/dashboard/Blog';
 import MonthlyEarnings from '@/app/(DashboardLayout)/components/dashboard/MonthlyEarnings';
+import Keyboard from '@/app/(DashboardLayout)/components/shared/Keyboard';
+import { Container, Typography } from "@mui/material";
 
 const Dashboard = () => {
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
-      <Box>
-        <Grid container spacing={3}>
-          <Grid
-            size={{
-              xs: 12,
-              lg: 8
-            }}>
-            <SalesOverview />
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              lg: 4
-            }}>
-            <Grid container spacing={3}>
-              <Grid size={12}>
-                <YearlyBreakup />
-              </Grid>
-              <Grid size={12}>
-                <MonthlyEarnings />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              lg: 4
-            }}>
-            <RecentTransactions />
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              lg: 8
-            }}>
-            <ProductPerformance />
-          </Grid>
-          <Grid size={12}>
-            <Blog />
-          </Grid>
-        </Grid>
-      </Box>
+      <Container sx={{ mt: 4 }}>
+        
+        <Keyboard />
+      </Container>
     </PageContainer>
   );
 }
