@@ -49,6 +49,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
 
 
         <IconButton
+          sx={{display: 'none'}}  // Hide for now
           size="large"
           aria-label="show 11 new notifications"
           color="inherit"
@@ -62,10 +63,12 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          <Button variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
+          <Button
+            sx={{display: 'none'}}  // Hide for now
+            variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
             Login
           </Button>
-          <Profile />
+          <Profile/>
         </Stack>
       </ToolbarStyled>
     </AppBarStyled>

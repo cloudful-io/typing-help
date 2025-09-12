@@ -30,7 +30,7 @@ const Profile = () => {
         color="inherit"
         aria-controls="msgs-menu"
         aria-haspopup="true"
-        sx={{
+        sx={{ display: 'none',
           ...(typeof anchorEl2 === "object" && {
             color: "primary.main",
           }),

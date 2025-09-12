@@ -1,7 +1,7 @@
 import {
   IconAperture,
   IconCopy,
-  IconLayoutDashboard,
+  IconKeyboard,
   IconLogin,
   IconMoodHappy,
   IconTypography,
@@ -19,7 +19,7 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Typing Practice",
-    icon: IconLayoutDashboard,
+    icon: IconKeyboard,
     href: "/",
   },
 /*  {

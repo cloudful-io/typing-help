@@ -14,8 +14,7 @@ import { Container, Typography } from "@mui/material";
 const Dashboard = () => {
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
-      <Container sx={{ mt: 4 }}>
-        
+      <Container sx={{ mt: 0 }}>
         <TypingPractice />
       </Container>
     </PageContainer>

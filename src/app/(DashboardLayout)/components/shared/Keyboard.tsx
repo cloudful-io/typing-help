@@ -1,5 +1,5 @@
-import React from "react";
-import { Box } from "@mui/material";
+import React, { useState } from "react";
+import { Box, FormControlLabel, Switch } from "@mui/material";
 import Key from "./Key";
 
 interface KeyboardProps {
@@ -17,36 +17,55 @@ const keyboardLayout: string[][] = [
 ];
 
 const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, activeKey, shiftActive }) => {
+  const [showKeyboard, setShowKeyboard] = useState(true);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "100%" }}>
-      {keyboardLayout.map((row, rowIndex) => (
-        <Box key={rowIndex} sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
-          {row.map((key, keyIndex) => {
-            const displayKey = key.replace("Left", "").replace("Right", "");
-            let width: string | number = "4vw";
+      {/* Switch to toggle keyboard */}
+      <FormControlLabel
+        control={
+          <Switch
+            checked={showKeyboard}
+            onChange={(e) => setShowKeyboard(e.target.checked)}
+          />
+        }
+        label={showKeyboard ? "Show Keyboard" : "Show Keyboard"}
+        sx={{ alignSelf: "flex-start", mb: 1 }}
+      />
 
-            const isActive =
-              activeKey === displayKey.toUpperCase() || 
-              (shiftActive && displayKey === "Shift") || 
-              (["Caps", "Enter", "Backspace", "Space"].includes(displayKey) && activeKey === displayKey);
+      {/* Conditionally render keyboard */}
+      {showKeyboard && (
+        <>
+          {keyboardLayout.map((row, rowIndex) => (
+            <Box key={rowIndex} sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+              {row.map((key, keyIndex) => {
+                const displayKey = key.replace("Left", "").replace("Right", "");
+                let width: string | number = "4vw";
 
-            if (key === "Space") width = "12vw";
-            if (["ShiftLeft", "ShiftRight", "Backspace", "Enter", "Caps", "Tab"].includes(key)) {
-              width = "8vw";
-            }
+                const isActive =
+                  activeKey === displayKey.toUpperCase() || 
+                  (shiftActive && displayKey === "Shift") || 
+                  (["Caps", "Enter", "Backspace", "Space"].includes(displayKey) && activeKey === displayKey);
 
-            return (
-              <Key
-                key={`${key}-${rowIndex}-${keyIndex}`}
-                label={displayKey}
-                onPress={onKeyPress}
-                width={width}
-                active={isActive}
-              />
-            );
-          })}
-        </Box>
-      ))}
+                if (key === "Space") width = "12vw";
+                if (["ShiftLeft", "ShiftRight", "Backspace", "Enter", "Caps", "Tab"].includes(key)) {
+                  width = "8vw";
+                }
+
+                return (
+                  <Key
+                    key={`${key}-${rowIndex}-${keyIndex}`}
+                    label={displayKey}
+                    onPress={onKeyPress}
+                    width={width}
+                    active={isActive}
+                  />
+                );
+              })}
+            </Box>
+          ))}
+        </>
+      )}
     </Box>
   );
 };

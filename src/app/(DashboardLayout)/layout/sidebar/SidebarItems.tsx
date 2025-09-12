@@ -1,6 +1,6 @@
 import React from "react";
 import Menuitems from "./MenuItems";
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Link, Typography } from "@mui/material";
 import {
   Logo,
   Sidebar as MUI_Sidebar,
@@ -9,7 +9,7 @@ import {
   Submenu,
 } from "react-mui-sidebar";
 import { IconPoint } from '@tabler/icons-react';
-import Link from "next/link";
+//import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Upgrade } from "./Updrade";
 
@@ -74,9 +74,17 @@ const SidebarItems = () => {
   return (
     < >
       <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#5D87FF"} themeSecondaryColor={'#49beff'} >
-
-        <Logo img='/images/logos/dark-logo.svg' component={Link} to="/" >Typing Help</Logo>
-
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Logo img='/images/logos/logo.png' component={Link} to="/" >Typing Help</Logo>
+            <Link
+              href="/"
+              underline="none"
+              color="inherit"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              <Typography variant="h5" noWrap>Typing.Help</Typography>
+            </Link>
+          </Stack>
         {renderMenuItems(Menuitems, pathDirect)}
         <Box px={2}>
           <Upgrade />

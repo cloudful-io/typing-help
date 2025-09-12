@@ -5,7 +5,7 @@ import Keyboard from "./Keyboard";
 const sampleTexts = [
   "The quick brown fox jumps over the lazy dog.",
   "你好，世界！",
-  "Typing is fun and improves speed.",
+  "小明每天放學後都會先寫作業，再出去跟朋友踢足球",
   "React is a powerful library for building UIs.",
   "Consistency and practice lead to mastery."
 ];
@@ -151,7 +151,7 @@ const TypingPractice: React.FC = () => {
         slotProps={{
             input: {sx: { fontSize: '1.2rem', lineHeight: 1.6, padding: '12px' },
             },
-      }}
+        }}
       />
 
       <Box sx={{ display: "flex", gap: 3, mb: 2 }}>
