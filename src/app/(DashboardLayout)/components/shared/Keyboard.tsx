@@ -40,16 +40,16 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, activeKey, shiftActive 
             <Box key={rowIndex} sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
               {row.map((key, keyIndex) => {
                 const displayKey = key.replace("Left", "").replace("Right", "");
-                let width: string | number = "4vw";
+                let width: string | number = "3vw";
 
                 const isActive =
                   activeKey === displayKey.toUpperCase() || 
                   (shiftActive && displayKey === "Shift") || 
                   (["Caps", "Enter", "Backspace", "Space"].includes(displayKey) && activeKey === displayKey);
 
-                if (key === "Space") width = "12vw";
+                if (key === "Space") width = "9vw";
                 if (["ShiftLeft", "ShiftRight", "Backspace", "Enter", "Caps", "Tab"].includes(key)) {
-                  width = "8vw";
+                  width = "6vw";
                 }
 
                 return (

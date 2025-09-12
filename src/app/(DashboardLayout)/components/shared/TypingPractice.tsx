@@ -1,78 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, Paper, Button, TextField } from "@mui/material";
 import Keyboard from "./Keyboard";
 
 const sampleTexts = [
-  "The quick brown fox jumps over the lazy dog.",
-  "你好，世界！",
-  "小明每天放學後都會先寫作業，再出去跟朋友踢足球",
-  "React is a powerful library for building UIs.",
-  "Consistency and practice lead to mastery."
+  "The sun rose slowly over the quiet village, casting a golden light on the cobblestone streets. Birds chirped in the trees, and the scent of fresh bread wafted from the bakery. Children ran across the square, laughing, while merchants prepared their stalls for the busy day ahead. Every corner seemed to hold a small surprise, from a colorful flower in a window to a cat napping in the sun. Life moved gently here, as if time itself had decided to take a pause and enjoy the morning.",
+  "早晨，太陽慢慢升起，把溫暖的光照在村子裡。小鳥在樹上唱歌，風輕輕吹動葉子，讓它們像小手在揮舞。孩子們在院子裡跑來跑去，笑聲響亮又開心。街道上，商店的老闆開始擺放水果和蔬菜，還有五顏六色的衣服。小貓在角落裡打盹，花兒在石縫中悄悄地長大，噴泉的水輕輕流動，發出清脆的聲音。人們互相打招呼，有的提著籃子去市場，有的帶著小狗散步。整個村子充滿了生氣，雖然是平常的一天，但大家都覺得很快樂，很舒服，仿佛時間也慢了下來，讓每個人都能享受這美好的早晨。",
+  "清晨，村子裡到處充滿了活動和歡笑。人們提著籃子走在街上，裡面裝著新鮮的水果和蔬菜。孩子們在路邊跑來跑去，笑聲清脆響亮，鞋子踩在石板路上發出輕快的聲音。小鳥在樹上唱歌，微風輕輕吹過，讓葉子閃閃發光。麵包店的老闆打開店門，空氣裡充滿了麵包和糕點的香味。角落裡，小貓伸懶腰，狗狗在旁邊輕輕叫。大家互相打招呼，分享笑容和小故事，雖然只是平常的一天，但整個村子充滿了活力和快樂，每個人都覺得早晨特別美好。",
+  "As the gentle breeze moved through the village, it carried the distant sound of a bell ringing softly from the tower, mingled with the chatter of early risers greeting one another, the rhythmic clatter of wooden carts moving along the cobblestones, and the faint rustle of leaves in the trees, while across the market square, merchants arranged their wares meticulously, hoping for good customers, children darted in between stalls, laughing as they played, and the overall sense of calm and purpose created a perfect morning scene, where time seemed to slow, letting everyone enjoy the beauty of a day that was ordinary, yet full of small, remarkable moments that made the village feel alive and warm.",
+  "The morning in the small town was full of life and quiet excitement at the same time. People walked along the streets carrying baskets of fresh fruit and vegetables, while children ran past them laughing loudly, their shoes tapping against the cobblestones. Birds sang from the trees, and the gentle breeze made the leaves shimmer in the sunlight. Bakers opened their shops, filling the air with the sweet smell of bread and pastries. A cat stretched lazily on the windowsill, and a dog barked softly nearby. Everywhere you looked, people greeted each other warmly, sharing smiles and stories, and even though it was just another ordinary day, the town felt alive with energy and happiness, a perfect place for anyone to enjoy the morning."
 ];
+
+const SESSION_TIME = 60; // seconds
 
 const TypingPractice: React.FC = () => {
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState(sampleTexts[0]);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [shiftActive, setShiftActive] = useState(false);
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [wpm, setWPM] = useState(0);
-  const [accuracy, setAccuracy] = useState(100);
+  const [timer, setTimer] = useState(SESSION_TIME);
+  const [running, setRunning] = useState(false);
+  const [wpm, setWPM] = useState<number | null>(null);
+  const [accuracy, setAccuracy] = useState<number | null>(null);
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Start a new sentence
   const newSentence = () => {
     const randIndex = Math.floor(Math.random() * sampleTexts.length);
     setTargetText(sampleTexts[randIndex]);
     setTypedText("");
-    setStartTime(null);
-    setWPM(0);
-    setAccuracy(100);
+    setTimer(SESSION_TIME);
+    setRunning(false);
+    setWPM(null);
+    setAccuracy(null);
     setActiveKey(null);
     setShiftActive(false);
+    if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  const handleKeyPress = (key: string) => {
-    if (!startTime) setStartTime(Date.now());
-
-    if (key === "Backspace") {
-      setTypedText((prev) => prev.slice(0, -1));
-    } else if (key === "Space") {
-      setTypedText((prev) => prev + " ");
-    } else if (key === "Enter") {
-      setTypedText((prev) => prev + "\n");
-    } else if (["Shift", "Ctrl", "Meta", "Alt", "Caps", "Tab", "Menu"].includes(key)) {
-      // ignore modifiers
-    } else {
+  const handleTyping = (key: string) => {
+    if (!running) return; // Only allow typing during session
+    if (key === "Backspace") setTypedText((prev) => prev.slice(0, -1));
+    else if (key === "Enter") setTypedText((prev) => prev + "\n");
+    else if (key === "Space" || key === " ") setTypedText((prev) => prev + " ");
+    else if (!["Shift", "Ctrl", "Meta", "Alt", "Caps", "Tab", "Menu"].includes(key)) {
       setTypedText((prev) => prev + key);
     }
   };
 
-  // Handle physical key presses for highlighting
+  const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!running) return;
+    setTypedText(e.target.value);
+  };
+
+  // Physical key highlight
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-        let pressedKey = e.key;
-
-        // Only normalize keys for highlighting (Shift, Caps, Backspace, Enter, Space)
-        switch (pressedKey) {
-            case " ": pressedKey = "Space"; break;
-            case "CapsLock": pressedKey = "Caps"; break;
-            case "Shift": pressedKey = "Shift"; setShiftActive(true); break;
-            case "Meta": pressedKey = "Meta"; break;
-            case "Enter": pressedKey = "Enter"; break;
-            case "Tab": pressedKey = "Tab"; break;
-            case "Backspace": pressedKey = "Backspace"; break;
-        }
-
-        let normalizedPressedKey = pressedKey;
-        if (pressedKey.length === 1) normalizedPressedKey = pressedKey.toUpperCase();
-
-        // Highlight key only
-        setActiveKey(normalizedPressedKey);
-
-        // Only handle special keys (optional, for Backspace / Enter / Space)
-        /*if (["Backspace", "Enter", "Space"].includes(pressedKey)) {
-            handleKeyPress(pressedKey);
-        }*/
+      let pressedKey = e.key;
+      switch (pressedKey) {
+        case " ": pressedKey = "Space"; break;
+        case "CapsLock": pressedKey = "Caps"; break;
+        case "Shift": pressedKey = "Shift"; setShiftActive(true); break;
+        case "Enter": pressedKey = "Enter"; break;
+        case "Tab": pressedKey = "Tab"; break;
+        case "Backspace": pressedKey = "Backspace"; break;
+      }
+      let normalizedPressedKey = pressedKey;
+      if (pressedKey.length === 1) normalizedPressedKey = pressedKey.toUpperCase();
+      setActiveKey(normalizedPressedKey);
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -87,28 +82,54 @@ const TypingPractice: React.FC = () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [startTime]);
+  }, []);
 
-  // Update WPM & accuracy
+  // Timer countdown
   useEffect(() => {
-    if (!startTime) return;
+    if (!running) return;
+    if (timer <= 0) {
+      setRunning(false);
+      computeResults();
+      return;
+    }
 
+    timerRef.current = setTimeout(() => setTimer(timer - 1), 1000);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [running, timer]);
+
+  const startSession = () => {
+    if (!running) {
+      setTypedText("");
+      setTimer(SESSION_TIME);
+      setRunning(true);
+      setWPM(null);
+      setAccuracy(null);
+    }
+  };
+
+  const computeResults = () => {
     const correctChars = typedText
       .split("")
       .reduce((acc, char, idx) => (char === targetText[idx] ? acc + 1 : acc), 0);
 
-    const elapsedMinutes = (Date.now() - startTime) / 1000 / 60;
-    setWPM(Math.round((typedText.length / 5) / elapsedMinutes));
-    setAccuracy(Math.round((correctChars / typedText.length) * 100) || 100);
-  }, [typedText, startTime, targetText]);
+    const elapsedMinutes = SESSION_TIME / 60;
+    const calculatedWPM = Math.round((typedText.length / 5) / elapsedMinutes);
+    const calculatedAccuracy = typedText.length > 0
+      ? Math.round((correctChars / typedText.length) * 100)
+      : 0;
 
-  // Render practice text with color and next-character underline
+    setWPM(calculatedWPM);
+    setAccuracy(calculatedAccuracy);
+  };
+
   const renderPracticeText = () => {
     return targetText.split("").map((char, idx) => {
       const typedChar = typedText[idx];
       let color: string = "black";
       if (typedChar != null) color = typedChar === char ? "green" : "red";
-
       const isNextChar = idx === typedText.length;
       return (
         <span
@@ -126,41 +147,45 @@ const TypingPractice: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Typing Practice
-      </Typography>
+    <Box sx={{ display: "flex", gap: 3, p: 2 }}>
+      {/* Left column: Practice text + typed text */}
+      <Box sx={{ flex: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Paper sx={{ p: 2, minHeight: "100px" }}>
+          <Typography component="div" sx={{ fontSize: "1.1rem", wordWrap: "break-word" }}>
+            {renderPracticeText()}
+          </Typography>
+        </Paper>
 
-      {/* Practice text with red/green highlighting */}
-      <Paper sx={{ p: 2, minHeight: "100px", mb: 1 }}>
-        <Typography component="div" sx={{ fontSize: "1.2rem", wordWrap: "break-word" }}>
-          {renderPracticeText()}
-        </Typography>
-      </Paper>
+        <TextField
+          value={typedText}
+          onChange={handleTextFieldChange}
+          multiline
+          fullWidth
+          minRows={3}
+          variant="outlined"
+          placeholder="Start typing here..."
+          sx={{ fontSize: "1.1rem" }}
+        />
 
-      {/* Typed text in a TextField */}
-      <TextField
-        value={typedText}
-        onChange={(e) => setTypedText(e.target.value)}
-        multiline
-        fullWidth
-        minRows={3}
-        variant="outlined"
-        placeholder="Start typing here..."
-        sx={{ mb: 2 }}
-        slotProps={{
-            input: {sx: { fontSize: '1.2rem', lineHeight: 1.6, padding: '12px' },
-            },
-        }}
-      />
-
-      <Box sx={{ display: "flex", gap: 3, mb: 2 }}>
-        <Typography>WPM: {wpm}</Typography>
-        <Typography>Accuracy: {accuracy}%</Typography>
-        <Button variant="contained" onClick={newSentence}>New Sentence</Button>
+        <Keyboard onKeyPress={handleTyping} activeKey={activeKey} shiftActive={shiftActive} />
       </Box>
 
-      <Keyboard onKeyPress={handleKeyPress} activeKey={activeKey} shiftActive={shiftActive} />
+      {/* Right column: Timer, WPM, Accuracy */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Paper sx={{ p: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+          <Typography variant="h6">Timer: {timer}s</Typography>
+          {wpm !== null && <Typography>WPM: {wpm}</Typography>}
+          {accuracy !== null && <Typography>Accuracy: {accuracy}%</Typography>}
+          {!running && (
+            <Button variant="contained" onClick={startSession}>
+              Start 1-Minute Session
+            </Button>
+          )}
+          <Button variant="outlined" onClick={newSentence}>
+            New Sentence
+          </Button>
+        </Paper>
+      </Box>
     </Box>
   );
 };

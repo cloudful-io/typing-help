@@ -15,8 +15,8 @@ const Key: React.FC<KeyProps> = ({ label, onPress, width, active }) => {
       color={active ? "primary" : "inherit"}
       onClick={() => onPress(label)}
       sx={{
-        minWidth: width || "4vw",
-        minHeight: "8vh",
+        minWidth: width || "3vw",
+        minHeight: "6vh",
         fontSize: "1.2rem",
         flexGrow: 1,
       }}
