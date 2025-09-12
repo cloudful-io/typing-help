@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Paper, Button, TextField } from "@mui/material";
+import { Box, Typography, Paper, Button } from "@mui/material";
 import Keyboard from "./Keyboard";
 
+// Sample sentences
 const sampleTexts = [
   "The quick brown fox jumps over the lazy dog.",
-  "你好，世界！",
+  "Hello World! Practice makes perfect.",
   "Typing is fun and improves speed.",
   "React is a powerful library for building UIs.",
   "Consistency and practice lead to mastery."
 ];
 
-const TypingPractice: React.FC = () => {
+const TypingPracticeUnified: React.FC = () => {
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState(sampleTexts[0]);
   const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -41,38 +42,36 @@ const TypingPractice: React.FC = () => {
     } else if (key === "Enter") {
       setTypedText((prev) => prev + "\n");
     } else if (["Shift", "Ctrl", "Meta", "Alt", "Caps", "Tab", "Menu"].includes(key)) {
-      // ignore modifiers
+      // ignore modifier keys
     } else {
       setTypedText((prev) => prev + key);
     }
   };
 
-  // Handle physical key presses for highlighting
+  // Handle physical key presses
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-        let pressedKey = e.key;
+      let pressedKey = e.key;
 
-        // Only normalize keys for highlighting (Shift, Caps, Backspace, Enter, Space)
-        switch (pressedKey) {
-            case " ": pressedKey = "Space"; break;
-            case "CapsLock": pressedKey = "Caps"; break;
-            case "Shift": pressedKey = "Shift"; setShiftActive(true); break;
-            case "Meta": pressedKey = "Meta"; break;
-            case "Enter": pressedKey = "Enter"; break;
-            case "Tab": pressedKey = "Tab"; break;
-            case "Backspace": pressedKey = "Backspace"; break;
-        }
+      // Normalize special keys
+      switch (pressedKey) {
+        case " ": pressedKey = "Space"; break;
+        case "CapsLock": pressedKey = "Caps"; break;
+        case "Shift": pressedKey = "Shift"; setShiftActive(true); break;
+        case "Meta": pressedKey = "Meta"; break;
+        case "Enter": pressedKey = "Enter"; break;
+        case "Tab": pressedKey = "Tab"; break;
+        case "Backspace": pressedKey = "Backspace"; break;
+      }
 
-        let normalizedPressedKey = pressedKey;
-        if (pressedKey.length === 1) normalizedPressedKey = pressedKey.toUpperCase();
+      // 🔑 Normalize letters for highlighting only
+      let normalizedPressedKey = pressedKey;
+      if (pressedKey.length === 1) {
+        normalizedPressedKey = pressedKey.toUpperCase();
+      }
 
-        // Highlight key only
-        setActiveKey(normalizedPressedKey);
-
-        // Only handle special keys (optional, for Backspace / Enter / Space)
-        /*if (["Backspace", "Enter", "Space"].includes(pressedKey)) {
-            handleKeyPress(pressedKey);
-        }*/
+      setActiveKey(normalizedPressedKey);
+      handleKeyPress(pressedKey); // pass original key for typing
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -89,7 +88,7 @@ const TypingPractice: React.FC = () => {
     };
   }, [startTime]);
 
-  // Update WPM & accuracy
+  // Update WPM & accuracy as user types
   useEffect(() => {
     if (!startTime) return;
 
@@ -102,8 +101,8 @@ const TypingPractice: React.FC = () => {
     setAccuracy(Math.round((correctChars / typedText.length) * 100) || 100);
   }, [typedText, startTime, targetText]);
 
-  // Render practice text with color and next-character underline
-  const renderPracticeText = () => {
+  // Render target text with per-character coloring and next-character highlight
+  const renderText = () => {
     return targetText.split("").map((char, idx) => {
       const typedChar = typedText[idx];
       let color: string = "black";
@@ -131,28 +130,11 @@ const TypingPractice: React.FC = () => {
         Typing Practice
       </Typography>
 
-      {/* Practice text with red/green highlighting */}
-      <Paper sx={{ p: 2, minHeight: "100px", mb: 1 }}>
-        <Typography component="div" sx={{ fontSize: "1.2rem", wordWrap: "break-word" }}>
-          {renderPracticeText()}
+      <Paper sx={{ p: 2, minHeight: "120px", mb: 2 }}>
+        <Typography component="div" sx={{ fontSize: "1.6rem", wordWrap: "break-word" }}>
+          {renderText()}
         </Typography>
       </Paper>
-
-      {/* Typed text in a TextField */}
-      <TextField
-        value={typedText}
-        onChange={(e) => setTypedText(e.target.value)}
-        multiline
-        fullWidth
-        minRows={3}
-        variant="outlined"
-        placeholder="Start typing here..."
-        sx={{ mb: 2 }}
-        slotProps={{
-            input: {sx: { fontSize: '1.2rem', lineHeight: 1.6, padding: '12px' },
-            },
-      }}
-      />
 
       <Box sx={{ display: "flex", gap: 3, mb: 2 }}>
         <Typography>WPM: {wpm}</Typography>
@@ -165,4 +147,4 @@ const TypingPractice: React.FC = () => {
   );
 };
 
-export default TypingPractice;
+export default TypingPracticeUnified;
