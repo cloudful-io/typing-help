@@ -53,6 +53,10 @@ const TypingPractice: React.FC = () => {
     setTypedText(e.target.value);
   };
 
+  const handlePaste = (event: any) => {
+    event.preventDefault(); // Prevent pasting
+  };
+
   // Physical key highlight
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -159,6 +163,7 @@ const TypingPractice: React.FC = () => {
         <TextField
           value={typedText}
           onChange={handleTextFieldChange}
+          onPaste={handlePaste}
           multiline
           fullWidth
           minRows={3}
