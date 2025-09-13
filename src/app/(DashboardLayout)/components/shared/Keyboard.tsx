@@ -20,7 +20,7 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, activeKey, shiftActive 
   const [showKeyboard, setShowKeyboard] = useState(true);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "100%" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "fit-content" }}>
       {/* Switch to toggle keyboard */}
       <FormControlLabel
         control={
