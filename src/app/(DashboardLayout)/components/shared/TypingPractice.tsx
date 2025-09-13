@@ -23,6 +23,7 @@ const TypingPractice: React.FC = () => {
   const [accuracy, setAccuracy] = useState<number | null>(null);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const textboxRef = useRef<HTMLInputElement>(null);
 
   // Start a new sentence
   const newSentence = () => {
@@ -106,6 +107,7 @@ const TypingPractice: React.FC = () => {
 
   const startSession = () => {
     if (!running) {
+      textboxRef.current?.focus();
       setTypedText("");
       setTimer(SESSION_TIME);
       setRunning(true);
@@ -161,6 +163,7 @@ const TypingPractice: React.FC = () => {
         </Paper>
 
         <TextField
+          inputRef={textboxRef}
           value={typedText}
           onChange={handleTextFieldChange}
           onPaste={handlePaste}
