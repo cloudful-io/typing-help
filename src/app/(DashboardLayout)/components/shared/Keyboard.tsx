@@ -20,7 +20,7 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, activeKey, shiftActive 
   const [showKeyboard, setShowKeyboard] = useState(true);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "fit-content" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "fit-content"  }}>
       {/* Switch to toggle keyboard */}
       <FormControlLabel
         control={
@@ -37,7 +37,7 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, activeKey, shiftActive 
       {showKeyboard && (
         <>
           {keyboardLayout.map((row, rowIndex) => (
-            <Box key={rowIndex} sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+            <Box key={rowIndex} sx={{ display: "flex",  width: "75%", justifyContent: "center", maxWidth: "90vw", mx: "auto", gap: 1 }}>
               {row.map((key, keyIndex) => {
                 const displayKey = key.replace("Left", "").replace("Right", "");
                 let width: string | number = "3vw";
@@ -47,9 +47,9 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, activeKey, shiftActive 
                   (shiftActive && displayKey === "Shift") || 
                   (["Caps", "Enter", "Backspace", "Space"].includes(displayKey) && activeKey === displayKey);
 
-                if (key === "Space") width = "9vw";
+                if (key === "Space") width = "8vw";
                 if (["ShiftLeft", "ShiftRight", "Backspace", "Enter", "Caps", "Tab"].includes(key)) {
-                  width = "6vw";
+                  width = "8vw";
                 }
 
                 return (
