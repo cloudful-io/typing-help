@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Typography, Paper, Button, TextField } from "@mui/material";
+import { Box, Grid, Typography, Paper, Button, TextField } from "@mui/material";
 import Keyboard from "./Keyboard";
+import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
+import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
+import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
+
 
 const sampleTexts = [
   "The sun rose slowly over the quiet village, casting a golden light on the cobblestone streets. Birds chirped in the trees, and the scent of fresh bread wafted from the bakery. Children ran across the square, laughing, while merchants prepared their stalls for the busy day ahead. Every corner seemed to hold a small surprise, from a colorful flower in a window to a cat napping in the sun. Life moved gently here, as if time itself had decided to take a pause and enjoy the morning.",
@@ -21,6 +25,8 @@ const TypingPractice: React.FC = () => {
   const [running, setRunning] = useState(false);
   const [wpm, setWPM] = useState<number | null>(null);
   const [accuracy, setAccuracy] = useState<number | null>(null);
+  const [correctChars, setCorrectChars] = useState<number>(0);
+  const [totalChars, setTotalChars] = useState<number>(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textboxRef = useRef<HTMLInputElement>(null);
@@ -117,18 +123,22 @@ const TypingPractice: React.FC = () => {
   };
 
   const computeResults = () => {
-    const correctChars = typedText
+    const correct = typedText
       .split("")
       .reduce((acc, char, idx) => (char === targetText[idx] ? acc + 1 : acc), 0);
 
+    const total = typedText.length;
+
     const elapsedMinutes = SESSION_TIME / 60;
     const calculatedWPM = Math.round((typedText.length / 5) / elapsedMinutes);
-    const calculatedAccuracy = typedText.length > 0
-      ? Math.round((correctChars / typedText.length) * 100)
+    const calculatedAccuracy = total > 0
+      ? Math.round((correct / total) * 100)
       : 0;
 
     setWPM(calculatedWPM);
     setAccuracy(calculatedAccuracy);
+    setCorrectChars(correct);
+    setTotalChars(total);
   };
 
   const renderPracticeText = () => {
@@ -153,9 +163,27 @@ const TypingPractice: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", gap: 3, p: 2 }}>
-      {/* Left column: Practice text + typed text */}
-      <Box sx={{ flex: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
+
+      {/* Top row: Accuracy, WPM, Timer/Controls */}
+      <Grid container spacing={2} alignItems="stretch">
+        <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
+          <AccuracyCard accuracy={accuracy} correct={correctChars} total={totalChars} />
+        </Grid>
+        <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
+          <WPMCard wpm={wpm} />
+        </Grid>
+        <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
+          <TimerControlCard
+            timer={timer}
+            running={running}
+            onStart={startSession}
+            onNewSentence={newSentence}
+          />
+        </Grid>
+      </Grid>
+
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Paper sx={{ p: 2, minHeight: "100px" }}>
           <Typography component="div" sx={{ fontSize: "1.1rem", wordWrap: "break-word" }}>
             {renderPracticeText()}
@@ -176,23 +204,6 @@ const TypingPractice: React.FC = () => {
         />
 
         <Keyboard onKeyPress={handleTyping} activeKey={activeKey} shiftActive={shiftActive} />
-      </Box>
-
-      {/* Right column: Timer, WPM, Accuracy */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-        <Paper sx={{ p: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-          <Typography variant="h6">Timer: {timer}s</Typography>
-          {wpm !== null && <Typography>WPM: {wpm}</Typography>}
-          {accuracy !== null && <Typography>Accuracy: {accuracy}%</Typography>}
-          {!running && (
-            <Button variant="contained" onClick={startSession}>
-              Start 1-Minute Session
-            </Button>
-          )}
-          <Button variant="outlined" onClick={newSentence}>
-            New Sentence
-          </Button>
-        </Paper>
       </Box>
     </Box>
   );
