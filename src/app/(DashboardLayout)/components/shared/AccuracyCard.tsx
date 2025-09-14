@@ -53,7 +53,7 @@ const AccuracyCard: React.FC<AccuracyCardProps> = ({ accuracy, correct, total })
       <Grid container justifyContent="center">
         <Grid size={{xs:12}}>
           <ReactApexChart key={accuracy} options={chartOptions} series={series} type="radialBar" height={120} />
-          <Typography variant="subtitle2" color="textSecondary" align='center'>{`${correct} out of ${total}`}</Typography>
+          <Typography variant="subtitle2" color="textSecondary" align='center'>{`${correct} out of ${total} characters`}</Typography>
         </Grid>
       </Grid>
     </DashboardCard>
