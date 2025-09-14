@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Grid, Typography, Paper, Button, TextField } from "@mui/material";
+import { Box, Grid, Typography, Paper, TextField } from "@mui/material";
 import Keyboard from "./Keyboard";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
 import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
-
 
 const sampleTexts = [
   "The sun rose slowly over the quiet village, casting a golden light on the cobblestone streets. Birds chirped in the trees, and the scent of fresh bread wafted from the bakery. Children ran across the square, laughing, while merchants prepared their stalls for the busy day ahead. Every corner seemed to hold a small surprise, from a colorful flower in a window to a cat napping in the sun. Life moved gently here, as if time itself had decided to take a pause and enjoy the morning.",
@@ -14,15 +13,16 @@ const sampleTexts = [
   "The morning in the small town was full of life and quiet excitement at the same time. People walked along the streets carrying baskets of fresh fruit and vegetables, while children ran past them laughing loudly, their shoes tapping against the cobblestones. Birds sang from the trees, and the gentle breeze made the leaves shimmer in the sunlight. Bakers opened their shops, filling the air with the sweet smell of bread and pastries. A cat stretched lazily on the windowsill, and a dog barked softly nearby. Everywhere you looked, people greeted each other warmly, sharing smiles and stories, and even though it was just another ordinary day, the town felt alive with energy and happiness, a perfect place for anyone to enjoy the morning."
 ];
 
-const SESSION_TIME = 60; // seconds
-
 const TypingPractice: React.FC = () => {
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState(sampleTexts[0]);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [shiftActive, setShiftActive] = useState(false);
-  const [timer, setTimer] = useState(SESSION_TIME);
+
+  const [timer, setTimer] = useState(60);       // countdown
+  const [duration, setDuration] = useState(60); // selected session duration
   const [running, setRunning] = useState(false);
+
   const [wpm, setWPM] = useState<number | null>(null);
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [correctChars, setCorrectChars] = useState<number>(0);
@@ -36,7 +36,7 @@ const TypingPractice: React.FC = () => {
     const randIndex = Math.floor(Math.random() * sampleTexts.length);
     setTargetText(sampleTexts[randIndex]);
     setTypedText("");
-    setTimer(SESSION_TIME);
+    setTimer(duration);
     setRunning(false);
     setWPM(null);
     setAccuracy(null);
@@ -104,18 +104,20 @@ const TypingPractice: React.FC = () => {
       return;
     }
 
-    timerRef.current = setTimeout(() => setTimer(timer - 1), 1000);
+    timerRef.current = setTimeout(() => setTimer((t) => t - 1), 1000);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [running, timer]);
 
-  const startSession = () => {
+  // Start session with chosen duration
+  const startSession = (selectedDuration: number) => {
     if (!running) {
       textboxRef.current?.focus();
       setTypedText("");
-      setTimer(SESSION_TIME);
+      setDuration(selectedDuration);
+      setTimer(selectedDuration);
       setRunning(true);
       setWPM(null);
       setAccuracy(null);
@@ -129,7 +131,7 @@ const TypingPractice: React.FC = () => {
 
     const total = typedText.length;
 
-    const elapsedMinutes = SESSION_TIME / 60;
+    const elapsedMinutes = duration / 60;
     const calculatedWPM = Math.round((typedText.length / 5) / elapsedMinutes);
     const calculatedAccuracy = total > 0
       ? Math.round((correct / total) * 100)
@@ -177,7 +179,7 @@ const TypingPractice: React.FC = () => {
           <TimerControlCard
             timer={timer}
             running={running}
-            onStart={startSession}
+            onStart={startSession}       // now takes duration
             onNewSentence={newSentence}
           />
         </Grid>
