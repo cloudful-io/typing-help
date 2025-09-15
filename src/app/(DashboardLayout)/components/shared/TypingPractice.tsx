@@ -64,6 +64,11 @@ const TypingPractice: React.FC = () => {
     event.preventDefault(); // Prevent pasting
   };
 
+  const handleDurationChange = (duration: number) => {
+    setTimer(duration);    // ✅ reset countdown to new duration
+    setRunning(false);     // optional: stop any active countdown
+  };
+
   // Physical key highlight
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -181,6 +186,7 @@ const TypingPractice: React.FC = () => {
             running={running}
             onStart={startSession}       // now takes duration
             onNewSentence={newSentence}
+            onDurationChange={handleDurationChange}
           />
         </Grid>
       </Grid>

@@ -25,7 +25,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
   running,
   onStart,
   onNewSentence,
-  presetTimes = [30, 60, 90, 120], // default presets
+  presetTimes = [30, 60, 120, 240], // default presets
   onDurationChange,
 }) => {
   const [selectedTime, setSelectedTime] = useState<number>(presetTimes[1] ?? 60); // default 60s
@@ -60,7 +60,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
       const val = Number(newTime);
       setSelectedTime(val);
       // notify parent so it can reset its timer/duration
-      //onDurationChange?.(val);
+      onDurationChange?.(val);
     }
   };
 
@@ -88,7 +88,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
           {/* Timer number (perfectly centered) */}
           <Box
             position="absolute"
-            top="50%"
+            top="58%"
             left="50%"
             sx={{
               transform: "translate(-50%, -50%)",
