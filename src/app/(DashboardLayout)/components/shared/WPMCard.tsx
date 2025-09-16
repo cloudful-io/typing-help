@@ -4,15 +4,20 @@ import React, { useMemo } from "react";
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
+import { Typography } from "@mui/material";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface WPMCardProps {
   wpm: number | null;
+  wordsTyped?: number;
+  chineseMode?: boolean;
   targetWPM?: number; // optional target, default 100
 }
 
-const WPMCard: React.FC<WPMCardProps> = ({ wpm, targetWPM = 100 }) => {
+const WPMCard: React.FC<WPMCardProps> = ({ wpm, wordsTyped, chineseMode = false, targetWPM = 100 }) => {
+  const label = chineseMode ? "CPM" : "WPM";
+
   // dynamic color based on performance
   const color = useMemo(() => {
     if (wpm === null) return "#bdbdbd"; // gray
@@ -33,7 +38,7 @@ const WPMCard: React.FC<WPMCardProps> = ({ wpm, targetWPM = 100 }) => {
         hollow: { size: "60%" },
         track: { background: "#eee" },
         dataLabels: {
-          name: { show: true, text: "WPM", offsetY: -10 },
+          name: { show: true, text: label, offsetY: -10 },
           value: {
             show: true,
             fontSize: "22px",
@@ -44,14 +49,15 @@ const WPMCard: React.FC<WPMCardProps> = ({ wpm, targetWPM = 100 }) => {
       },
     },
     colors: [color],
-    labels: ["WPM"],
-  }), [color]);
+    labels: [label],
+  }), [color, label]);
 
   const series = [wpm ?? 0]; // fallback to 0
 
   return (
-    <DashboardCard title="Words Per Minute">
+    <DashboardCard title={label === "WPM" ? "Words Per Minute" : "Characters Per Minute"}>
       <ReactApexChart key={wpm} options={chartOptions} series={series} type="radialBar" height={120} />
+      <Typography variant="subtitle2" color="textSecondary" align='center' sx={{ pt: 2 }}>{wordsTyped} {chineseMode ? "characters typed" : "words typed"}</Typography>
     </DashboardCard>
   );
 };

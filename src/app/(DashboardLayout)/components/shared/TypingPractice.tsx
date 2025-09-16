@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Box, Grid, Typography, Paper, TextField } from "@mui/material";
 import Keyboard from "./Keyboard";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
@@ -28,6 +28,8 @@ const TypingPractice: React.FC = () => {
   const [correctChars, setCorrectChars] = useState<number>(0);
   const [totalChars, setTotalChars] = useState<number>(0);
 
+  const [chineseMode, setChineseMode] = useState(false);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textboxRef = useRef<HTMLInputElement>(null);
 
@@ -35,6 +37,10 @@ const TypingPractice: React.FC = () => {
   const newSentence = () => {
     const randIndex = Math.floor(Math.random() * sampleTexts.length);
     setTargetText(sampleTexts[randIndex]);
+
+    // detect if text contains Chinese
+    setChineseMode(/\p{Script=Han}/u.test(sampleTexts[randIndex]));
+
     setTypedText("");
     setTimer(duration);
     setRunning(false);
@@ -44,6 +50,17 @@ const TypingPractice: React.FC = () => {
     setShiftActive(false);
     if (timerRef.current) clearInterval(timerRef.current);
   };
+
+  const wordsTyped = useMemo(() => {
+    if (!typedText.trim()) return 0;
+
+    if (chineseMode) {
+      const chars = typedText.match(/\p{Script=Han}/gu) || [];
+      return chars.length;
+    }
+
+    return typedText.trim().split(/\s+/).length;
+  }, [typedText, chineseMode]);
 
   const handleTyping = (key: string) => {
     if (!running) return; // Only allow typing during session
@@ -126,6 +143,8 @@ const TypingPractice: React.FC = () => {
       setRunning(true);
       setWPM(null);
       setAccuracy(null);
+      setCorrectChars(0);
+      setTotalChars(0);
     }
   };
 
@@ -137,12 +156,22 @@ const TypingPractice: React.FC = () => {
     const total = typedText.length;
 
     const elapsedMinutes = duration / 60;
-    const calculatedWPM = Math.round((typedText.length / 5) / elapsedMinutes);
+    
+    let calculatedSpeed: number;
+    if (chineseMode) {
+      // Characters per minute
+      const charsTyped = (typedText.match(/\p{Script=Han}/gu) || []).length;
+      calculatedSpeed = Math.round(charsTyped / elapsedMinutes);
+    } else {
+      // Words per minute
+      calculatedSpeed = Math.round(wordsTyped / elapsedMinutes);
+    }
+
     const calculatedAccuracy = total > 0
       ? Math.round((correct / total) * 100)
       : 0;
 
-    setWPM(calculatedWPM);
+    setWPM(calculatedSpeed);
     setAccuracy(calculatedAccuracy);
     setCorrectChars(correct);
     setTotalChars(total);
@@ -178,7 +207,7 @@ const TypingPractice: React.FC = () => {
           <AccuracyCard accuracy={accuracy} correct={correctChars} total={totalChars} />
         </Grid>
         <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
-          <WPMCard wpm={wpm} />
+          <WPMCard wpm={wpm} wordsTyped={wordsTyped} chineseMode={chineseMode} />
         </Grid>
         <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
           <TimerControlCard
