@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
-import {
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';import {
   Box,
   Button,
   CircularProgress,
@@ -117,8 +117,8 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
 
         {/* Buttons */}
         {!running && (
-          <Button variant="contained" onClick={() => onStart(selectedTime)}>
-            Start {selectedTime}-Second Session
+          <Button variant="contained" startIcon={<PlayCircleOutlineIcon />} onClick={() => onStart(selectedTime)}>
+            Start Session
           </Button>
         )}
         <Button variant="outlined" onClick={onNewSentence}>

@@ -16,6 +16,8 @@
     "@mui/icons-material": "^7.0.1",
     "@mui/lab": "^7.0.0-beta.10",
     "@mui/material": "^7.0.1",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.55.0",
     "@tabler/icons-react": "^3.33.0",
     "@types/node": "^20.2.3",
     "apexcharts": "4.7.0",

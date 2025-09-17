@@ -6,7 +6,6 @@ import GoogleAnalytics from "@/app/(DashboardLayout)/components/shared/GoogleAna
 
 import './global.css'
 
-
 export default function RootLayout({
   children,
 }: {
