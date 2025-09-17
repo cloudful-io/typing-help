@@ -11,12 +11,20 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false })
 interface WPMCardProps {
   wpm: number | null;
   wordsTyped?: number;
-  chineseMode?: boolean;
-  targetWPM?: number; // optional target, default 100
+  language: string;        // e.g., "en-US", "zh-Hant", "ja"
+  targetWPM?: number;      // optional target, default 100
 }
 
-const WPMCard: React.FC<WPMCardProps> = ({ wpm, wordsTyped, chineseMode = false, targetWPM = 100 }) => {
-  const label = chineseMode ? "CPM" : "WPM";
+const WPMCard: React.FC<WPMCardProps> = ({ 
+  wpm, 
+  wordsTyped, 
+  language, 
+  targetWPM = 100 
+}) => {
+  // Decide if this language should be CPM-based
+  const isCharacterBased = ["zh-Hant", "zh-Hans", "ja", "ko"].includes(language);
+
+  const label = isCharacterBased ? "CPM" : "WPM";
 
   // dynamic color based on performance
   const color = useMemo(() => {
@@ -55,9 +63,22 @@ const WPMCard: React.FC<WPMCardProps> = ({ wpm, wordsTyped, chineseMode = false,
   const series = [wpm ?? 0]; // fallback to 0
 
   return (
-    <DashboardCard title={label === "WPM" ? "Words Per Minute" : "Characters Per Minute"}>
-      <ReactApexChart key={wpm} options={chartOptions} series={series} type="radialBar" height={120} />
-      <Typography variant="subtitle2" color="textSecondary" align='center' sx={{ pt: 2 }}>{wordsTyped} {chineseMode ? "characters typed" : "words typed"}</Typography>
+    <DashboardCard title={isCharacterBased ? "Characters Per Minute" : "Words Per Minute"}>
+      <ReactApexChart 
+        key={`${wpm}-${label}`} 
+        options={chartOptions} 
+        series={series} 
+        type="radialBar" 
+        height={120} 
+      />
+      <Typography 
+        variant="subtitle2" 
+        color="textSecondary" 
+        align='center' 
+        sx={{ pt: 2 }}
+      >
+        {wordsTyped} {isCharacterBased ? "characters typed" : "words typed"}
+      </Typography>
     </DashboardCard>
   );
 };
