@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { Box, Grid, Typography, Paper, TextField } from "@mui/material";
+import { Box, Grid, Typography, Paper, TextField, FormControlLabel, Switch } from "@mui/material";
 import Keyboard from "./Keyboard";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
@@ -27,9 +27,10 @@ const TypingPractice: React.FC = () => {
   const textboxRef = useRef<HTMLInputElement>(null);
 
   // 🔹 Fetch practice text from API
-  const fetchPracticeText = async () => {
+  const fetchPracticeText = async (mode?: boolean) => {
     try {
-      const res = await fetch("/api/practice-text?language=zh-Hant");
+      const language = mode !== undefined ? (mode ? "zh-Hant" : "en-US") : (chineseMode ? "zh-Hant" : "en-US");
+      const res = await fetch(`/api/practice-text?language=${language}`);
       if (!res.ok) throw new Error("Failed to fetch practice text");
 
       const data = await res.json();
@@ -96,6 +97,12 @@ const TypingPractice: React.FC = () => {
     setTimer(duration);    // ✅ reset countdown to new duration
     setRunning(false);     // optional: stop any active countdown
   };
+
+  const handleLanguageToggle = (isChinese: boolean) => {
+    setChineseMode(isChinese);   // 1️⃣ update language mode
+    fetchPracticeText(isChinese);               // 2️⃣ fetch a new sentence for the selected language
+  };
+
 
   // Physical key highlight
   useEffect(() => {
@@ -214,13 +221,13 @@ const TypingPractice: React.FC = () => {
 
       {/* Top row: Accuracy, WPM, Timer/Controls */}
       <Grid container spacing={2} alignItems="stretch">
-        <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
+        <Grid size={4} sx={{ display: "flex", flex: 1 }}>
           <AccuracyCard accuracy={accuracy} correct={correctChars} total={totalChars} />
         </Grid>
-        <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
+        <Grid size={4} sx={{ display: "flex", flex: 1 }}>
           <WPMCard wpm={wpm} wordsTyped={wordsTyped} chineseMode={chineseMode} />
         </Grid>
-        <Grid size={{xs:12, md:4}} sx={{ display: "flex" }}>
+        <Grid size={4} sx={{ display: "flex", flex: 1 }}>
           <TimerControlCard
             timer={timer}
             running={running}
@@ -232,6 +239,18 @@ const TypingPractice: React.FC = () => {
       </Grid>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={chineseMode}
+                onChange={(e) => handleLanguageToggle(e.target.checked)}
+              />
+            }
+            label={chineseMode ? "中文" : "English"}
+          />
+        </Box>
+
         <Paper sx={{ p: 2, minHeight: "100px" }}>
           <Typography component="div" sx={{ fontSize: "1.1rem", wordWrap: "break-word" }}>
             {targetText ? renderPracticeText() : "Loading practice text..."}
