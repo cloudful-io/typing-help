@@ -7,6 +7,8 @@ import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerCon
 
 
 const TypingPractice: React.FC = () => {
+  const [isComposing, setIsComposing] = useState(false);
+
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");;
   const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -86,7 +88,9 @@ const TypingPractice: React.FC = () => {
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!running) return;
-    setTypedText(e.target.value);
+    if (!isComposing) {alert("hello");
+      setTypedText(e.target.value);
+    }
   };
 
   const handlePaste = (event: any) => {
@@ -273,6 +277,12 @@ const TypingPractice: React.FC = () => {
           value={typedText}
           onChange={handleTextFieldChange}
           onPaste={handlePaste}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={(e) => {
+            setIsComposing(false);
+            const target = e.currentTarget as any; // cast to correct type
+            setTypedText(target.value);
+          }}
           multiline
           fullWidth
           minRows={3}
