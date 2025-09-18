@@ -1,10 +1,11 @@
 "use client";
 
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
-import { Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import { useMemo } from "react";
+import { getAccuracyColor } from '@/utils/typing';
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -15,14 +16,11 @@ interface AccuracyCardProps {
 }
 
 const AccuracyCard: React.FC<AccuracyCardProps> = ({ accuracy, correct, total }) => {
-  const color = useMemo(() => {
-    if (accuracy === null) return "#bdbdbd"; // gray fallback
-    if (accuracy < 85) return "#f44336";     // red
-    if (accuracy < 95) return "#ff9800";     // orange/yellow
-    return "#4caf50";                        // green
-  }, [accuracy]);
+  const safeAccuracy = total > 0 && accuracy !== null ? accuracy : 0;
 
-  const chartOptions : ApexOptions  = useMemo(() => ({
+  const color = useMemo(() => getAccuracyColor(accuracy, total), [accuracy, total]);
+
+  const chartOptions: ApexOptions = useMemo(() => ({
     chart: {
       type: "radialBar",
       sparkline: { enabled: true },
@@ -36,26 +34,40 @@ const AccuracyCard: React.FC<AccuracyCardProps> = ({ accuracy, correct, total })
           name: { show: false },
           value: {
             offsetY: 8,
-            fontSize: "20px",
+            fontSize: "18px",
             fontWeight: 600,
             formatter: (val: number) => `${val}%`,
           },
         },
       },
     },
+    responsive: [
+      {
+        breakpoint: 600,
+        options: {
+          plotOptions: { radialBar: { dataLabels: { value: { fontSize: "14px" } } } },
+        },
+      },
+    ],
     colors: [color],
   }), [color]);
 
-  const series = [accuracy ?? 0]; // fallback to 0 when null
+  const series = [safeAccuracy];
 
   return (
     <DashboardCard title="Accuracy">
-      <Grid container justifyContent="center">
-        <Grid size={{xs:12}}>
-          <ReactApexChart key={accuracy} options={chartOptions} series={series} type="radialBar" height={120} />
-          <Typography variant="subtitle2" color="textSecondary" align='center'>{`${correct} out of ${total} characters`}</Typography>
-        </Grid>
-      </Grid>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <ReactApexChart 
+          key={accuracy}
+          options={chartOptions} 
+          series={series} 
+          type="radialBar" 
+          height={120} 
+        />
+        <Typography variant="body2" color="text.secondary" align="center" aria-label="accuracy details">
+          {`${correct} out of ${total} characters correct`}
+        </Typography>
+      </Box>
     </DashboardCard>
   );
 };
