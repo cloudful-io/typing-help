@@ -24,6 +24,7 @@ const AccuracyCard: React.FC<AccuracyCardProps> = ({ accuracy, correct, total })
     chart: {
       type: "radialBar",
       sparkline: { enabled: true },
+      
     },
     plotOptions: {
       radialBar: {
