@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';import {
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
+import {
   Box,
   Button,
   CircularProgress,
@@ -14,8 +16,10 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';import
 interface TimerControlsCardProps {
   timer: number;          // seconds left (from parent)
   running: boolean;
+  paused: boolean;
   onStart: (duration: number) => void;  // starts a session with given duration
-  onNewSentence: () => void;
+  onPause: () => void;
+  onResume: () => void;
   presetTimes?: number[];
   onDurationChange?: (duration: number) => void; // NEW: notify parent when user picks a duration
 }
@@ -23,8 +27,10 @@ interface TimerControlsCardProps {
 const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
   timer,
   running,
+  paused = false,
   onStart,
-  onNewSentence,
+  onPause,
+  onResume,
   presetTimes = [30, 60, 120, 240], // default presets
   onDurationChange,
 }) => {
@@ -116,14 +122,38 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
         </ToggleButtonGroup>
 
         {/* Buttons */}
-        {!running && (
-          <Button variant="contained" startIcon={<PlayCircleOutlineIcon />} onClick={() => onStart(selectedTime)}>
-            Start Session
-          </Button>
-        )}
-        <Button variant="outlined" onClick={onNewSentence}>
-          New Sentence
-        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {!running && !paused && (
+            <Button
+              variant="contained"
+              startIcon={<PlayCircleOutlineIcon />}
+              onClick={() => onStart(selectedTime)}
+            >
+              Start Session
+            </Button>
+          )}
+
+          {running && (
+            <Button
+              variant="contained"
+              color="warning"
+              startIcon={<PauseCircleOutlineIcon />}
+              onClick={onPause}
+            >
+              Pause
+            </Button>
+          )}
+
+          {!running && paused && (
+            <Button
+              variant="contained"
+              startIcon={<PlayCircleOutlineIcon />}
+              onClick={onResume}
+            >
+              Resume
+            </Button>
+          )}
+        </Box>
       </Box>
     </DashboardCard>
   );

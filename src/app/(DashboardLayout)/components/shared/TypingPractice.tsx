@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { Box, Grid, Typography, Paper, TextField, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { Box, Grid, Typography, Paper, TextField, ToggleButtonGroup, ToggleButton, Button } from "@mui/material";
 import Keyboard from "./Keyboard";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
@@ -7,7 +7,6 @@ import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerCon
 
 
 const TypingPractice: React.FC = () => {
-  const [isComposing, setIsComposing] = useState(false);
 
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");;
@@ -17,6 +16,7 @@ const TypingPractice: React.FC = () => {
   const [timer, setTimer] = useState(60);       // countdown
   const [duration, setDuration] = useState(60); // selected session duration
   const [running, setRunning] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const [wpm, setWPM] = useState<number | null>(null);
   const [accuracy, setAccuracy] = useState<number | null>(null);
@@ -43,6 +43,7 @@ const TypingPractice: React.FC = () => {
       setTypedText("");
       setTimer(duration);
       setRunning(false);
+      setPaused(false);
       setWPM(null);
       setAccuracy(null);
       setActiveKey(null);
@@ -88,9 +89,7 @@ const TypingPractice: React.FC = () => {
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!running) return;
-    if (!isComposing) {alert("hello");
-      setTypedText(e.target.value);
-    }
+    setTypedText(e.target.value);
   };
 
   const handlePaste = (event: any) => {
@@ -99,7 +98,8 @@ const TypingPractice: React.FC = () => {
 
   const handleDurationChange = (duration: number) => {
     setTimer(duration);    
-    setRunning(false);    
+    setRunning(false); 
+    setPaused(false);   
   };
 
   const handleLanguageChange = (
@@ -149,6 +149,7 @@ const TypingPractice: React.FC = () => {
     if (!running) return;
     if (timer <= 0) {
       setRunning(false);
+      setPaused(false);
       computeResults();
       return;
     }
@@ -168,11 +169,25 @@ const TypingPractice: React.FC = () => {
       setDuration(selectedDuration);
       setTimer(selectedDuration);
       setRunning(true);
+      setPaused(false);
       setWPM(null);
       setAccuracy(null);
       setCorrectChars(0);
       setTotalChars(0);
     }
+  };
+
+  // Pause session
+  const pauseSession = () => {
+    setRunning(false);
+    setPaused(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
+  // Resume session
+  const resumeSession = () => {
+    setRunning(true);
+    setPaused(false);
   };
 
   const computeResults = () => {
@@ -238,16 +253,24 @@ const TypingPractice: React.FC = () => {
           <TimerControlCard
             timer={timer}
             running={running}
-            onStart={startSession}       // now takes duration
-            onNewSentence={newSentence}
+            paused={paused}     
+            onStart={startSession}  
+            onPause={pauseSession}    
+            onResume={resumeSession} 
             onDurationChange={handleDurationChange}
           />
         </Grid>
       </Grid>
-
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          
+        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={newSentence}
+              //sx={{m:2}}
+            >
+              Load New Sentence
+            </Button>
             <ToggleButtonGroup
               value={language}
               size="small"
@@ -277,17 +300,11 @@ const TypingPractice: React.FC = () => {
           value={typedText}
           onChange={handleTextFieldChange}
           onPaste={handlePaste}
-          onCompositionStart={() => setIsComposing(true)}
-          onCompositionEnd={(e) => {
-            setIsComposing(false);
-            const target = e.currentTarget as any; // cast to correct type
-            setTypedText(target.value);
-          }}
           multiline
           fullWidth
           minRows={3}
           variant="outlined"
-          placeholder="Start typing here..."
+          placeholder="Click on the Start Session button to start typing..."
           sx={{ fontSize: "1.1rem" }}
         />
 
