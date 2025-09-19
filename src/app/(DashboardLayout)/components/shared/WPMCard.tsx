@@ -4,7 +4,8 @@ import React, { useMemo } from "react";
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
+import { getWPMColor, isLanguageCharacterBased } from "@/utils/typing";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -12,27 +13,22 @@ interface WPMCardProps {
   wpm: number | null;
   wordsTyped?: number;
   language: string;        // e.g., "en-US", "zh-Hant", "ja"
-  targetWPM?: number;      // optional target, default 100
+  targetWPM?: number;      // optional target, default 80
 }
 
 const WPMCard: React.FC<WPMCardProps> = ({ 
   wpm, 
-  wordsTyped, 
+  wordsTyped = 0, 
   language, 
-  targetWPM = 100 
+  targetWPM = 80 
 }) => {
   // Decide if this language should be CPM-based
-  const isCharacterBased = ["zh-Hant", "zh-Hans", "ja", "ko"].includes(language);
+  const isCharacterBased = isLanguageCharacterBased(language);
 
   const label = isCharacterBased ? "CPM" : "WPM";
 
   // dynamic color based on performance
-  const color = useMemo(() => {
-    if (wpm === null) return "#bdbdbd"; // gray
-    if (wpm < targetWPM * 0.6) return "#f44336"; // red if <60% of target
-    if (wpm < targetWPM * 0.8) return "#ff9800"; // orange if 60-80%
-    return "#4caf50"; // green if >80%
-  }, [wpm, targetWPM]);
+  const color = useMemo(() => getWPMColor(wpm, targetWPM), [wpm, targetWPM]);
 
   const chartOptions: ApexOptions = useMemo(() => ({
     chart: {
@@ -60,25 +56,22 @@ const WPMCard: React.FC<WPMCardProps> = ({
     labels: [label],
   }), [color, label]);
 
-  const series = [wpm ?? 0]; // fallback to 0
+  const series = [wpm ?? 0]; 
 
   return (
     <DashboardCard title={isCharacterBased ? "Characters Per Minute" : "Words Per Minute"}>
-      <ReactApexChart 
-        key={`${wpm}-${label}`} 
-        options={chartOptions} 
-        series={series} 
-        type="radialBar" 
-        height={120} 
-      />
-      <Typography 
-        variant="subtitle2" 
-        color="textSecondary" 
-        align='center' 
-        sx={{ pt: 2 }}
-      >
-        {wordsTyped} {isCharacterBased ? "characters typed" : "words typed"}
-      </Typography>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <ReactApexChart 
+          key={`${wpm}-${label}-${color}`} 
+          options={chartOptions} 
+          series={series} 
+          type="radialBar" 
+          height={120} 
+        />
+        <Typography variant="body2" color="text.secondary" align="center" aria-label="words per minute detail" sx={{ pt: 2 }}>
+          {wordsTyped} {isCharacterBased ? "characters typed" : "words typed"}
+        </Typography>
+      </Box>
     </DashboardCard>
   );
 };
