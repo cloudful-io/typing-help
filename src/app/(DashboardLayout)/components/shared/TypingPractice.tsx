@@ -19,7 +19,6 @@ const TypingPractice: React.FC = () => {
   const [paused, setPaused] = useState(false);
 
   const [wpm, setWPM] = useState<number | null>(null);
-  const [accuracy, setAccuracy] = useState<number | null>(null);
   const [correctChars, setCorrectChars] = useState<number>(0);
   const [totalChars, setTotalChars] = useState<number>(0);
 
@@ -41,11 +40,12 @@ const TypingPractice: React.FC = () => {
 
       // reset state
       setTypedText("");
+      setTotalChars(0);
+      setCorrectChars(0);
       setTimer(duration);
       setRunning(false);
       setPaused(false);
       setWPM(null);
-      setAccuracy(null);
       setActiveKey(null);
       setShiftActive(false);
       if (timerRef.current) clearInterval(timerRef.current);
@@ -171,7 +171,6 @@ const TypingPractice: React.FC = () => {
       setRunning(true);
       setPaused(false);
       setWPM(null);
-      setAccuracy(null);
       setCorrectChars(0);
       setTotalChars(0);
     }
@@ -207,12 +206,7 @@ const TypingPractice: React.FC = () => {
       calculatedSpeed = Math.round(wordsTyped / elapsedMinutes);
     }
 
-    const calculatedAccuracy = total > 0
-      ? Math.round((correct / total) * 100)
-      : 0;
-
     setWPM(calculatedSpeed);
-    setAccuracy(calculatedAccuracy);
     setCorrectChars(correct);
     setTotalChars(total);
   };
@@ -244,7 +238,7 @@ const TypingPractice: React.FC = () => {
       {/* Top row: Accuracy, WPM, Timer/Controls */}
       <Grid container spacing={2} alignItems="stretch">
         <Grid size={{xs:12, md:4}} sx={{ display: "flex", flex: 1 }}>
-          <AccuracyCard accuracy={accuracy} correct={correctChars} total={totalChars} />
+          <AccuracyCard correct={correctChars} total={totalChars} />
         </Grid>
         <Grid size={{xs:12, md:4}} sx={{ display: "flex", flex: 1 }}>
           <WPMCard wpm={wpm} wordsTyped={wordsTyped} language={language} />

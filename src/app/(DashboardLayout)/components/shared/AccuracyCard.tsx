@@ -5,20 +5,20 @@ import { Box, Typography } from '@mui/material';
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import { useMemo } from "react";
-import { getAccuracyColor } from '@/utils/typing';
+import { getAccuracyColor, calculateAccuracy } from '@/utils/typing';
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface AccuracyCardProps {
-  accuracy: number | null;
   correct: number;
   total: number;
 }
 
-const AccuracyCard: React.FC<AccuracyCardProps> = ({ accuracy, correct, total }) => {
-  const safeAccuracy = total > 0 && accuracy !== null ? accuracy : 0;
-
-  const color = useMemo(() => getAccuracyColor(accuracy, total), [accuracy, total]);
+const AccuracyCard: React.FC<AccuracyCardProps> = ({ correct, total }) => {
+  const safeCorrect = Math.max(0, correct);
+  const safeTotal = Math.max(0, total);
+  const accuracy = calculateAccuracy(safeCorrect, safeTotal);
+  const color = useMemo(() => getAccuracyColor(accuracy, safeTotal), [accuracy, safeTotal]);
 
   const chartOptions: ApexOptions = useMemo(() => ({
     chart: {
@@ -53,13 +53,13 @@ const AccuracyCard: React.FC<AccuracyCardProps> = ({ accuracy, correct, total })
     colors: [color],
   }), [color]);
 
-  const series = [safeAccuracy];
+  const series = [accuracy];
 
   return (
     <DashboardCard title="Accuracy">
       <Box display="flex" flexDirection="column" alignItems="center">
         <ReactApexChart 
-          key={accuracy}
+          key={`${correct}-${total}`} 
           options={chartOptions} 
           series={series} 
           type="radialBar" 
