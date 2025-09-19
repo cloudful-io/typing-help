@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
@@ -8,74 +8,107 @@ import {
   Box,
   Button,
   CircularProgress,
-  Typography,
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
+import { getTimerControlColor } from "@/utils/typing";
 
 interface TimerControlsCardProps {
-  timer: number;          // seconds left (from parent)
-  running: boolean;
-  paused: boolean;
-  onStart: (duration: number) => void;  // starts a session with given duration
-  onPause: () => void;
-  onResume: () => void;
   presetTimes?: number[];
-  onDurationChange?: (duration: number) => void; // NEW: notify parent when user picks a duration
+  onStart?: (duration: number) => void;
+  onPause?: () => void;
+  onResume?: () => void;
+  onDurationChange?: (duration: number) => void;
+  onSessionEnd?: (elapsedSeconds: number) => void;
 }
 
 const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
-  timer,
-  running,
-  paused = false,
+  presetTimes = [30, 60, 120, 240],
   onStart,
   onPause,
   onResume,
-  presetTimes = [30, 60, 120, 240], // default presets
   onDurationChange,
+  onSessionEnd,
 }) => {
-  const [selectedTime, setSelectedTime] = useState<number>(presetTimes[1] ?? 60); // default 60s
+  const [selectedTime, setSelectedTime] = useState<number>(presetTimes[1] ?? 60);
+  const [timer, setTimer] = useState<number>(selectedTime);
+  const [running, setRunning] = useState(false);
+  const [paused, setPaused] = useState(false);
 
-  // Keep selectedTime valid if presetTimes prop ever changes
+  const intervalRef = useRef<number | null>(null);
+
+  // Keep selectedTime valid if presetTimes prop changes
   useEffect(() => {
     if (!presetTimes.includes(selectedTime)) {
       const fallback = presetTimes[0] ?? 60;
       setSelectedTime(fallback);
       onDurationChange?.(fallback);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presetTimes]);
 
-  // progress is percentage of time remaining (100 -> 0)
-  const progress = selectedTime > 0 ? (timer / selectedTime) * 100 : 0;
+  // Update timer when selectedTime changes
+  useEffect(() => {
+    setTimer(selectedTime);
+  }, [selectedTime]);
 
-  const color =
-    timer / selectedTime > 0.25
-      ? "success.main"
-      : timer / selectedTime > 0.1
-      ? "warning.main"
-      : "error.main";
+  // Countdown effect
+  useEffect(() => {
+    if (!running) return;
 
-  // Note: MUI ToggleButtonGroup may pass string values from the DOM,
-  // so coerce with Number(...) to be safe.
-  const handleTimeToggle = (
-    _event: React.MouseEvent<HTMLElement>,
-    newTime: number | string | null
-  ) => {
+    if (timer <= 0) {
+      setRunning(false);
+      setPaused(false);
+      onSessionEnd?.(selectedTime);
+      return;
+    }
+
+    intervalRef.current = window.setTimeout(() => setTimer((t) => t - 1), 1000);
+
+    return () => {
+      if (intervalRef.current) clearTimeout(intervalRef.current);
+    };
+  }, [running, timer]);
+
+  const handleTimeToggle = (_e: React.MouseEvent<HTMLElement>, newTime: number | string | null) => {
     if (newTime != null) {
       const val = Number(newTime);
       setSelectedTime(val);
-      // notify parent so it can reset its timer/duration
+      setTimer(val);
       onDurationChange?.(val);
     }
   };
 
+  const handleStart = () => {
+    setTimer(selectedTime);
+    setRunning(true);
+    setPaused(false);
+    onStart?.(selectedTime);
+  };
+
+  const handlePause = () => {
+    setRunning(false);
+    setPaused(true);
+    onPause?.();
+    if (intervalRef.current) clearTimeout(intervalRef.current);
+  };
+
+  const handleResume = () => {
+    setRunning(true);
+    setPaused(false);
+    onResume?.();
+  };
+
+  const { progress, color } = useMemo(() => ({
+    progress: selectedTime > 0 ? (timer / selectedTime) * 100 : 0,
+    color: getTimerControlColor(timer, selectedTime),
+  }), [timer, selectedTime]);
+
+
   return (
-    <DashboardCard title="Timer">
+    <DashboardCard title="Timer Control">
       <Box display="flex" flexDirection="column" gap={2} alignItems="center">
-        {/* Radial countdown */}
+        {/* Countdown circle */}
         <Box position="relative" display="inline-flex" sx={{ pt: 2 }}>
-          {/* Background circle (grey, always full) */}
           <CircularProgress
             variant="determinate"
             value={100}
@@ -83,7 +116,6 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
             thickness={6}
             sx={{ color: "grey.300", position: "absolute" }}
           />
-          {/* Foreground progress (shrinks from full to 0) */}
           <CircularProgress
             variant="determinate"
             value={progress}
@@ -91,65 +123,39 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
             thickness={6}
             sx={{ color }}
           />
-          {/* Timer number (perfectly centered) */}
           <Box
             position="absolute"
             top="58%"
             left="50%"
-            sx={{
-              transform: "translate(-50%, -50%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            sx={{ transform: "translate(-50%, -50%)", display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <Typography variant="h6">{timer}s</Typography>
+            {timer}s
           </Box>
         </Box>
 
-        {/* Preset time selector */}
-        <ToggleButtonGroup
-          value={selectedTime}
-          exclusive
-          onChange={handleTimeToggle}
-          size="small"
-        >
-          {presetTimes.map((t) => (
-            <ToggleButton key={t} value={t}>
-              {t}s
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
+        <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+          <ToggleButtonGroup value={selectedTime} exclusive onChange={handleTimeToggle} disabled={running || paused} size="small">
+            {presetTimes.map((t) => (
+              <ToggleButton key={t} value={t}>
+                {t}s
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
 
-        {/* Buttons */}
-        <Box sx={{ display: "flex", gap: 1 }}>
           {!running && !paused && (
-            <Button
-              variant="contained"
-              startIcon={<PlayCircleOutlineIcon />}
-              onClick={() => onStart(selectedTime)}
-            >
-              Start Session
+            <Button variant="contained" onClick={handleStart} startIcon={<PlayCircleOutlineIcon />}>
+              Start
             </Button>
           )}
 
           {running && (
-            <Button
-              variant="contained"
-              color="warning"
-              startIcon={<PauseCircleOutlineIcon />}
-              onClick={onPause}
-            >
+            <Button variant="contained" color="warning" onClick={handlePause} startIcon={<PauseCircleOutlineIcon />}>
               Pause
             </Button>
           )}
 
           {!running && paused && (
-            <Button
-              variant="contained"
-              startIcon={<PlayCircleOutlineIcon />}
-              onClick={onResume}
-            >
+            <Button variant="contained" onClick={handleResume} startIcon={<PlayCircleOutlineIcon />}>
               Resume
             </Button>
           )}

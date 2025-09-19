@@ -3,20 +3,15 @@ import { Box, Grid, Typography, Paper, TextField, ToggleButtonGroup, ToggleButto
 import Keyboard from "./Keyboard";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
-import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard'
+import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
 
 
 const TypingPractice: React.FC = () => {
-
+  const [canType, setCanType] = useState(false);
   const [typedText, setTypedText] = useState("");
-  const [targetText, setTargetText] = useState<string>("");;
+  const [targetText, setTargetText] = useState<string>("");
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [shiftActive, setShiftActive] = useState(false);
-
-  const [timer, setTimer] = useState(60);       // countdown
-  const [duration, setDuration] = useState(60); // selected session duration
-  const [running, setRunning] = useState(false);
-  const [paused, setPaused] = useState(false);
 
   const [wpm, setWPM] = useState<number | null>(null);
   const [correctChars, setCorrectChars] = useState<number>(0);
@@ -24,10 +19,9 @@ const TypingPractice: React.FC = () => {
 
   const [language, setLanguage] = useState("en-US");
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textboxRef = useRef<HTMLInputElement>(null);
 
-  // 🔹 Fetch practice text from API
+  // Fetch practice text from API
   const fetchPracticeText = async (selectedLanguage?: string) => {
     const lang = selectedLanguage || language;
     try {
@@ -36,30 +30,24 @@ const TypingPractice: React.FC = () => {
 
       const data = await res.json();
       setTargetText(data.content);
-      setLanguage(lang); 
+      setLanguage(lang);
 
-      // reset state
+      // Reset typing state
       setTypedText("");
       setTotalChars(0);
       setCorrectChars(0);
-      setTimer(duration);
-      setRunning(false);
-      setPaused(false);
       setWPM(null);
       setActiveKey(null);
       setShiftActive(false);
-      if (timerRef.current) clearInterval(timerRef.current);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Load initial practice text
   useEffect(() => {
     fetchPracticeText();
   }, []);
 
-  // Start a new sentence
   const newSentence = () => {
     fetchPracticeText();
   };
@@ -68,17 +56,15 @@ const TypingPractice: React.FC = () => {
     if (!typedText.trim()) return 0;
 
     if (["zh-Hant", "zh-Hans", "ja"].includes(language)) {
-      // character-based languages
       const chars = typedText.match(/\p{Script=Han}/gu) || [];
       return chars.length;
     }
 
-    // word-based languages
     return typedText.trim().split(/\s+/).length;
   }, [typedText, language]);
 
   const handleTyping = (key: string) => {
-    if (!running) return; // Only allow typing during session
+    if (!canType) return;
     if (key === "Backspace") setTypedText((prev) => prev.slice(0, -1));
     else if (key === "Enter") setTypedText((prev) => prev + "\n");
     else if (key === "Space" || key === " ") setTypedText((prev) => prev + " ");
@@ -88,30 +74,20 @@ const TypingPractice: React.FC = () => {
   };
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!running) return;
+    if (!canType) return;
     setTypedText(e.target.value);
   };
 
   const handlePaste = (event: any) => {
-    event.preventDefault(); // Prevent pasting
-  };
-
-  const handleDurationChange = (duration: number) => {
-    setTimer(duration);    
-    setRunning(false); 
-    setPaused(false);   
+    event.preventDefault(); // prevent pasting
   };
 
   const handleLanguageChange = (
     event: React.MouseEvent<HTMLElement>,
     newLanguage: string | null
   ) => {
-    if (newLanguage) {
-      setLanguage(newLanguage);
-      fetchPracticeText(newLanguage);
-    }
+    if (newLanguage) fetchPracticeText(newLanguage);
   };
-
 
   // Physical key highlight
   useEffect(() => {
@@ -125,9 +101,8 @@ const TypingPractice: React.FC = () => {
         case "Tab": pressedKey = "Tab"; break;
         case "Backspace": pressedKey = "Backspace"; break;
       }
-      let normalizedPressedKey = pressedKey;
-      if (pressedKey.length === 1) normalizedPressedKey = pressedKey.toUpperCase();
-      setActiveKey(normalizedPressedKey);
+      if (pressedKey.length === 1) pressedKey = pressedKey.toUpperCase();
+      setActiveKey(pressedKey);
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -137,68 +112,21 @@ const TypingPractice: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
-  // Timer countdown
-  useEffect(() => {
-    if (!running) return;
-    if (timer <= 0) {
-      setRunning(false);
-      setPaused(false);
-      computeResults();
-      return;
-    }
-
-    timerRef.current = setTimeout(() => setTimer((t) => t - 1), 1000);
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [running, timer]);
-
-  // Start session with chosen duration
-  const startSession = (selectedDuration: number) => {
-    if (!running) {
-      textboxRef.current?.focus();
-      setTypedText("");
-      setDuration(selectedDuration);
-      setTimer(selectedDuration);
-      setRunning(true);
-      setPaused(false);
-      setWPM(null);
-      setCorrectChars(0);
-      setTotalChars(0);
-    }
-  };
-
-  // Pause session
-  const pauseSession = () => {
-    setRunning(false);
-    setPaused(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-  };
-
-  // Resume session
-  const resumeSession = () => {
-    setRunning(true);
-    setPaused(false);
-  };
-
-  const computeResults = () => {
+  const computeResults = (elapsedSeconds: number) => {
     const correct = typedText
       .split("")
       .reduce((acc, char, idx) => (char === targetText[idx] ? acc + 1 : acc), 0);
-
     const total = typedText.length;
 
-    const elapsedMinutes = duration / 60;
-    
+    const elapsedMinutes = elapsedSeconds / 60;
     let calculatedSpeed: number;
+
     if (["zh-Hant", "zh-Hans", "ja"].includes(language)) {
       const charsTyped = (typedText.match(/\p{Script=Han}/gu) || []).length;
       calculatedSpeed = Math.round(charsTyped / elapsedMinutes);
@@ -234,53 +162,57 @@ const TypingPractice: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
-
       {/* Top row: Accuracy, WPM, Timer/Controls */}
       <Grid container spacing={2} alignItems="stretch">
-        <Grid size={{xs:12, md:4}} sx={{ display: "flex", flex: 1 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex", flex: 1 }}>
           <AccuracyCard correct={correctChars} total={totalChars} />
         </Grid>
-        <Grid size={{xs:12, md:4}} sx={{ display: "flex", flex: 1 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex", flex: 1 }}>
           <WPMCard wpm={wpm} wordsTyped={wordsTyped} language={language} />
         </Grid>
-        <Grid size={{xs:12, md:4}} sx={{ flex: 1 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ flex: 1 }}>
           <TimerControlCard
-            timer={timer}
-            running={running}
-            paused={paused}     
-            onStart={startSession}  
-            onPause={pauseSession}    
-            onResume={resumeSession} 
-            onDurationChange={handleDurationChange}
+            presetTimes={[30, 60, 120, 240]}
+            onStart={(duration) => {
+              setCanType(true);
+              setTypedText("");
+              setCorrectChars(0);
+              setTotalChars(0);
+              setWPM(null);
+              textboxRef.current?.focus();
+            }}
+            onPause={() => setCanType(false)}
+            onResume={() => {
+              setCanType(true);
+              textboxRef.current?.focus();
+            }}
+            onSessionEnd={(elapsedSeconds) => {
+              setCanType(false);
+              computeResults(elapsedSeconds);
+            }}
           />
         </Grid>
       </Grid>
+
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={newSentence}
-              //sx={{m:2}}
-            >
-              Load New Sentence
-            </Button>
-            <ToggleButtonGroup
-              value={language}
-              size="small"
-              exclusive
-              onChange={handleLanguageChange}
-              aria-label="language selector"
-            >
-              <ToggleButton value="en-US" aria-label="English">
-                English
-              </ToggleButton>
-              <ToggleButton value="zh-Hant" aria-label="Chinese">
-                中文
-              </ToggleButton>
-              {/* You can add more later */}
-              {/* <ToggleButton value="es">Español</ToggleButton> */}
-            </ToggleButtonGroup>
+          <Button variant="outlined" size="small" onClick={newSentence}>
+            Load New Sentence
+          </Button>
+          <ToggleButtonGroup
+            value={language}
+            size="small"
+            exclusive
+            onChange={handleLanguageChange}
+            aria-label="language selector"
+          >
+            <ToggleButton value="en-US" aria-label="English">
+              English
+            </ToggleButton>
+            <ToggleButton value="zh-Hant" aria-label="Chinese">
+              中文
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Box>
 
         <Paper sx={{ p: 2, minHeight: "100px" }}>
@@ -296,9 +228,9 @@ const TypingPractice: React.FC = () => {
           onPaste={handlePaste}
           multiline
           fullWidth
-          minRows={3}
+          minRows={5}
           variant="outlined"
-          placeholder="Click on the Start Session button to start typing..."
+          placeholder="Click on the Start button to start typing..."
           sx={{ fontSize: "1.1rem" }}
         />
 
