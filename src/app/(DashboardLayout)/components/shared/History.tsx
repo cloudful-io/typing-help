@@ -61,9 +61,15 @@ const HistoryPage: React.FC = () => {
     { field: "date", headerName: "Date", flex: 1 },
     { field: "language", headerName: "Language", flex: 1 },
     { field: "wpm", headerName: "WPM", type: "number", flex: 1 },
-    { field: "totalChars", headerName: "Total Characters", flex: 1 },
-    { field: "correctChars", headerName: "Correct Characters", flex: 1 },
-    
+    {
+        field: 'totalChars', headerName: "Accuracy (%)", flex: 1,
+        valueGetter: (value, row) => {
+        if (!row.totalChars || !row.correctChars || row.totalChars === 0) {
+            return 0;
+        }
+        return Math.round(row.correctChars / row.totalChars * 100);
+        },
+    },
     { field: "duration", headerName: "Duration (s)", type: "number", flex: 1 },
   ], []); // Memoize columns to prevent re-creation
 
