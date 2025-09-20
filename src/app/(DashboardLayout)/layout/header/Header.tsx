@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 // components
 import Profile from './Profile';
-import { IconBellRinging, IconMenu } from '@tabler/icons-react';
+import { IconBellRinging, IconMenu, IconHistory } from '@tabler/icons-react';
 
 interface ItemType {
   toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
@@ -49,22 +49,18 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
 
 
         <IconButton
-          sx={{display: 'none'}}  // Hide for now
           size="large"
-          aria-label="show 11 new notifications"
+          aria-label="show history"
           color="inherit"
           aria-controls="msgs-menu"
           aria-haspopup="true"
         >
-          <Badge variant="dot" color="primary">
-            <IconBellRinging size="21" stroke="1.5" />
-          </Badge>
-
+          <IconHistory size="21" stroke="1.5" />
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
           <Button
-            sx={{display: 'none'}}  // Hide for now
+            //sx={{display: 'none'}}  // Hide for now
             variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
             Login
           </Button>

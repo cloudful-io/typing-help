@@ -21,15 +21,17 @@ export interface PracticeSession {
 export function usePracticeSessions() {
   const STORAGE_KEY = "typingAppSessions";
 
-  const getSessions = useCallback((): PracticeSession[] => {
+  const getSessions = (): PracticeSession[] => {
+    if (typeof window === "undefined") return []; // SSR: return empty
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  }, []);
+  };
 
-  const saveSession = useCallback((session: PracticeSession) => {
+  const saveSession = (session: PracticeSession) => {
+    if (typeof window === "undefined") return; // SSR safety
     const sessions = getSessions();
     sessions.push(session);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-  }, [getSessions]);
+  };
 
   return { getSessions, saveSession };
 }
