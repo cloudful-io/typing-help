@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Box, Grid, Typography, Paper, TextField, ToggleButtonGroup, ToggleButton, Button } from "@mui/material";
 import Keyboard from "./Keyboard";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
 import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
-
+import { computeTypingResults, countWords } from "@/utils/typing";
 
 const TypingPractice: React.FC = () => {
-  const [canType, setCanType] = useState(false);
-  const [sessionActive, setSessionActive] = useState(false);
+  type SessionState = "idle" | "running" | "paused" | "ended";
+  const [sessionState, setSessionState] = useState<SessionState>("idle");
+
+  const canType = sessionState === "running";
+  const sessionActive = sessionState === "running" || sessionState === "paused";
 
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");
@@ -20,11 +23,21 @@ const TypingPractice: React.FC = () => {
   const [totalChars, setTotalChars] = useState<number>(0);
 
   const [language, setLanguage] = useState("en-US");
+  const [isComposing, setIsComposing] = useState(false);
 
   const textboxRef = useRef<HTMLInputElement>(null);
 
+  const resetTypingState = useCallback(() => {
+    setTypedText("");
+    setTotalChars(0);
+    setCorrectChars(0);
+    setWPM(null);
+    setActiveKey(null);
+    setShiftActive(false);
+  }, []);
+
   // Fetch practice text from API
-  const fetchPracticeText = async (selectedLanguage?: string) => {
+  const fetchPracticeText = useCallback(async (selectedLanguage?: string) => {
     const lang = selectedLanguage || language;
     try {
       const res = await fetch(`/api/practice-text?language=${lang}`);
@@ -34,36 +47,24 @@ const TypingPractice: React.FC = () => {
       setTargetText(data.content);
       setLanguage(lang);
 
-      // Reset typing state
-      setTypedText("");
-      setTotalChars(0);
-      setCorrectChars(0);
-      setWPM(null);
-      setActiveKey(null);
-      setShiftActive(false);
+      resetTypingState();
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [language, resetTypingState]);
 
   useEffect(() => {
     fetchPracticeText();
-  }, []);
+  }, [fetchPracticeText]);
 
-  const newSentence = () => {
+  const handleNewSentence = () => {
     fetchPracticeText();
   };
 
-  const wordsTyped = useMemo(() => {
-    if (!typedText.trim()) return 0;
-
-    if (["zh-Hant", "zh-Hans", "ja"].includes(language)) {
-      const chars = typedText.match(/\p{Script=Han}/gu) || [];
-      return chars.length;
-    }
-
-    return typedText.trim().split(/\s+/).length;
-  }, [typedText, language]);
+  const wordsTyped = useMemo(
+    () => countWords(typedText, language),
+    [typedText, language]
+  );
 
   const handleTyping = (key: string) => {
     if (!canType) return;
@@ -78,6 +79,14 @@ const TypingPractice: React.FC = () => {
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!canType) return;
     setTypedText(e.target.value);
+  };
+
+  const handleCompositionStart = (e: any) => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = (e: any) => {
+    setIsComposing(false);
   };
 
   const handlePaste = (event: any) => {
@@ -121,46 +130,51 @@ const TypingPractice: React.FC = () => {
   }, []);
 
   const computeResults = (elapsedSeconds: number) => {
-    const correct = typedText
-      .split("")
-      .reduce((acc, char, idx) => (char === targetText[idx] ? acc + 1 : acc), 0);
-    const total = typedText.length;
+    const { correct, total, wpm } = computeTypingResults(
+      typedText,
+      targetText,
+      language,
+      elapsedSeconds
+    );
 
-    const elapsedMinutes = elapsedSeconds / 60;
-    let calculatedSpeed: number;
-
-    if (["zh-Hant", "zh-Hans", "ja"].includes(language)) {
-      const charsTyped = (typedText.match(/\p{Script=Han}/gu) || []).length;
-      calculatedSpeed = Math.round(charsTyped / elapsedMinutes);
-    } else {
-      calculatedSpeed = Math.round(wordsTyped / elapsedMinutes);
-    }
-
-    setWPM(calculatedSpeed);
+    setWPM(wpm);
     setCorrectChars(correct);
     setTotalChars(total);
   };
 
   const renderPracticeText = () => {
-    return targetText.split("").map((char, idx) => {
-      const typedChar = typedText[idx];
-      let color: string = "black";
-      if (typedChar != null) color = typedChar === char ? "green" : "red";
-      const isNextChar = idx === typedText.length;
-      return (
-        <span
-          key={idx}
-          style={{
-            color,
-            textDecoration: isNextChar ? "underline" : "none",
-            fontWeight: isNextChar ? "bold" : "normal",
-          }}
-        >
-          {char}
-        </span>
-      );
-    });
-  };
+  // Determine the length to consider for highlighting
+  const highlightLength = isComposing ? typedText.length - 1 : typedText.length;
+
+  return targetText.split("").map((char, idx) => {
+    const typedChar = typedText[idx];
+    let color: string = "black";
+
+    // Only evaluate correctness if not composing
+    if (!isComposing && typedChar != null) {
+      color = typedChar === char ? "green" : "red";
+    }
+
+    // Underline/bold only the next character
+    const isNextChar = idx === highlightLength;
+
+    return (
+      <span
+        key={idx}
+        style={{
+          color,
+          textDecoration: isNextChar ? "underline" : "none",
+          fontWeight: isNextChar ? "bold" : "normal",
+        }}
+      >
+        {char}
+      </span>
+    );
+  });
+};
+
+
+
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
@@ -176,26 +190,19 @@ const TypingPractice: React.FC = () => {
           <TimerControlCard
             presetTimes={[30, 60, 120, 240]}
             onStart={(duration) => {
-              setCanType(true);
-              setSessionActive(true);
-              setTypedText("");
-              setCorrectChars(0);
-              setTotalChars(0);
-              setWPM(null);
+              setSessionState("running");
+              resetTypingState();
               textboxRef.current?.focus();
             }}
             onPause={() => {
-              setCanType(false);
-              setSessionActive(true);
+              setSessionState("paused")
             }}
             onResume={() => {
-              setCanType(true);
-              setSessionActive(true);
+              setSessionState("running");
               textboxRef.current?.focus();
             }}
             onSessionEnd={(elapsedSeconds) => {
-              setCanType(false);
-              setSessionActive(false);
+              setSessionState("ended");
               computeResults(elapsedSeconds);
             }}
           />
@@ -204,7 +211,7 @@ const TypingPractice: React.FC = () => {
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-          <Button variant="outlined" size="small" disabled={sessionActive} onClick={newSentence}>
+          <Button variant="outlined" size="small" disabled={sessionActive} onClick={handleNewSentence}>
             Load New Sentence
           </Button>
           <ToggleButtonGroup
@@ -234,6 +241,8 @@ const TypingPractice: React.FC = () => {
           inputRef={textboxRef}
           value={typedText}
           onChange={handleTextFieldChange}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
           onPaste={handlePaste}
           multiline
           fullWidth

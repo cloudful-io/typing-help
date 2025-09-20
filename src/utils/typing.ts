@@ -31,3 +31,31 @@ export function getTimerControlColor(remainingTime: number, totalTime: number): 
     else if (progress > 0.1) return "warning.main";
     else return "error.main";
 }
+
+export const computeTypingResults = (
+  typedText: string,
+  targetText: string,
+  language: string,
+  elapsedSeconds: number
+) => {
+  const correct = typedText
+    .split("")
+    .reduce((acc, char, idx) => (char === targetText[idx] ? acc + 1 : acc), 0);
+  const total = typedText.length;
+
+  const elapsedMinutes = elapsedSeconds / 60;
+
+  const wordsTyped = countWords(typedText, language);
+  const wpm = Math.round(wordsTyped/elapsedMinutes);
+
+  return { correct, total, wpm };
+};
+
+export const countWords = (typedText: string, language: string): number => {
+  if (!typedText.trim()) return 0;
+
+  if (isLanguageCharacterBased(language)) {
+    return (typedText.match(/\p{Script=Han}/gu) || []).length;
+  }
+  return typedText.trim().split(/\s+/).length;
+};
