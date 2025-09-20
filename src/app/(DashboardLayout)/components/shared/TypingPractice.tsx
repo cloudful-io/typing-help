@@ -5,6 +5,7 @@ import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
 import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
 import { computeTypingResults, countWords } from "@/utils/typing";
+import { set } from "lodash";
 
 const TypingPractice: React.FC = () => {
   type SessionState = "idle" | "running" | "paused" | "ended";
@@ -17,6 +18,7 @@ const TypingPractice: React.FC = () => {
   const [targetText, setTargetText] = useState<string>("");
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [shiftActive, setShiftActive] = useState(false);
+  const [committedTextLength, setCommittedTextLength] = useState(0);
 
   const [wpm, setWPM] = useState<number | null>(null);
   const [correctChars, setCorrectChars] = useState<number>(0);
@@ -34,6 +36,7 @@ const TypingPractice: React.FC = () => {
     setWPM(null);
     setActiveKey(null);
     setShiftActive(false);
+    setCommittedTextLength(0);
   }, []);
 
   // Fetch practice text from API
@@ -73,7 +76,7 @@ const TypingPractice: React.FC = () => {
     else if (key === "Space" || key === " ") setTypedText((prev) => prev + " ");
     else if (!["Shift", "Ctrl", "Meta", "Alt", "Caps", "Tab", "Menu"].includes(key)) {
       setTypedText((prev) => prev + key);
-    }
+    } 
   };
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,6 +86,7 @@ const TypingPractice: React.FC = () => {
 
   const handleCompositionStart = (e: any) => {
     setIsComposing(true);
+    setCommittedTextLength(e.target.value.length);
   };
 
   const handleCompositionEnd = (e: any) => {
@@ -144,7 +148,8 @@ const TypingPractice: React.FC = () => {
 
   const renderPracticeText = () => {
   // Determine the length to consider for highlighting
-  const highlightLength = isComposing ? typedText.length - 1 : typedText.length;
+  //const highlightLength = isComposing ? typedText.length - 1 : typedText.length;
+  const highlightLength = isComposing ? committedTextLength : typedText.length;
 
   return targetText.split("").map((char, idx) => {
     const typedChar = typedText[idx];
@@ -152,6 +157,9 @@ const TypingPractice: React.FC = () => {
 
     // Only evaluate correctness if not composing
     if (!isComposing && typedChar != null) {
+      color = typedChar === char ? "green" : "red";
+    }
+    else if (isComposing && committedTextLength > 0 && typedChar != null && idx < committedTextLength) {
       color = typedChar === char ? "green" : "red";
     }
 
@@ -236,7 +244,6 @@ const TypingPractice: React.FC = () => {
             {targetText ? renderPracticeText() : "Loading practice text..."}
           </Typography>
         </Paper>
-
         <TextField
           inputRef={textboxRef}
           value={typedText}
