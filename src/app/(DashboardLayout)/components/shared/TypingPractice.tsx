@@ -8,6 +8,8 @@ import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerCon
 
 const TypingPractice: React.FC = () => {
   const [canType, setCanType] = useState(false);
+  const [sessionActive, setSessionActive] = useState(false);
+
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");
   const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -175,19 +177,25 @@ const TypingPractice: React.FC = () => {
             presetTimes={[30, 60, 120, 240]}
             onStart={(duration) => {
               setCanType(true);
+              setSessionActive(true);
               setTypedText("");
               setCorrectChars(0);
               setTotalChars(0);
               setWPM(null);
               textboxRef.current?.focus();
             }}
-            onPause={() => setCanType(false)}
+            onPause={() => {
+              setCanType(false);
+              setSessionActive(true);
+            }}
             onResume={() => {
               setCanType(true);
+              setSessionActive(true);
               textboxRef.current?.focus();
             }}
             onSessionEnd={(elapsedSeconds) => {
               setCanType(false);
+              setSessionActive(false);
               computeResults(elapsedSeconds);
             }}
           />
@@ -196,12 +204,13 @@ const TypingPractice: React.FC = () => {
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-          <Button variant="outlined" size="small" onClick={newSentence}>
+          <Button variant="outlined" size="small" disabled={sessionActive} onClick={newSentence}>
             Load New Sentence
           </Button>
           <ToggleButtonGroup
             value={language}
             size="small"
+            disabled={sessionActive}
             exclusive
             onChange={handleLanguageChange}
             aria-label="language selector"
