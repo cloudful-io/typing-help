@@ -5,7 +5,7 @@ import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
 import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
 import { computeTypingResults, countWords } from "@/utils/typing";
-import { set } from "lodash";
+import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
 
 const TypingPractice: React.FC = () => {
   type SessionState = "idle" | "running" | "paused" | "ended";
@@ -144,7 +144,26 @@ const TypingPractice: React.FC = () => {
     setWPM(wpm);
     setCorrectChars(correct);
     setTotalChars(total);
+
+    saveSessionStats(elapsedSeconds, wpm, correct, total);
   };
+
+  const { saveSession, getSessions } = usePracticeSessions();
+
+  const saveSessionStats = (elapsedSeconds: number, wpm: number, correctChars: number, totalChars: number) => {
+    const characterStats = buildCharacterStats(targetText, typedText);
+
+    saveSession({
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      language,
+      wpm: wpm || 0,
+      totalChars,
+      correctChars,
+      duration: elapsedSeconds,
+      characterStats,
+    });
+  }
 
   const renderPracticeText = () => {
   // Determine the length to consider for highlighting
