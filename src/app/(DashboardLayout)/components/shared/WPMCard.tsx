@@ -10,6 +10,7 @@ import { getWPMColor, isLanguageCharacterBased } from "@/utils/typing";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface WPMCardProps {
+  title?: string;
   wpm: number | null;
   wordsTyped?: number;
   language: string;        // e.g., "en-US", "zh-Hant", "ja"
@@ -17,6 +18,7 @@ interface WPMCardProps {
 }
 
 const WPMCard: React.FC<WPMCardProps> = ({ 
+  title,
   wpm, 
   wordsTyped = 0, 
   language, 
@@ -59,7 +61,7 @@ const WPMCard: React.FC<WPMCardProps> = ({
   const series = [wpm ?? 0]; 
 
   return (
-    <DashboardCard title={isCharacterBased ? "Characters Per Minute" : "Words Per Minute"}>
+    <DashboardCard title={title != null && title.length > 0 ? title: (isCharacterBased ? "Characters Per Minute" : "Words Per Minute")}>
       <Box display="flex" flexDirection="column" alignItems="center">
         <ReactApexChart 
           key={`${wpm}-${label}-${color}`} 

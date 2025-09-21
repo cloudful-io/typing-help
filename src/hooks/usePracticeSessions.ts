@@ -12,7 +12,8 @@ export interface PracticeSession {
   language: string;
   wpm: number;
   correctChars: number;
-  totalChars: number
+  totalChars: number;
+  wordsTyped: number;
   duration: number; // seconds
   textId?: string;
   characterStats: CharacterStats[];

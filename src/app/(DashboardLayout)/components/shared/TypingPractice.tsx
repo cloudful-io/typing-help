@@ -160,6 +160,7 @@ const TypingPractice: React.FC = () => {
       wpm: wpm || 0,
       totalChars,
       correctChars,
+      wordsTyped,
       duration: elapsedSeconds,
       characterStats,
     });

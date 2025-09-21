@@ -10,11 +10,12 @@ import { getAccuracyColor, calculateAccuracy } from '@/utils/typing';
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface AccuracyCardProps {
+  title?: string;
   correct: number;
   total: number;
 }
 
-const AccuracyCard: React.FC<AccuracyCardProps> = ({ correct, total }) => {
+const AccuracyCard: React.FC<AccuracyCardProps> = ({ title = "Accuracy", correct, total }) => {
   const safeCorrect = Math.max(0, correct);
   const safeTotal = Math.max(0, total);
   const accuracy = calculateAccuracy(safeCorrect, safeTotal);
@@ -56,7 +57,7 @@ const AccuracyCard: React.FC<AccuracyCardProps> = ({ correct, total }) => {
   const series = [accuracy];
 
   return (
-    <DashboardCard title="Accuracy">
+    <DashboardCard title={title}>
       <Box display="flex" flexDirection="column" alignItems="center">
         <ReactApexChart 
           key={`${correct}-${total}`} 
