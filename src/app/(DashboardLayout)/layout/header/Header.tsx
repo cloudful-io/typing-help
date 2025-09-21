@@ -52,7 +52,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
             <IconButton
               size="large"
               aria-label="show history"
-              color="inherit"
+              color="secondary"
               aria-controls="msgs-menu"
               aria-haspopup="true"
             >

@@ -9,6 +9,7 @@ import AccuracyCard from "./AccuracyCard";
 import WPMCard from "./WPMCard";
 import { usePracticeSessions, PracticeSession } from "@/hooks/usePracticeSessions";
 import { getLanguageName } from "@/utils/language";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const HistoryPage: React.FC = () => {
   const { getPracticeSessions, clearPracticeSessions } = usePracticeSessions();
@@ -30,7 +31,7 @@ const HistoryPage: React.FC = () => {
   // Summary stats
   const summary = useMemo(() => {
     if (sessions.length === 0)
-      return { avgWPM: 0, avgWordsTyped: 0, bestWPM: 0, bestWordsTyped: 0, totalSessions: 0, totalChars: 0, correctChars: 0 };
+      return { avgWPM: null, avgWordsTyped: 0, bestWPM: null, bestWordsTyped: 0, totalSessions: 0, totalChars: 0, correctChars: 0 };
 
     const totalWPM = sessions.reduce((sum, s) => sum + s.wpm, 0);
 
@@ -106,14 +107,10 @@ const HistoryPage: React.FC = () => {
   }
 
   const handleClearSessions = () => {
-
-    // If you’re persisting to localStorage:
     clearPracticeSessions();
 
     // Clear React state
     setSessions([]);
-
-    
   };
 
   return (
@@ -144,6 +141,7 @@ const HistoryPage: React.FC = () => {
           variant="contained"
           color="error"
           onClick={handleClearSessions}
+          startIcon={<DeleteIcon/>}
         >
           Clear All
         </Button>
