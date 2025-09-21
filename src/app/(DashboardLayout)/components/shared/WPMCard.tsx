@@ -58,7 +58,7 @@ const WPMCard: React.FC<WPMCardProps> = ({
     labels: [label],
   }), [color, label]);
 
-  const series = [wpm ?? 0]; 
+  const series = [wpm != null ? Math.round(wpm) : 0]; 
 
   return (
     <DashboardCard title={title != null && title.length > 0 ? title: (isCharacterBased ? "Characters Per Minute" : "Words Per Minute")}>
@@ -71,7 +71,7 @@ const WPMCard: React.FC<WPMCardProps> = ({
           height={120} 
         />
         <Typography variant="body2" color="text.secondary" align="center" aria-label="words per minute detail" sx={{ pt: 2 }}>
-          {wordsTyped} {isCharacterBased ? "characters typed" : "words typed"}
+          {wordsTyped ?? 0} {isCharacterBased ? "characters typed" : "words typed"}
         </Typography>
       </Box>
     </DashboardCard>

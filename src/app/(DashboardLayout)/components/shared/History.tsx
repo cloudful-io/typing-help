@@ -60,7 +60,7 @@ const HistoryPage: React.FC = () => {
     
     return {
       avgWPM: totalWPM / sessions.length,
-      avgWordsTyped,
+      avgWordsType: avgWordsTyped ?? 0,
       totalChars,
       correctChars,
       avgAccuracy: totalAccuracy / sessions.length,
