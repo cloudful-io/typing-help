@@ -148,12 +148,12 @@ const TypingPractice: React.FC = () => {
     saveSessionStats(elapsedSeconds, wpm, correct, total);
   };
 
-  const { saveSession, getSessions } = usePracticeSessions();
+  const { savePracticeSession } = usePracticeSessions();
 
   const saveSessionStats = (elapsedSeconds: number, wpm: number, correctChars: number, totalChars: number) => {
     const characterStats = buildCharacterStats(targetText, typedText);
 
-    saveSession({
+    savePracticeSession({
       id: crypto.randomUUID(),
       date: new Date().toISOString(),
       language,

@@ -71,7 +71,7 @@ const WPMCard: React.FC<WPMCardProps> = ({
           height={120} 
         />
         <Typography variant="body2" color="text.secondary" align="center" aria-label="words per minute detail" sx={{ pt: 2 }}>
-          {wordsTyped ?? 0} {isCharacterBased ? "characters typed" : "words typed"}
+          {wordsTyped ? Math.round(wordsTyped) : 0} {isCharacterBased ? "characters typed" : "words typed"}
         </Typography>
       </Box>
     </DashboardCard>

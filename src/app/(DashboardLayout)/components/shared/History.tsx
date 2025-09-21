@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
-import { Box, Grid, Paper, Typography } from "@mui/material";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Box, Grid, Paper, Typography, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { GridColDef, GridCellParams, GridRenderCellParams } from "@mui/x-data-grid"; // Correct import
+import { GridColDef } from "@mui/x-data-grid"; 
 import SessionCard from './SessionCard';
 import AccuracyCard from "./AccuracyCard";
 import WPMCard from "./WPMCard";
@@ -12,7 +11,7 @@ import { usePracticeSessions, PracticeSession } from "@/hooks/usePracticeSession
 import { getLanguageName } from "@/utils/language";
 
 const HistoryPage: React.FC = () => {
-  const { getSessions } = usePracticeSessions();
+  const { getPracticeSessions, clearPracticeSessions } = usePracticeSessions();
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -23,24 +22,17 @@ const HistoryPage: React.FC = () => {
   const [loading, setLoading] = useState(true); // Add a loading state
 
   useEffect(() => {
-    // This runs only on the client
-    const stored = localStorage.getItem("typingAppSessions");
-    if (stored) {
-      setSessions(JSON.parse(stored));
-    }
-    setLoading(false); // Set loading to false once data is checked
+    const stored = getPracticeSessions();   
+    setSessions(stored);
+    setLoading(false);
   }, []);
 
   // Summary stats
   const summary = useMemo(() => {
     if (sessions.length === 0)
-      return { avgWPM: 0, avgWordsTyped: 0, avgAccuracy: 0, bestWPM: 0, bestWordsType: 0, totalSessions: 0, totalChars: 0, correctChars: 0 };
+      return { avgWPM: 0, avgWordsTyped: 0, bestWPM: 0, bestWordsTyped: 0, totalSessions: 0, totalChars: 0, correctChars: 0 };
 
     const totalWPM = sessions.reduce((sum, s) => sum + s.wpm, 0);
-    const totalAccuracy = sessions.reduce(
-      (sum, s) => sum + (s.totalChars > 0 ? (s.correctChars / s.totalChars) * 100 : 0),
-      0
-    );
 
     // Find session with best WPM
     const bestSession = sessions.reduce((best, s) =>
@@ -60,26 +52,16 @@ const HistoryPage: React.FC = () => {
     
     return {
       avgWPM: totalWPM / sessions.length,
-      avgWordsType: avgWordsTyped ?? 0,
+      avgWordsTyped: avgWordsTyped ?? 0,
       totalChars,
       correctChars,
-      avgAccuracy: totalAccuracy / sessions.length,
       bestWPM: bestSession.wpm,
-      bestWordsType: bestSession.wordsTyped,
+      bestWordsTyped: bestSession.wordsTyped,
       totalSessions: sessions.length,
       lastPractice
     };
   }, [sessions]);
 
-  // Chart data
-  const chartData = sessions
-    .slice()
-    .reverse() // oldest to newest
-    .map((s) => ({
-      date: new Date(s.date).toLocaleDateString(),
-      wpm: s.wpm,
-      accuracy: s.totalChars > 0 ? (s.correctChars / s.totalChars) * 100 : 0,
-    }));
 
   // DataGrid columns
   const columns: GridColDef<PracticeSession>[] = useMemo(() => [
@@ -122,6 +104,18 @@ const HistoryPage: React.FC = () => {
   if (loading) {
     return <Box sx={{ p: 3 }}>Loading sessions...</Box>;
   }
+
+  const handleClearSessions = () => {
+
+    // If you’re persisting to localStorage:
+    clearPracticeSessions();
+
+    // Clear React state
+    setSessions([]);
+
+    
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
       <Typography variant="h3">Typing Practice History</Typography>
@@ -137,59 +131,27 @@ const HistoryPage: React.FC = () => {
            <WPMCard title="Average WPM" wpm={summary.avgWPM} wordsTyped={summary.avgWordsTyped} language=""/>
         </Grid>
         <Grid size={{xs: 6, md: 3}} sx={{ display: "flex", flex: 1 }}>
-          <WPMCard title="Best WPM" wpm={summary.bestWPM} wordsTyped={summary.bestWordsType} language=""/>
+          <WPMCard title="Best WPM" wpm={summary.bestWPM} wordsTyped={summary.bestWordsTyped} language=""/>
         </Grid>
       </Grid>
-
-      {/* Chart */}
-      <Paper sx={{ p: 2, height: 300, display: 'none'}}>
-        <Typography variant="subtitle1" gutterBottom>
-          WPM & Accuracy Over Time
-        </Typography>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis
-              yAxisId="left"
-              label={{ value: "WPM", angle: -90, position: "insideLeft" }}
-            />
-            <YAxis
-              yAxisId="right"
-              orientation="right"
-              label={{ value: "Accuracy %", angle: 90, position: "insideRight" }}
-            />
-            <Tooltip />
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="wpm"
-              stroke="#1976d2"
-              strokeWidth={2}
-            />
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="accuracy"
-              stroke="#2e7d32"
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </Paper>
-
       {/* DataGrid for sessions */}
       <Paper sx={{ p: 2, height: 400 }}>
-        <Typography variant="subtitle1" gutterBottom>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6" color="text.primary">
           All Sessions
         </Typography>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleClearSessions}
+        >
+          Clear All
+        </Button>
+        </Box>
         <DataGrid
           rows={sessions}
           columns={columns}
-          getRowId={(row) => row.id}
+          //getRowId={(row) => row.id}
           onPaginationModelChange={setPaginationModel}
           pageSizeOptions={[10, 25, 50]}
           disableRowSelectionOnClick

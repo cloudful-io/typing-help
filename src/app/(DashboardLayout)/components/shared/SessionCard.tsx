@@ -14,7 +14,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ total, lastPractice }) => {
   return (
     <DashboardCard title="Typing Practice Sessions">
       <Box display="flex" flexDirection="column" alignItems="center">
-        <Typography variant="h4" color="text.primary" align="center" aria-label="total session" mb={2}>
+        <Typography variant="h1" color="text.primary" align="center" aria-label="total session" mb={2}>
           {total}
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center" aria-label="last session">

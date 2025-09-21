@@ -22,19 +22,26 @@ export interface PracticeSession {
 export function usePracticeSessions() {
   const STORAGE_KEY = "typingAppSessions";
 
-  const getSessions = (): PracticeSession[] => {
+  const getPracticeSessions = (): PracticeSession[] => {
     if (typeof window === "undefined") return []; // SSR: return empty
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
   };
 
-  const saveSession = (session: PracticeSession) => {
+  const savePracticeSession = (session: PracticeSession) => {
     if (typeof window === "undefined") return; // SSR safety
-    const sessions = getSessions();
+    const sessions = getPracticeSessions();
     sessions.push(session);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
   };
 
-  return { getSessions, saveSession };
+  const clearPracticeSessions = () => {
+    console.log("start");
+    if (typeof window === "undefined") return; // SSR safety
+    localStorage.removeItem(STORAGE_KEY);
+    console.log("end");
+  }
+
+  return { getPracticeSessions, savePracticeSession, clearPracticeSessions };
 }
 
 export function buildCharacterStats(
