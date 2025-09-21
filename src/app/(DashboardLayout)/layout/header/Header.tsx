@@ -46,21 +46,21 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         >
           <IconMenu width="20" height="20" />
         </IconButton>
-
-
-        <IconButton
-          size="large"
-          aria-label="show history"
-          color="inherit"
-          aria-controls="msgs-menu"
-          aria-haspopup="true"
-        >
-          <IconHistory size="21" stroke="1.5" />
-        </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
+          <Link href="/history">
+            <IconButton
+              size="large"
+              aria-label="show history"
+              color="inherit"
+              aria-controls="msgs-menu"
+              aria-haspopup="true"
+            >
+              <IconHistory size="21" stroke="1.5" />
+            </IconButton>
+          </Link>
           <Button
-            //sx={{display: 'none'}}  // Hide for now
+            sx={{display: 'none'}}  // Hide for now
             variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
             Login
           </Button>
