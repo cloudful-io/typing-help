@@ -168,7 +168,6 @@ const TypingPractice: React.FC = () => {
 
   const renderPracticeText = () => {
   // Determine the length to consider for highlighting
-  //const highlightLength = isComposing ? typedText.length - 1 : typedText.length;
   const highlightLength = isComposing ? committedTextLength : typedText.length;
 
   return targetText.split("").map((char, idx) => {
