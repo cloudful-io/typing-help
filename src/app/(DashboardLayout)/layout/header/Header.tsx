@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
+
 // components
 import Profile from './Profile';
 import { IconBellRinging, IconMenu, IconHistory } from '@tabler/icons-react';
@@ -48,17 +49,18 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          <Link href="/history">
+          
             <IconButton
               size="large"
               aria-label="show history"
-              color="secondary"
+              color="inherit"
               aria-controls="msgs-menu"
               aria-haspopup="true"
+              component={Link} href="/history"
             >
               <IconHistory size="21" stroke="1.5" />
             </IconButton>
-          </Link>
+          
           <Button
             sx={{display: 'none'}}  // Hide for now
             variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
