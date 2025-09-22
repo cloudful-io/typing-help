@@ -1,11 +1,13 @@
 import React from 'react';
-import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
+import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import LoginButton from '@mui/icons-material/Login'
 
 // components
 import Profile from './Profile';
-import { IconBellRinging, IconMenu, IconHistory } from '@tabler/icons-react';
+import { IconMenu, IconHistory } from '@tabler/icons-react';
 
 interface ItemType {
   toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
@@ -15,7 +17,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
 
   // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
-
+  const { data: session, status } = useSession();
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
@@ -61,12 +63,24 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
               <IconHistory size="21" stroke="1.5" />
             </IconButton>
           
-          <Button
-            sx={{display: 'none'}}  // Hide for now
-            variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
-            Login
-          </Button>
-          <Profile/>
+          {status !== "loading" && !session && (
+            <Button
+              variant="contained"
+              component={Link}
+              href="/authentication/login"
+              disableElevation
+              color="primary"
+              startIcon={<LoginButton/>}
+            >
+              Login
+            </Button>
+          )}
+
+          {session && (
+            <>
+            <Profile />
+            </>
+          )}
         </Stack>
       </ToolbarStyled>
     </AppBarStyled>

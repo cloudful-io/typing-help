@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+
 import { Grid, Box, Card, Stack, Typography } from "@mui/material";
 // components
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
@@ -8,7 +8,7 @@ import AuthLogin from "../auth/AuthLogin";
 
 const Login2 = () => {
   return (
-    <PageContainer title="Login" description="this is Login page">
+    <PageContainer title="Login" description="Login page">
       <Box
         sx={{
           position: "relative",
@@ -55,10 +55,10 @@ const Login2 = () => {
                     color="textSecondary"
                     mb={1}
                   >
-                    Your Social Campaigns
+                    Typing Help
                   </Typography>
                 }
-                subtitle={
+                /*subtitle={
                   <Stack
                     direction="row"
                     spacing={1}
@@ -84,7 +84,7 @@ const Login2 = () => {
                       Create an account
                     </Typography>
                   </Stack>
-                }
+                }*/
               />
             </Card>
           </Grid>

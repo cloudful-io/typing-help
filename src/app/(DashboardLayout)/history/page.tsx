@@ -6,7 +6,7 @@ import  History from "@/app/(DashboardLayout)/components/shared/History";
 
 const HistoryPage = () => {
   return (
-    <PageContainer title="Typing Practice History" description="This page provides a history of your typing practice sessions, including detailed statistics and performance metrics.">
+    <PageContainer title="History" description="This page provides a history of your typing practice sessions, including detailed statistics and performance metrics.">
       <Container sx={{ mt: 0 }}>
         <History/>
       </Container>

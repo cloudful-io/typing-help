@@ -1,16 +1,27 @@
-import React from "react";
+'use client';
+
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
-  FormGroup,
-  FormControlLabel,
   Button,
   Stack,
-  Checkbox,
+  CircularProgress
 } from "@mui/material";
-import Link from "next/link";
+import { signIn, getProviders } from 'next-auth/react';
 
-import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
+import GoogleIcon from '@mui/icons-material/Google';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import EmailIcon from '@mui/icons-material/Email';
+import AppleIcon from '@mui/icons-material/Apple';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import LockIcon from '@mui/icons-material/Lock';
+import CloudQueueIcon from '@mui/icons-material/CloudQueue';
+import SecurityIcon from '@mui/icons-material/Security';
+import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 
 interface loginType {
   title?: string;
@@ -18,81 +29,74 @@ interface loginType {
   subtext?: React.ReactNode;
 }
 
-const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
-  <>
-    {title ? (
-      <Typography fontWeight="700" variant="h2" mb={1}>
-        {title}
-      </Typography>
-    ) : null}
+const providerIcons: Record<string, React.ReactNode> = {
+  google: <GoogleIcon />,
+  github: <GitHubIcon />,
+  facebook: <FacebookIcon />,
+  twitter: <TwitterIcon />,
+  linkedin: <LinkedInIcon />,
+  email: <EmailIcon />,
+  apple: <AppleIcon />,
+  discord: <ChatBubbleIcon />,
+  slack: <ChatBubbleIcon />,
+  auth0: <LockIcon />,
+  'azure-ad': <CloudQueueIcon />,
+  cognito: <CloudQueueIcon />,
+  okta: <SecurityIcon />,
+  twitch: <VideogameAssetIcon />,
+  notion: null,
+  spotify: null,
+  reddit: null,
+  stripe: null,
+};
 
-    {subtext}
+const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
+  const [providers, setProviders] = useState<Record<string, any> | null>(null);
 
-    <Stack>
-      <Box>
-        <Typography
-          variant="subtitle1"
-          fontWeight={600}
-          component="label"
-          htmlFor="username"
-          mb="5px"
-        >
-          Username
-        </Typography>
-        <CustomTextField variant="outlined" fullWidth />
-      </Box>
-      <Box mt="25px">
-        <Typography
-          variant="subtitle1"
-          fontWeight={600}
-          component="label"
-          htmlFor="password"
-          mb="5px"
-        >
-          Password
-        </Typography>
-        <CustomTextField type="password" variant="outlined" fullWidth />
-      </Box>
-      <Stack
-        justifyContent="space-between"
-        direction="row"
+  useEffect(() => {
+    getProviders().then(setProviders);
+  }, []);
+
+  if (!providers) {
+    return (
+      <Box
+        minHeight="100vh"
+        display="flex"
         alignItems="center"
-        my={2}
+        justifyContent="center"
       >
-        <FormGroup>
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="Remeber this Device"
-          />
-        </FormGroup>
-        <Typography
-          component={Link}
-          href="/"
-          fontWeight="500"
-          sx={{
-            textDecoration: "none",
-            color: "primary.main",
-          }}
-        >
-          Forgot Password ?
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      {title ? (
+        <Typography fontWeight="700" variant="h2" mb={1}>
+          {title}
         </Typography>
-      </Stack>
-    </Stack>
-    <Box>
-      <Button
-        color="primary"
-        variant="contained"
-        size="large"
-        fullWidth
-        component={Link}
-        href="/"
-        type="submit"
-      >
-        Sign In
-      </Button>
-    </Box>
-    {subtitle}
-  </>
-);
+      ) : null}
+
+      {subtext}
+      {subtitle}
+
+      {providers && (
+        <Stack spacing={2} mt={2}>
+          {Object.values(providers).map((provider: any) => (
+            <Button
+              key={provider.id}
+              variant="outlined"
+              startIcon={providerIcons[provider.id] || null}
+              onClick={() => signIn(provider.id)}
+            >
+              Sign in with {provider.name}
+            </Button>
+          ))}
+        </Stack>
+      )}
+    </>
+  );
+};
 
 export default AuthLogin;

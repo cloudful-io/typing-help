@@ -6,7 +6,7 @@ import { Container } from "@mui/material";
 
 const Dashboard = () => {
   return (
-    <PageContainer title="Typing Practice" description="This page allows you to practice your typing skills with various texts and track your performance.">
+    <PageContainer title="Practice" description="This page allows you to practice your typing skills with various texts and track your performance.">
       <Container sx={{ mt: 0 }}>
         <TypingPractice />
       </Container>

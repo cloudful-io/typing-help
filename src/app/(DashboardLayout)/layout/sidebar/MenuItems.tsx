@@ -18,7 +18,7 @@ const Menuitems = [
 
   {
     id: uniqueId(),
-    title: "Typing Practice",
+    title: "Practice",
     icon: IconKeyboard,
     href: "/",
   },
