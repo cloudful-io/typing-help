@@ -9,6 +9,12 @@ import { getOrCreateOrUpdateUser } from '@/lib/user';
 
 export default async function Dashboard() {
   const supabase = await createClient()
+
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    redirect("/new?nosession");
+  }
   const { data, error } = await supabase.auth.getUser()
     
   if (!error && data?.user) 
