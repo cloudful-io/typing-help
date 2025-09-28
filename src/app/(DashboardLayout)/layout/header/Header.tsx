@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import LoginButton from '@mui/icons-material/Login'
 
 // components
@@ -15,9 +15,11 @@ interface ItemType {
 
 const Header = ({toggleMobileSidebar}: ItemType) => {
 
-  // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
-  // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
-  const { data: session, status } = useSession();
+  const { user, loading, signOut } = useSupabaseAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
@@ -63,11 +65,11 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
               <IconHistory size="21" stroke="1.5" />
             </IconButton>
           
-          {status !== "loading" && !session && (
+          {!user && !loading && (
             <Button
               variant="contained"
               component={Link}
-              href="/authentication/login"
+              href="authentication/login"
               disableElevation
               color="primary"
               startIcon={<LoginButton/>}
@@ -76,9 +78,9 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
             </Button>
           )}
 
-          {session && (
+          {user && (
             <>
-            <Profile />
+            <Profile user={user} signOut={handleSignOut} />
             </>
           )}
         </Stack>

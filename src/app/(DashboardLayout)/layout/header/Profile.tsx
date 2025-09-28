@@ -10,61 +10,53 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { useSession } from 'next-auth/react';
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
-import { signOut } from "next-auth/react";
+import { User } from "@supabase/supabase-js";
 
-const Profile = () => {
-  const { data: session, status } = useSession();
-  const [anchorEl2, setAnchorEl2] = useState(null);
-  const handleClick2 = (event: any) => {
-    setAnchorEl2(event.currentTarget);
+type ProfileProps = {
+  user: User;
+  signOut: () => Promise<void>; 
+};
+
+const Profile: React.FC<ProfileProps> = ({ user, signOut }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
-  const handleClose2 = () => {
-    setAnchorEl2(null);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
     <Box>
       <IconButton
         size="large"
-        aria-label="show 11 new notifications"
+        aria-label="User menu"
         color="inherit"
-        aria-controls="msgs-menu"
-        aria-haspopup="true"
-        sx={{ 
-          ...(typeof anchorEl2 === "object" && {
-            color: "primary.main",
-          }),
-        }}
-        onClick={handleClick2}
+        onClick={handleClick}
       >
-         <Avatar
-          src={session?.user?.image || undefined} // show provider image if available
-          alt={session?.user?.name || "User"}     // fallback alt text
+        <Avatar
+          src={user.user_metadata?.avatar_url || undefined} // provider image if available
+          alt={user.email || "User"}
           sx={{ width: 35, height: 35 }}
         >
           {/* fallback initials if no image */}
-          {!session?.user?.image && session?.user?.name
-            ? session?.user.name.charAt(0).toUpperCase()
+          {!user.user_metadata?.avatar_url && user.email
+            ? user.email.charAt(0).toUpperCase()
             : null}
         </Avatar>
       </IconButton>
-      {/* ------------------------------------------- */}
-      {/* Message Dropdown */}
-      {/* ------------------------------------------- */}
+
       <Menu
-        id="msgs-menu"
-        anchorEl={anchorEl2}
+        anchorEl={anchorEl}
         keepMounted
-        open={Boolean(anchorEl2)}
-        onClose={handleClose2}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         sx={{
-          "& .MuiMenu-paper": {
-            width: "200px",
-          },
+          "& .MuiMenu-paper": { width: "200px" },
         }}
       >
         <MenuItem>
@@ -84,7 +76,9 @@ const Profile = () => {
             variant="outlined"
             color="primary"
             fullWidth
-            onClick={() => signOut({ callbackUrl: "/" })} // redirect home after logout
+            onClick={async () => {
+              await signOut();
+            }}
           >
             Logout
           </Button>

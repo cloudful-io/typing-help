@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Box, Grid, Typography, Paper, TextField, ToggleButtonGroup, ToggleButton, Button } from "@mui/material";
 import Keyboard from "./Keyboard";

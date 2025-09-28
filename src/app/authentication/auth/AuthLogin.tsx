@@ -8,7 +8,7 @@ import {
   Stack,
   CircularProgress
 } from "@mui/material";
-import { signIn, getProviders } from 'next-auth/react';
+import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -51,11 +51,9 @@ const providerIcons: Record<string, React.ReactNode> = {
 };
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
-  const [providers, setProviders] = useState<Record<string, any> | null>(null);
-
-  useEffect(() => {
-    getProviders().then(setProviders);
-  }, []);
+  const providers = (process.env.NEXT_PUBLIC_SUPABASE_PROVIDERS ?? "").split(",");
+  const { signInWithProvider } = useSupabaseAuth();
+  
 
   if (!providers) {
     return (
@@ -85,12 +83,12 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         <Stack spacing={2} mt={2}>
           {Object.values(providers).map((provider: any) => (
             <Button
-              key={provider.id}
+              key={provider}
               variant="outlined"
-              startIcon={providerIcons[provider.id] || null}
-              onClick={() => signIn(provider.id)}
+              startIcon={providerIcons[provider] || null}
+              onClick={() => signInWithProvider(provider)}
             >
-              Sign in with {provider.name}
+              Sign in with {provider}
             </Button>
           ))}
         </Stack>
