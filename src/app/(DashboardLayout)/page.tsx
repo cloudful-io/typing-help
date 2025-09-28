@@ -9,12 +9,6 @@ import { getOrCreateOrUpdateUser } from '@/lib/user';
 
 export default async function Dashboard() {
   const supabase = await createClient()
-
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
-    redirect("/new?nosession");
-  }
   const { data, error } = await supabase.auth.getUser()
     
   if (!error && data?.user) 
@@ -24,18 +18,6 @@ export default async function Dashboard() {
     if (userObject && !userObject.onboarding_complete) {
       redirect("/new"); 
     }
-    else if (!userObject) {
-      redirect("/new?nouserobject");
-    }
-    else if (userObject.onboarding_complete) {
-      redirect("/new?onboardingcomplete")
-    }
-  }
-  else if (error) {
-    redirect(`/new?${error}`)
-  }
-  else if (!data?.user) {
-    redirect("/new?nouser")
   }
 
   return (
