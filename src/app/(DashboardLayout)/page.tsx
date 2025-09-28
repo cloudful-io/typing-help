@@ -26,7 +26,7 @@ export default async function Dashboard() {
     }
   }
   else if (error) {
-    redirect(`/new?$error`)
+    redirect(`/new?${error}`)
   }
   else if (!data?.user) {
     redirect("/new?nouser")
