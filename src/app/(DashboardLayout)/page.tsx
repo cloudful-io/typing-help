@@ -18,6 +18,18 @@ export default async function Dashboard() {
     if (userObject && !userObject.onboarding_complete) {
       redirect("/new"); 
     }
+    else if (!userObject) {
+      redirect("/new?nouserobject");
+    }
+    else if (userObject.onboarding_complete) {
+      redirect("/new?onboardingcomplete")
+    }
+  }
+  else if (error) {
+    redirect(`/new?$error`)
+  }
+  else if (!data?.user) {
+    redirect("/new?nouser")
   }
 
   return (
