@@ -7,7 +7,7 @@ import LoginButton from '@mui/icons-material/Login'
 
 // components
 import Profile from './Profile';
-import { IconMenu, IconHistory } from '@tabler/icons-react';
+import { IconMenu, IconDeviceDesktopAnalytics } from '@tabler/icons-react';
 
 interface ItemType {
   toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
@@ -53,18 +53,19 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          
+          {/* Only show if authenticated */}
+          {!user && (
             <IconButton
               size="large"
-              aria-label="show history"
+              aria-label="show stats"
               color="inherit"
               aria-controls="msgs-menu"
               aria-haspopup="true"
-              component={Link} href="/history"
+              component={Link} href="/stats"
             >
-              <IconHistory size="21" stroke="1.5" />
+              <IconDeviceDesktopAnalytics size="21" stroke="1.5" />
             </IconButton>
-          
+          )}
           {!user && !loading && (
             <Button
               variant="contained"

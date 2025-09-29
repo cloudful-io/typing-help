@@ -10,7 +10,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { IconListCheck, IconMail, IconUser, IconDeviceDesktopAnalytics } from "@tabler/icons-react";
 import { User } from "@supabase/supabase-js";
 
 type ProfileProps = {
@@ -61,15 +61,15 @@ const Profile: React.FC<ProfileProps> = ({ user, signOut }) => {
       >
         <MenuItem>
           <ListItemIcon>
-            <IconUser width={20} />
-          </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
             <IconMail width={20} />
           </ListItemIcon>
           <ListItemText>My Account</ListItemText>
+        </MenuItem>
+        <MenuItem component={Link} href="/stats" onClick={handleClose}>
+          <ListItemIcon>
+            <IconDeviceDesktopAnalytics width={20} />
+          </ListItemIcon>
+          <ListItemText>My Stats</ListItemText>
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button

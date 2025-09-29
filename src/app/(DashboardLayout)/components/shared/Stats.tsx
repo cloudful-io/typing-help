@@ -11,7 +11,7 @@ import { usePracticeSessions, PracticeSession } from "@/hooks/usePracticeSession
 import { getLanguageName } from "@/utils/language";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const HistoryPage: React.FC = () => {
+const StatsPage: React.FC = () => {
   const { getPracticeSessions, clearPracticeSessions } = usePracticeSessions();
 
   const [paginationModel, setPaginationModel] = useState({
@@ -115,7 +115,7 @@ const HistoryPage: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
-      <Typography variant="h3">Typing Practice History</Typography>
+      <Typography variant="h3">Typing Practice Stats</Typography>
       {/* Summary Cards */}
       <Grid container spacing={2} alignItems="stretch">
         <Grid size={{xs: 6, md: 3}} sx={{ display: "flex", flex: 1 }}>
@@ -159,4 +159,4 @@ const HistoryPage: React.FC = () => {
   );
 };
 
-export default HistoryPage;
+export default StatsPage;
