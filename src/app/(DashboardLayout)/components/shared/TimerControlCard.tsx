@@ -5,7 +5,7 @@ import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCa
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
-
+import { keyframes } from "@mui/system";
 import {
   Box,
   Button,
@@ -14,6 +14,12 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import { getTimerControlColor } from "@/utils/typing";
+
+const pulse = keyframes`
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.3); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+`;
 
 interface TimerControlsCardProps {
   presetTimes?: number[];
@@ -123,13 +129,22 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
             value={progress}
             size={80}
             thickness={6}
-            sx={{ color }}
+            sx={{ 
+              color,
+           }}
           />
           <Box
             position="absolute"
             top="58%"
             left="50%"
-            sx={{ transform: "translate(-50%, -50%)", display: "flex", alignItems: "center", justifyContent: "center" }}
+            sx={{ 
+              transform: "translate(-50%, -50%)", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center",
+              color: timer <= 5 ? "error.main" : "text.primary",
+              animation: timer > 0 && timer <= 5 ? `${pulse} 1s infinite` : "none", 
+            }}
           >
             {timer}s
           </Box>
