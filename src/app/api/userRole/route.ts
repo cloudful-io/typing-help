@@ -5,8 +5,8 @@ export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get('userId');
   if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
 
-  const rolesResponse = await getUserRolesByName(userId);
-  return NextResponse.json({ roles: rolesResponse.data?.[0]?.roles || [] });
+  const roles = await getUserRolesByName(userId);
+  return NextResponse.json(roles);
 }
 
 export async function POST(req: NextRequest) {

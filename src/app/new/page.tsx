@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
-import { getOrCreateOrUpdateUser } from "@/lib/user";
-import { addUserRoleByName } from "@/lib/userRole";
+
 import {
   Box,
   Button,
@@ -25,6 +24,7 @@ import {
   Snackbar,
   Alert
 } from "@mui/material";
+import Image from "next/image";
 import TermsOfUse from "@/app/(DashboardLayout)/components/shared/TermsOfUse";
 import PrivacyPolicy from "@/app/(DashboardLayout)/components/shared/PrivacyPolicy";
 
@@ -58,19 +58,6 @@ export default function OnboardingPage() {
   const { user } = useSupabaseAuth();
   
   const handleSave = async () => {
-    /*if (!selectedRole) {
-      setErrorMsg("Please select a role before saving.");
-      return;
-    }
-    if (!user) {
-      router.push("/");
-      return;
-    }
-    setIsSaving(true);
-    const userObject = await getOrCreateOrUpdateUser({email: user.email!, fullName: user.user_metadata?.full_name, onboardingComplete: true});
-    await addUserRoleByName(user?.id!, selectedRole!);
-*/
-
     // Anonymous users
     if (!user) {
         // Redirect user to homepage
@@ -229,7 +216,7 @@ export default function OnboardingPage() {
                 onClick={() => setSelectedRole("teacher")}
               >
                 <Box mb={2}>
-                  <img src="/images/icons/teacher.png" alt="Teacher" style={{ width: 64, height: 64 }} />
+                  <Image src="/images/icons/teacher.png" alt="Teacher" height={64} width={64} />
                 </Box>
                 <Typography variant="h6">Teacher</Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -254,7 +241,7 @@ export default function OnboardingPage() {
                 onClick={() => setSelectedRole("student")}
               >
                 <Box mb={2}>
-                  <img src="/images/icons/student.png" alt="Student" style={{ width: 64, height: 64 }} />
+                  <Image src="/images/icons/student.png" alt="Student" height={64} width={64} />
                 </Box>
                 <Typography variant="h6">Student</Typography>
                 <Typography variant="body2" color="text.secondary">

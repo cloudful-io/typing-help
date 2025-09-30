@@ -34,8 +34,6 @@ export async function getUserRolesByName(userId: string) {
 
   if (error || !data) return [];
 
-  // data will be something like:
-  // [{ roles: { name: 'teacher' } }, { roles: { name: 'admin' } }]
   return data.map((item: any) => item.roles.name);
 }
 
