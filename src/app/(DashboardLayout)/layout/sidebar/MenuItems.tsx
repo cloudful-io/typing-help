@@ -36,6 +36,19 @@ const Menuitems = [
     href: "/classes",
     role: "teacher"
   },
+  {
+    navlabel: true,
+    subheader: "STUDENT",
+    role: "student"
+  },
+
+  {
+    id: uniqueId(),
+    title: "Classes",
+    icon: IconSchool,
+    href: "/classes",
+    role: "student"
+  },
 /*  {
     navlabel: true,
     subheader: "UTILITIES",
