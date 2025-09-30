@@ -6,6 +6,7 @@ import {
   IconMoodHappy,
   IconTypography,
   IconUserPlus,
+  IconSchool
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -21,6 +22,19 @@ const Menuitems = [
     title: "Practice",
     icon: IconKeyboard,
     href: "/",
+  },
+  {
+    navlabel: true,
+    subheader: "TEACHER",
+    role: "teacher"
+  },
+
+  {
+    id: uniqueId(),
+    title: "Classes",
+    icon: IconSchool,
+    href: "/classes",
+    role: "teacher"
   },
 /*  {
     navlabel: true,

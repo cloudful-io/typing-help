@@ -25,7 +25,7 @@ const TypingPractice: React.FC = () => {
   const [correctChars, setCorrectChars] = useState<number>(0);
   const [totalChars, setTotalChars] = useState<number>(0);
 
-  const [language, setLanguage] = useState("en-US");
+  const [language, setLanguage] = useState("zh-Hant");
   const [isComposing, setIsComposing] = useState(false);
 
   const textboxRef = useRef<HTMLInputElement>(null);
@@ -48,6 +48,7 @@ const TypingPractice: React.FC = () => {
       if (!res.ok) throw new Error("Failed to fetch practice text");
 
       const data = await res.json();
+
       setTargetText(data.content);
       setLanguage(lang);
 
@@ -186,6 +187,13 @@ const TypingPractice: React.FC = () => {
     // Underline/bold only the next character
     const isNextChar = idx === highlightLength;
 
+    if (char === "\n") {
+    return (
+      <span key={idx} style={{ color }}>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+      </span>
+    );
+  }
     return (
       <span
         key={idx}

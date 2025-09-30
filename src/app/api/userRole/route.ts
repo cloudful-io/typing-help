@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addUserRoleByName } from "@/lib/userRole";
+import { getUserRolesByName, addUserRoleByName } from "@/lib/userRole";
+
+export async function GET(req: NextRequest) {
+  const userId = req.nextUrl.searchParams.get('userId');
+  if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+
+  const rolesResponse = await getUserRolesByName(userId);
+  return NextResponse.json({ roles: rolesResponse.data?.[0]?.roles || [] });
+}
 
 export async function POST(req: NextRequest) {
   try {

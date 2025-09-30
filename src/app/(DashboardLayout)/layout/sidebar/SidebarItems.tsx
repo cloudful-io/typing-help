@@ -12,9 +12,9 @@ import { IconPoint } from '@tabler/icons-react';
 //import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Upgrade } from "./Updrade";
+import { useUserRoles } from "@/contexts/UserRolesContext";
 
-
-const renderMenuItems = (items: any, pathDirect: any) => {
+const renderMenuItems = (items: any, pathDirect: any, roles: any) => {
 
   return items.map((item: any) => {
 
@@ -24,6 +24,9 @@ const renderMenuItems = (items: any, pathDirect: any) => {
 
     if (item.subheader) {
       // Display Subheader
+      if (item.role && !roles.includes(item.role)) {
+         return null;
+      }
       return (
         <Menu
           subHeading={item.subheader}
@@ -41,12 +44,13 @@ const renderMenuItems = (items: any, pathDirect: any) => {
           icon={itemIcon}
           borderRadius='7px'
         >
-          {renderMenuItems(item.children, pathDirect)}
+          {renderMenuItems(item.children, pathDirect, roles)}
         </Submenu>
       );
     }
 
     // If the item has no children, render a MenuItem
+    if (item.role && !roles.includes(item.role)) return null;
 
     return (
       <Box px={3} key={item.id}>
@@ -71,6 +75,8 @@ const SidebarItems = () => {
   const pathname = usePathname();
   const pathDirect = pathname;
 
+  const { roles } = useUserRoles();
+
   return (
     < >
       <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#5D87FF"} themeSecondaryColor={'#49beff'} >
@@ -85,7 +91,7 @@ const SidebarItems = () => {
               <Typography variant="h5" noWrap>Typing.Help</Typography>
             </Link>
           </Stack>
-        {renderMenuItems(Menuitems, pathDirect)}
+        {renderMenuItems(Menuitems, pathDirect, roles)}
         <Box px={2}>
           <Upgrade />
         </Box>

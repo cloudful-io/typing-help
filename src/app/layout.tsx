@@ -1,16 +1,26 @@
-"use client";
-import { baselightTheme } from "@/utils/theme/DefaultColors";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import GoogleAnalytics from "@/app/(DashboardLayout)/components/shared/GoogleAnalytics";
+// app/layout.tsx  (Server Component)
+import "./global.css";
+import { UserRolesProvider } from "@/contexts/UserRolesContext";
+import Providers from "./providers"; // <- client wrapper
+import { getUserRolesByName} from "@/lib/userRole";
+import { createClient } from '@/utils/supabase/server'
 
-import './global.css'
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  const supabase = await createClient()
+  const { data, error } = await supabase.auth.getUser()
+
+  const user = data.user;
+  let roles: string[] = [];
+
+  if (user) {
+    roles = await getUserRolesByName(user.id); // returns array of role names
+  }
+
   return (
     <html lang="en">
       <head>
@@ -21,12 +31,11 @@ export default function RootLayout({
         <link rel="manifest" href="/images/favicon/site.webmanifest" />
       </head>
       <body>
-        <GoogleAnalytics />
-          <ThemeProvider theme={baselightTheme}>
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-            <CssBaseline />
+        <UserRolesProvider initialRoles={roles}>
+          <Providers>
             {children}
-          </ThemeProvider>
+          </Providers>
+        </UserRolesProvider>
       </body>
     </html>
   );

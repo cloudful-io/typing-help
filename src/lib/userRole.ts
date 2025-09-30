@@ -14,13 +14,10 @@ export async function getRoleByName(name: string) {
 // Add role to user by role name
 export async function addUserRoleByName(userId: string, roleName: string) {
   const supabase = await createClient();
-console.log(userId)
-console.log(roleName);
 
   const { data: role, error: roleError } = await getRoleByName(roleName)
   if (roleError || !role) return { error: roleError ?? new Error('Role not found') }
 
-console.log(role.id);
   return await supabase
     .from('user_roles')
     .insert([{ user_id: userId, role_id: role.id }])
@@ -30,10 +27,16 @@ console.log(role.id);
 export async function getUserRolesByName(userId: string) {
   const supabase = await createClient();
 
-  return await supabase
+  const { data, error } = await supabase
     .from('user_roles')
-    .select('roles(name, description)')
-    .eq('user_id', userId)
+    .select('roles(name)')
+    .eq('user_id', userId);
+
+  if (error || !data) return [];
+
+  // data will be something like:
+  // [{ roles: { name: 'teacher' } }, { roles: { name: 'admin' } }]
+  return data.map((item: any) => item.roles.name);
 }
 
 // Update role for a user by role names
