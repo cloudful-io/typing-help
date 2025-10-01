@@ -5,6 +5,7 @@ import Keyboard from "./Keyboard";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
 import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
+import TimeUpModal from '@/app/(DashboardLayout)/components/shared/TimeUpModal'
 import { computeTypingResults, countWords } from "@/utils/typing";
 import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
 
@@ -14,6 +15,7 @@ const TypingPractice: React.FC = () => {
 
   const canType = sessionState === "running";
   const sessionActive = sessionState === "running" || sessionState === "paused";
+  const [showTimeUpModal, setShowTimeUpModal] = useState(false);
 
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");
@@ -190,7 +192,7 @@ const TypingPractice: React.FC = () => {
     if (char === "\n") {
     return (
       <span key={idx} style={{ color }}>
-        &nbsp;&nbsp;&nbsp;&nbsp;
+        <br/>
       </span>
     );
   }
@@ -209,11 +211,9 @@ const TypingPractice: React.FC = () => {
   });
 };
 
-
-
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
+      <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
       {/* Top row: Accuracy, WPM, Timer/Controls */}
       <Grid container spacing={2} alignItems="stretch">
         <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex", flex: 1 }}>
@@ -240,6 +240,7 @@ const TypingPractice: React.FC = () => {
             onSessionEnd={(elapsedSeconds) => {
               setSessionState("ended");
               computeResults(elapsedSeconds);
+              setShowTimeUpModal(true);
             }}
           />
         </Grid>
