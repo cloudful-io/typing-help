@@ -18,15 +18,16 @@ export default function TypingClassList() {
   const [classes, setClasses] = useState<TypingClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<"teacher" | "student" | null>(null);
-
+  //setRole(useUserRoles());
   useEffect(() => {
     const fetchRoleAndClasses = async () => {
       if (!user) return;
 
       // 1. Get the user's roles from your userRole lib
-      const { roles } = useUserRoles();
-      const isTeacher = roles.includes("teacher");
-      const isStudent = roles.includes("student");
+      //const { roles } = useUserRoles();
+      //const isTeacher = roles.includes("teacher");
+      const isTeacher = true;
+      //const isStudent = roles.includes("student");
 
       // Decide which role to use
       let userRole: "teacher" | "student" = "student"; // default
