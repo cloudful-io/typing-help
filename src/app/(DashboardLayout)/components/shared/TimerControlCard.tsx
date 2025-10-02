@@ -9,6 +9,7 @@ import { keyframes } from "@mui/system";
 import {
   Box,
   Button,
+  IconButton,
   CircularProgress,
   ToggleButton,
   ToggleButtonGroup,
@@ -26,6 +27,7 @@ interface TimerControlsCardProps {
   onStart?: (duration: number) => void;
   onPause?: () => void;
   onResume?: () => void;
+  onReset?: () => void;
   onDurationChange?: (duration: number) => void;
   onSessionEnd?: (elapsedSeconds: number) => void;
 }
@@ -35,6 +37,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
   onStart,
   onPause,
   onResume,
+  onReset,
   onDurationChange,
   onSessionEnd,
 }) => {
@@ -106,6 +109,14 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
     onResume?.();
   };
 
+  const handleReset = () => {
+    if (intervalRef.current) clearTimeout(intervalRef.current);
+    setRunning(false);
+    setPaused(false);
+    setTimer(selectedTime);
+    onReset?.();
+  }
+
   const { progress, color } = useMemo(() => ({
     progress: selectedTime > 0 ? (timer / selectedTime) * 100 : 0,
     color: getTimerControlColor(timer, selectedTime),
@@ -150,7 +161,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
           </Box>
         </Box>
 
-        <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+        <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
           <ToggleButtonGroup value={selectedTime} exclusive onChange={handleTimeToggle} disabled={running || paused} size="small">
             {presetTimes.map((t) => (
               <ToggleButton key={t} value={t}>
@@ -166,15 +177,25 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
           )}
 
           {running && (
+            <>
             <Button variant="contained" color="warning" onClick={handlePause} startIcon={<PauseCircleOutlineIcon />}>
               Pause
             </Button>
+            <Button variant="contained" color="error" onClick={handleReset} startIcon={<RestartAltIcon />}>
+              Restart
+            </Button>
+            </>
           )}
 
           {!running && paused && (
+            <>
             <Button variant="contained" onClick={handleResume} startIcon={<PlayCircleOutlineIcon />}>
               Resume
             </Button>
+            <Button variant="contained" color="error" onClick={handleReset} startIcon={<RestartAltIcon />}>
+              Reset
+            </Button>
+            </>
           )}
         </Box>
       </Box>

@@ -216,13 +216,13 @@ const TypingPractice: React.FC = () => {
       <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
       {/* Top row: Accuracy, WPM, Timer/Controls */}
       <Grid container spacing={2} alignItems="stretch">
-        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex", flex: 1 }}>
+        <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
           <AccuracyCard correct={correctChars} total={totalChars} />
         </Grid>
-        <Grid size={{ xs: 12, md: 4 }} sx={{ display: "flex", flex: 1 }}>
+        <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
           <WPMCard wpm={wpm} wordsTyped={wordsTyped} language={language} />
         </Grid>
-        <Grid size={{ xs: 12, md: 4 }} sx={{ flex: 1 }}>
+        <Grid size={{ xs: 12, md: 6 }} sx={{ flex: 1 }}>
           <TimerControlCard
             presetTimes={[30, 60, 120, 240]}
             onStart={(duration) => {
@@ -236,6 +236,10 @@ const TypingPractice: React.FC = () => {
             onResume={() => {
               setSessionState("running");
               textboxRef.current?.focus();
+            }}
+            onReset={() => {
+              resetTypingState();
+              setSessionState("ended");
             }}
             onSessionEnd={(elapsedSeconds) => {
               setSessionState("ended");
