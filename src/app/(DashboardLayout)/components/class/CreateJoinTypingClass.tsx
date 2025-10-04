@@ -1,7 +1,7 @@
 'use client';
 
-import CreateTypingClass from "@/app/(DashboardLayout)/components/classes/CreateTypingClass"
-import JoinTypingClass from "@/app/(DashboardLayout)/components/classes/JoinTypingClass"
+import CreateTypingClass from "@/app/(DashboardLayout)/components/class/CreateTypingClass"
+import JoinTypingClass from "@/app/(DashboardLayout)/components/class/JoinTypingClass"
 import { useUserRoles } from "@/contexts/UserRolesContext";
 
 export default function CreateJoinTypingClass() {

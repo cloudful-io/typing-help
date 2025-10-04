@@ -1,6 +1,6 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import { Container } from "@mui/material";
-import CreateJoinTypingClass from "@/app/(DashboardLayout)/components/classes/CreateJoinTypingClass"
+import CreateJoinTypingClass from "@/app/(DashboardLayout)/components/class/CreateJoinTypingClass"
 export default async function ClassPage() {
      
   return (

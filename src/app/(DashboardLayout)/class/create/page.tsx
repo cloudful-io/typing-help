@@ -1,13 +1,13 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import { Container } from "@mui/material";
-import JoinTypingClass from "@/app/(DashboardLayout)/components/classes/JoinTypingClass"
+import CreateTypingClass from "@/app/(DashboardLayout)/components/class/CreateTypingClass"
 
 export default async function CreateClassPage() {
-  
+     
   return (
-    <PageContainer title="Classes" description="This page provides students a way to join a class.">
+    <PageContainer title="Classes" description="This page provides teachers a way to create a class.">
       <Container sx={{ mt: 0 }}>
-        <JoinTypingClass/>
+        <CreateTypingClass/>
       </Container>
     </PageContainer>
   );

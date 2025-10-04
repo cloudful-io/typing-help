@@ -1,4 +1,4 @@
-import ClassDetail from "@/app/(DashboardLayout)/components/classes/ClassDetail";
+import ClassDetail from "@/app/(DashboardLayout)/components/class/ClassDetail";
 import { use } from "react";
 
 interface ClassPageProps {

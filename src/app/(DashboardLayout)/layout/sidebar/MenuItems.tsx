@@ -37,7 +37,7 @@ const Menuitems = [
     id: uniqueId(),
     title: "Create a Class",
     icon: IconCirclePlus,
-    href: "/classes/create",
+    href: "/class/create",
     role: "teacher"
   },
   {
@@ -50,7 +50,7 @@ const Menuitems = [
     id: uniqueId(),
     title: "Join a Class",
     icon: IconDoorEnter,
-    href: "/classes/join",
+    href: "/class/join",
     role: "student"
   },
 /*  {

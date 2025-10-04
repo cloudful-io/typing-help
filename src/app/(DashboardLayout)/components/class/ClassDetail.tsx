@@ -5,7 +5,7 @@ import { useMode } from '@/contexts/ModeContext';
 import { useClassContext } from '@/contexts/ClassContext';
 import { getTypingClassById, isMember } from '@/lib/typingClass';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
-import { Divider, Tabs, Tab, Box, Typography } from '@mui/material';
+import { Tab, Box, Typography } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
