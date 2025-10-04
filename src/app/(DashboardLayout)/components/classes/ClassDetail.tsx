@@ -5,6 +5,7 @@ import { useMode } from '@/contexts/ModeContext';
 import { useClassContext } from '@/contexts/ClassContext';
 import { getTypingClassById, isMember } from '@/lib/typingClass';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { Divider, Typography, Box, Chip } from '@mui/material';
 
 interface TypingClass {
   id: number;
@@ -53,10 +54,22 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
   if (!classData) return <p>Loading class data...</p>;
 
   return (
-    <div>
-      <h1>{classData.title}</h1>
-      <p>Class code: {classData.code}</p>
-      {/* Other class content, interactive components */}
-    </div>
+    <>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Typography variant="h2" sx={{ fontWeight: 700 }}>
+        {classData.title}
+      </Typography>
+      <Chip 
+        label={`Class Code: ${classData.code}`} 
+        color="primary" 
+        variant="outlined" 
+        sx={{ fontSize: "1rem", fontWeight: 600, px: 1.5 }}
+      />
+    </Box>
+
+    {/* other content */}
+    <Divider sx={{ my: 2 }} />
+
+    </>
   );
 }
