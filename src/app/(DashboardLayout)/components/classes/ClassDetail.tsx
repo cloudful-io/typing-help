@@ -5,38 +5,45 @@ import { useMode } from '@/contexts/ModeContext';
 import { useClassContext } from '@/contexts/ClassContext';
 import { getTypingClassById, isMember } from '@/lib/typingClass';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
-import { Divider, Typography, Box, Chip } from '@mui/material';
+import { Divider, Tabs, Tab, Box, Typography } from '@mui/material';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import ClassHeader from './ClassHeader';
+import StudentsList from './StudentList';
 
 interface TypingClass {
   id: number;
   title: string;
   code: string;
+  teacherName: string;
 }
 
 interface ClassDetailProps {
-  id: string;
+  classId: string;
 }
 
-export default function ClassDetail({ id }: ClassDetailProps) {
+export default function ClassDetail({ classId }: ClassDetailProps) {
   const { setMode } = useMode();
   const { setActiveClass } = useClassContext();
   const { user } = useSupabaseAuth();
 
   const [classData, setClassData] = useState<TypingClass | null>(null);
-  const [isUserMember, setIsUserMember] = useState<boolean | null>(null); // null = loading
+  const [isUserMember, setIsUserMember] = useState<boolean | null>(null); 
+  const [activeTab, setActiveTab] = useState("0"); // 0 = Practice, 1 = Students
 
   useEffect(() => {
     async function initClass() {
       if (!user) return;
 
       // Check if user is a member first
-      const member = await isMember(user.id, id);
+      const member = await isMember(user.id, classId);
       setIsUserMember(member);
 
       if (!member) return; // don't fetch class if not a member
 
       // Fetch the class
-      const data = await getTypingClassById(id);
+      const data = await getTypingClassById(classId);
       setClassData(data);
 
       // Sync context
@@ -47,29 +54,42 @@ export default function ClassDetail({ id }: ClassDetailProps) {
     }
 
     initClass();
-  }, [id, setActiveClass, setMode, user]);
+  }, [classId, setActiveClass, setMode, user]);
 
   if (isUserMember === null) return <p>Loading...</p>; // still checking membership
   if (!isUserMember) return <p>You are not a member of this class.</p>;
   if (!classData) return <p>Loading class data...</p>;
 
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setActiveTab(newValue);
+  };
+
   return (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-      <Typography variant="h2" sx={{ fontWeight: 700 }}>
-        {classData.title}
-      </Typography>
-      <Chip 
-        label={`Class Code: ${classData.code}`} 
-        color="primary" 
-        variant="outlined" 
-        sx={{ fontSize: "1rem", fontWeight: 600, px: 1.5 }}
-      />
-    </Box>
+      <ClassHeader title={classData.title} code={classData.code} teacher={classData.teacherName}/>
 
-    {/* other content */}
-    <Divider sx={{ my: 2 }} />
+      <Box sx={{ width: '100%', typography: 'body1' }}>
+        <TabContext value={activeTab}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example">
+              <Tab label="Practice" value="0" />
+              <Tab label="Students" value="1" />
+            </TabList>
+          </Box>
+          <TabPanel value="0">
+            <Box>
+              {/* Render your Practice content here */}
+              <Typography>Practice assignments will go here.</Typography>
+            </Box>
 
+          </TabPanel>
+          <TabPanel value="1">
+            <Box>
+              <StudentsList classId={classId} />
+            </Box>
+          </TabPanel>
+        </TabContext>
+      </Box>
     </>
   );
 }

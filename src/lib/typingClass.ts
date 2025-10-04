@@ -49,22 +49,24 @@ export async function getTypingClassByCode(code: string) {
 export async function getTypingClassById(classId: string) {
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from("typing_classes")
-    .select("*")
-    .eq("id", classId)
-    .single();  // ensures at most one row is returned
+  const { data: classData, error: classError } = await supabase
+    .from('typing_classes')
+    .select('*')
+    .eq('id', classId)
+    .single();
 
-  if (error) {
-    if (error.code === "PGRST116") {
-      // "No rows found" error from supabase
-      return null;
-    }
-    console.error("Error fetching class by ID:", error.message);
-    throw error; // rethrow unexpected errors
-  }
+  if (!classData) return null;
 
-  return data; // will be a single object or null
+  const { data: teacherData } = await supabase
+    .from('users') // or 'users' if you store teacher names there
+    .select('full_name')
+    .eq('id', classData.teacher_id)
+    .single();
+
+  return {
+    ...classData,
+    teacherName: teacherData?.full_name || 'Unknown',
+  };
 }
 
 export async function getTypingClassesForTeacher(teacherId: string) {
@@ -163,3 +165,36 @@ export async function isMember(userId: string, classId: string) {
   // Not a member
   return false;
 }
+
+export async function getStudentsForClass(classId: string) {
+  const supabase = createClient();
+
+  // 1️⃣ Fetch student IDs
+  const { data: studentRows, error: studentError } = await supabase
+    .from('student_classes')
+    .select('student_id')
+    .eq('class_id', classId);
+
+  if (studentError) {
+    console.error('Error fetching student IDs:', studentError.message);
+    return [];
+  }
+
+  const studentIds = (studentRows || []).map((row: any) => row.student_id);
+
+  if (studentIds.length === 0) return [];
+
+  // 2️⃣ Fetch user info
+  const { data: usersData, error: usersError } = await supabase
+    .from('users') // or 'profiles' if you use auth.users + profiles
+    .select('id, full_name, email')
+    .in('id', studentIds);
+
+  if (usersError) {
+    console.error('Error fetching user data:', usersError.message);
+    return [];
+  }
+
+  return usersData || [];
+}
+
