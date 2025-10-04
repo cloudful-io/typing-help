@@ -54,7 +54,7 @@ const Header = () => {
               ml: 1, 
               fontWeight: 800, 
               letterSpacing: "0.5px", 
-              display: { sm: "none", md: "block" }
+              display: { xs: "none", sm: "none", md: "block" }
             }}>
               Typing Help
           </Typography>
