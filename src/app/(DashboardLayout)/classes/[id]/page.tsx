@@ -1,12 +1,13 @@
 // app/class/[id]/page.tsx
 import ClassDetail from "@/app/(DashboardLayout)/components/classes/ClassDetail";
+import { use } from "react";
 
 interface ClassPageProps {
   params: { id: string };
 }
 
-export default function ClassPage({ params }: ClassPageProps) {
-  const classId = parseInt(params.id, 10);
+export default function ClassPage({params}: {params: Promise<{ id: string }>}) {
+  const { id } = use(params);
 
-  return <ClassDetail classId={classId} />;
+  return <ClassDetail classId={id} />;
 }

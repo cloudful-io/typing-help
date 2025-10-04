@@ -12,7 +12,7 @@ interface TypingClass {
 }
 
 interface ClassDetailProps {
-  classId: number;
+  classId: string;
 }
 
 export default function ClassDetail({ classId }: ClassDetailProps) {
@@ -23,7 +23,7 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
   useEffect(() => {
     async function initClass() {
       // Fetch the class
-      const data = await getTypingClassById(classId.toString());
+      const data = await getTypingClassById(classId);
       setClassData(data);
 
       // Sync context
