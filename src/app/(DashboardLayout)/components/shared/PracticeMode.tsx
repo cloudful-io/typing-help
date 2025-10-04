@@ -9,7 +9,7 @@ import TimeUpModal from '@/app/(DashboardLayout)/components/shared/TimeUpModal'
 import { computeTypingResults, countWords } from "@/utils/typing";
 import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
 
-const TypingPractice: React.FC = () => {
+const PracticeMode: React.FC = () => {
   type SessionState = "idle" | "running" | "paused" | "ended";
   const [sessionState, setSessionState] = useState<SessionState>("idle");
 
@@ -298,4 +298,4 @@ const TypingPractice: React.FC = () => {
   );
 };
 
-export default TypingPractice;
+export default PracticeMode;

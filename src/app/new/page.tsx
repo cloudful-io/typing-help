@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { useMode } from "@/contexts/ModeContext";
+import { useUserRoles } from "@/contexts/UserRolesContext";
 
 import {
   Box,
@@ -32,6 +34,8 @@ const steps = ["Agreements", "Profile"];
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { setMode } = useMode();
+  const { setRoles } = useUserRoles();
   
   const [isSaving, setIsSaving] = useState(false);
 
@@ -102,6 +106,8 @@ export default function OnboardingPage() {
         if (!userObject?.id) {
           throw new Error("Failed to get user ID from database");
         }
+        setRoles([selectedRole]);
+        setMode("classroom");
 
         // Redirect user to dashboard
         router.push("/");

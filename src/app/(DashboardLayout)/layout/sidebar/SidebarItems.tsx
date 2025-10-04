@@ -81,7 +81,7 @@ const SidebarItems = () => {
     < >
       <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#5D87FF"} themeSecondaryColor={'#49beff'} >
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Logo img='/images/logos/logo.png' component={Link} to="/" >Typing Help</Logo>
+            <Logo img='/images/logos/logo.png' component={Link} to="/">Typing Help</Logo>
             <Link
               href="/"
               underline="none"

@@ -1,18 +1,39 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import { createTypingClass } from '@/lib/typingClass';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
+import AddIcon from '@mui/icons-material/Add';
 
 const CreateTypingClass: React.FC = () => {
   const { user } = useSupabaseAuth();
+  const { roles } = useUserRoles();
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successCode, setSuccessCode] = useState<string | null>(null);
+
+  const isTeacher = roles.includes('teacher');
+  if (!isTeacher) {
+    router.push("/");
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +46,7 @@ const CreateTypingClass: React.FC = () => {
     try {
       const newClass = await createTypingClass(user.id, title);
       setSuccessCode(newClass.code);
-      setTitle(''); // reset form
+      setTitle('');
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Failed to create class');
@@ -33,39 +54,52 @@ const CreateTypingClass: React.FC = () => {
       setLoading(false);
     }
   };
-  const router = useRouter();
-  const { roles } = useUserRoles();
-  const isTeacher = roles.includes('teacher');
-
-  if (!isTeacher) {
-    router.push("/");
-  }
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: 400 }}>
-      <Typography variant="h6">Create New Typing Class</Typography>
-      <TextField
-        label="Class Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-        fullWidth
-      />
-
-      <Button type="submit" variant="contained" disabled={loading}>
-        {loading ? <CircularProgress size={24} /> : 'Create Class'}
+    <>
+      {/* Button that opens dialog */}
+      <Button
+        variant="contained"
+        startIcon={<AddIcon />}
+        onClick={() => setOpen(true)}
+      >
+        Create Class
       </Button>
 
-      {successCode && (
-        <Typography color="success.main">
-          Class created successfully! Code: <strong>{successCode}</strong>
-        </Typography>
-      )}
+      {/* Dialog itself */}
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Create New Typing Class</DialogTitle>
+        <Box component="form" onSubmit={handleSubmit}>
+          <DialogContent dividers>
+            <TextField
+              label="Class Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              fullWidth
+              margin="dense"
+            />
 
-      {error && (
-        <Typography color="error">{error}</Typography>
-      )}
-    </Box>
+            {successCode && (
+              <Typography color="success.main" sx={{ mt: 2 }}>
+                Class created successfully! Code: <strong>{successCode}</strong>
+              </Typography>
+            )}
+
+            {error && (
+              <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>
+            )}
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="contained" disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : 'Create'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+    </>
   );
 };
 

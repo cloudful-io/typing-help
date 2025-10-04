@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button } from '@mui/material';
+import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button, Typography } from '@mui/material';
+import Image from "next/image";
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
@@ -7,13 +8,11 @@ import LoginButton from '@mui/icons-material/Login'
 
 // components
 import Profile from './Profile';
-import { IconMenu, IconDeviceDesktopAnalytics } from '@tabler/icons-react';
+import ModeToggle from './ModeToggle';
+import { IconDeviceDesktopAnalytics } from '@tabler/icons-react';
+import ActionButton from './ActionButton';
 
-interface ItemType {
-  toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
-}
-
-const Header = ({toggleMobileSidebar}: ItemType) => {
+const Header = () => {
 
   const { user, loading, signOut } = useSupabaseAuth();
 
@@ -38,19 +37,30 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
-        <IconButton
-          color="inherit"
-          aria-label="menu"
-          onClick={toggleMobileSidebar}
+        <Box
+          component={Link}
+          href="/"
           sx={{
-            display: {
-              lg: "none",
-              xs: "inline",
-            },
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none", // remove underline
+            color: "inherit",       // inherit text color
           }}
         >
-          <IconMenu width="20" height="20" />
-        </IconButton>
+          <Image src="/images/logos/logo.png" width={48} height={48} alt="Typing Help"/>
+          <Typography variant="h5" sx={{ ml: 1, fontWeight: 800, letterSpacing: "0.5px" }}>Typing Help</Typography>
+        </Box>
+        {user && (
+          <>
+          <Box sx={{ ml: 5 }}>
+          <ModeToggle />
+          </Box>
+          <Box sx={{ ml: 5 }}>
+          <ActionButton/>
+        </Box>
+        </>
+        )}
+
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
           {/* Only show if authenticated */}

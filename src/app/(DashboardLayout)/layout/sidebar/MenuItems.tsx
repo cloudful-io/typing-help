@@ -1,7 +1,10 @@
 import {
   IconAperture,
   IconCopy,
+  IconHome,
   IconKeyboard,
+  IconCirclePlus,
+  IconDoorEnter,
   IconLogin,
   IconMoodHappy,
   IconTypography,
@@ -14,7 +17,8 @@ import { uniqueId } from "lodash";
 const Menuitems = [
   {
     navlabel: true,
-    subheader: "HOME",
+    subheader: "HOME",  
+    icon: IconHome,
   },
 
   {
@@ -25,28 +29,28 @@ const Menuitems = [
   },
   {
     navlabel: true,
-    subheader: "TEACHER",
+    subheader: "CLASSES",
     role: "teacher"
   },
 
   {
     id: uniqueId(),
-    title: "Classes",
-    icon: IconSchool,
-    href: "/classes",
+    title: "Create a Class",
+    icon: IconCirclePlus,
+    href: "/classes/create",
     role: "teacher"
   },
   {
     navlabel: true,
-    subheader: "STUDENT",
+    subheader: "CLASSES",
     role: "student"
   },
 
   {
     id: uniqueId(),
-    title: "Classes",
-    icon: IconSchool,
-    href: "/classes",
+    title: "Join a Class",
+    icon: IconDoorEnter,
+    href: "/classes/join",
     role: "student"
   },
 /*  {

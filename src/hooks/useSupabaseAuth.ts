@@ -4,6 +4,7 @@ import { User } from '@supabase/supabase-js';
 import { useSearchParams } from "next/navigation";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
+import { useMode } from "@/contexts/ModeContext";
 
 type Provider =
   | 'azure'
@@ -27,7 +28,7 @@ export function useSupabaseAuth() {
   const supabase = createClient();
   const router = useRouter();
   const { setRoles } = useUserRoles(); // <-- access context
-
+  const { setMode } = useMode();
 
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
@@ -65,6 +66,8 @@ export function useSupabaseAuth() {
     const { error } = await supabase.auth.signOut();
     if (error) console.error("Sign out failed:", error.message);
     else setRoles([]);
+   
+    setMode("practice");
 
     router.push('/');
   };

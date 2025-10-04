@@ -1,18 +1,39 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import { getTypingClassByCode, joinTypingClass } from '@/lib/typingClass';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
+import InputIcon from '@mui/icons-material/Input';
 
 const JoinTypingClass: React.FC = () => {
   const { user } = useSupabaseAuth();
-  const [code, setCode] = useState('');
+  const { roles } = useUserRoles();
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+  const [classCode, setClassCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const isStudent = roles.includes('student');
+  if (!isStudent) {
+    router.push("/");
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,10 +41,10 @@ const JoinTypingClass: React.FC = () => {
 
     setLoading(true);
     setError(null);
-    setSuccessMessage(null);
+    setSuccess(false);
 
     try {
-      const joinClass = await getTypingClassByCode(code);
+      const joinClass = await getTypingClassByCode(classCode);
 
       if (!joinClass) {
         console.error("Unable to find class");
@@ -31,51 +52,66 @@ const JoinTypingClass: React.FC = () => {
       }
       else {
         const data = await joinTypingClass(user.id, joinClass.id);
-        setSuccessMessage(joinClass.title);
+        setClassCode(joinClass.title);
       }
       
-      setCode(''); // reset form
+      setClassCode(''); // reset form
+
+      setSuccess(true);
+      setClassCode('');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to create class');
+      setError(err.message || 'Failed to join class');
     } finally {
       setLoading(false);
     }
   };
-  const router = useRouter();
-  const { roles } = useUserRoles();
-  const isStudent = roles.includes('student');
-
-  if (!isStudent) {
-    router.push("/");
-  }
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: 400 }}>
-      <Typography variant="h6">Join Typing Class</Typography>
-
-      <TextField
-        label="Code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        required
-        fullWidth
-      />
-
-      <Button type="submit" variant="contained" disabled={loading}>
-        {loading ? <CircularProgress size={24} /> : 'Join Class'}
+    <>
+      {/* Button that opens dialog */}
+      <Button
+        variant="contained"
+        startIcon={<InputIcon />}
+        onClick={() => setOpen(true)}
+      >
+        Join Class
       </Button>
 
-      {successMessage && (
-        <Typography color="success.main">
-          Successfully joined {successMessage}.
-        </Typography>
-      )}
+      {/* Dialog */}
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Join a Typing Class</DialogTitle>
+        <Box component="form" onSubmit={handleSubmit}>
+          <DialogContent dividers>
+            <TextField
+              label="Class Code"
+              value={classCode}
+              onChange={(e) => setClassCode(e.target.value)}
+              required
+              fullWidth
+              margin="dense"
+            />
 
-      {error && (
-        <Typography color="error">{error}</Typography>
-      )}
-    </Box>
+            {success && (
+              <Typography color="success.main" sx={{ mt: 2 }}>
+                Successfully joined the class!
+              </Typography>
+            )}
+
+            {error && (
+              <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>
+            )}
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="contained" disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : 'Join'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+    </>
   );
 };
 

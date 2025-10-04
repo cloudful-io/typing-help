@@ -46,6 +46,27 @@ export async function getTypingClassByCode(code: string) {
   return data; // will be a single object or null
 }
 
+export async function getTypingClassById(classId: string) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("typing_classes")
+    .select("*")
+    .eq("id", classId)
+    .single();  // ensures at most one row is returned
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      // "No rows found" error from supabase
+      return null;
+    }
+    console.error("Error fetching class by ID:", error.message);
+    throw error; // rethrow unexpected errors
+  }
+
+  return data; // will be a single object or null
+}
+
 
 export async function getTypingClassesForTeacher(teacherId: string) {
   const supabase = createClient();
