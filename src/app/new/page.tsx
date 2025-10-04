@@ -64,8 +64,8 @@ export default function OnboardingPage() {
   const handleSave = async () => {
     // Anonymous users
     if (!user) {
-        // Redirect user to homepage
-        router.push("/");
+        // Redirect user to classroom mode
+        router.push("/?m=classroom");
         return;
     }
     else if (!selectedRole) {

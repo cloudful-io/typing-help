@@ -2,14 +2,13 @@
 import { useState, useEffect } from "react";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useMode } from "@/contexts/ModeContext";
-import { Button, MenuItem, Select, FormControl, InputLabel,Dialog, DialogTitle, DialogContent, DialogActions, } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import InputIcon from '@mui/icons-material/Input';
+import { MenuItem, Select, FormControl, InputLabel} from '@mui/material';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { getTypingClassesForStudent, getTypingClassesForTeacher } from "@/lib/typingClass";
 import CreateTypingClass from "@/app/(DashboardLayout)/components/classes/CreateTypingClass";
 import JoinTypingClass from "@/app/(DashboardLayout)/components/classes/JoinTypingClass";
 import { useRouter } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
 interface TypingClass {
   id: number;
@@ -22,12 +21,10 @@ export default function ActionButton() {
   const { roles } = useUserRoles();
   const { mode } = useMode();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [classes, setClasses] = useState<TypingClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<number | "">("");
-
-  const [open, setOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<"create" | "join" | null>(null);
 
   const isPracticeMode = (mode === "practice");
   const isClassroomMode = (mode === "classroom");
@@ -54,16 +51,22 @@ export default function ActionButton() {
     }
   }, [user, isClassroomMode, isTeacher, isStudent]);
 
+  useEffect(() => {
+  // check if we're on a /classes/[id] route
+  const match = pathname.match(/^\/classes\/(\d+)/);
+  if (match) {
+    setSelectedClass(Number(match[1]));
+  } else {
+    setSelectedClass("");
+  }
+}, [pathname]);
+
   const handleSelectChange = (event: any) => {
-    
     const classId = event.target.value;
     setSelectedClass(classId);
-    // Navigate to the class page
+    
     router.push(`/classes/${classId}`);
-  
   };
-
-  
 
   return (
     <>
