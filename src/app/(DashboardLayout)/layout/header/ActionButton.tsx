@@ -9,6 +9,7 @@ import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { getTypingClassesForStudent, getTypingClassesForTeacher } from "@/lib/typingClass";
 import CreateTypingClass from "@/app/(DashboardLayout)/components/classes/CreateTypingClass";
 import JoinTypingClass from "@/app/(DashboardLayout)/components/classes/JoinTypingClass";
+import { useRouter } from 'next/navigation';
 
 interface TypingClass {
   id: number;
@@ -20,6 +21,8 @@ export default function ActionButton() {
   const { user } = useSupabaseAuth();
   const { roles } = useUserRoles();
   const { mode } = useMode();
+  const router = useRouter();
+
   const [classes, setClasses] = useState<TypingClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<number | "">("");
 
@@ -52,18 +55,15 @@ export default function ActionButton() {
   }, [user, isClassroomMode, isTeacher, isStudent]);
 
   const handleSelectChange = (event: any) => {
-    setSelectedClass(event.target.value);
+    
+    const classId = event.target.value;
+    setSelectedClass(classId);
+    // Navigate to the class page
+    router.push(`/classes/${classId}`);
+  
   };
 
-  const handleOpenDialog = (mode: "create" | "join") => {
-    setDialogMode(mode);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setDialogMode(null);
-  };
+  
 
   return (
     <>

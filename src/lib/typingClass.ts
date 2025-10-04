@@ -67,7 +67,6 @@ export async function getTypingClassById(classId: string) {
   return data; // will be a single object or null
 }
 
-
 export async function getTypingClassesForTeacher(teacherId: string) {
   const supabase = createClient();
   const { data, error } = await supabase
@@ -126,4 +125,41 @@ export async function getTypingClassesForStudent(studentId: string) {
 
   // unwrap nested `typing_classes`
   return (data || []).map((row: any) => row.typing_classes);
+}
+
+export async function isMember(userId: string, classId: string) {
+  const supabase = createClient();
+
+  // Check if the user is the teacher
+  const { data: teacherData, error: teacherError } = await supabase
+    .from("typing_classes")
+    .select("id")
+    .eq("id", classId)
+    .eq("teacher_id", userId)
+    .single();
+
+  if (teacherError && teacherError.code !== "PGRST116") {
+    console.error("Error checking teacher membership:", teacherError.message);
+    throw teacherError;
+  }
+
+  if (teacherData) return true; // user is the teacher
+
+  // Check if the user is a student in the class
+  const { data: studentData, error: studentError } = await supabase
+    .from("student_classes")
+    .select("id")
+    .eq("class_id", classId)
+    .eq("student_id", userId)
+    .single();
+
+  if (studentError && studentError.code !== "PGRST116") {
+    console.error("Error checking student membership:", studentError.message);
+    throw studentError;
+  }
+
+  if (studentData) return true; // user is a student
+
+  // Not a member
+  return false;
 }

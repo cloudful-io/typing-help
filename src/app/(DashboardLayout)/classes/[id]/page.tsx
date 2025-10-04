@@ -1,4 +1,3 @@
-// app/class/[id]/page.tsx
 import ClassDetail from "@/app/(DashboardLayout)/components/classes/ClassDetail";
 import { use } from "react";
 
