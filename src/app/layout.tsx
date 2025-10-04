@@ -1,4 +1,3 @@
-// app/layout.tsx  (Server Component)
 import "./global.css";
 import { UserRolesProvider } from "@/contexts/UserRolesContext";
 import Providers from "./providers"; // <- client wrapper

@@ -29,10 +29,10 @@ export default function ModeToggle() {
       color="primary"
       exclusive
       onChange={(_, newMode) => {
-        if (newMode) setMode(newMode);
-        if (window.location.pathname !== "/") {
-            router.push("/");
-        }
+        if (newMode) 
+          setMode(newMode);
+            
+        router.push(`/?m=${encodeURIComponent(newMode)}`);
       }}
       size="small"
     >
