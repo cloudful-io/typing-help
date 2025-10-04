@@ -36,7 +36,7 @@ export default function ClassroomMode() {
 
       if (data.length > 0) {
         setHasClass(true);
-        router.replace(`/class/${data[0].id}`); // redirect to first class
+        router.replace(`/classes/${data[0].id}`); // redirect to first class
       } else {
         setHasClass(false);
       }

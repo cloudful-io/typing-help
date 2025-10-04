@@ -52,8 +52,8 @@ export default function ActionButton() {
   }, [user, isClassroomMode, isTeacher, isStudent]);
 
   useEffect(() => {
-  // check if we're on a /class/[id] route
-  const match = pathname.match(/^\/class\/(\d+)/);
+  // check if we're on a /classes/[id] route
+  const match = pathname.match(/^\/classes\/(\d+)/);
   if (match) {
     setSelectedClass(Number(match[1]));
   } else {
@@ -65,7 +65,7 @@ export default function ActionButton() {
     const classId = event.target.value;
     setSelectedClass(classId);
     
-    router.push(`/class/${classId}`);
+    router.push(`/classes/${classId}`);
   };
 
   return (
