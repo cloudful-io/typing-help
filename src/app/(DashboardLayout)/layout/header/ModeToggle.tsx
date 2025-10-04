@@ -11,7 +11,7 @@ export default function ModeToggle() {
   const { mode, setMode } = useMode();
   const router = useRouter();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // true if screen < sm
+  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // true if screen < sm
 
   const commonStyles = {
     "&.Mui-selected": {

@@ -48,7 +48,16 @@ const Header = () => {
           }}
         >
           <Image src="/images/logos/logo.png" width={48} height={48} alt="Typing Help"/>
-          <Typography variant="h5" sx={{ ml: 1, fontWeight: 800, letterSpacing: "0.5px" }}>Typing Help</Typography>
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              ml: 1, 
+              fontWeight: 800, 
+              letterSpacing: "0.5px", 
+              display: { sm: "none", md: "block" }
+            }}>
+              Typing Help
+          </Typography>
         </Box>
         {user && (
           <>
