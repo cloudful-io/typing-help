@@ -14,10 +14,10 @@ interface TypingClass {
 }
 
 interface ClassDetailProps {
-  classId: string;
+  id: string;
 }
 
-export default function ClassDetail({ classId }: ClassDetailProps) {
+export default function ClassDetail({ id }: ClassDetailProps) {
   const { setMode } = useMode();
   const { setActiveClass } = useClassContext();
   const { user } = useSupabaseAuth();
@@ -30,13 +30,13 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
       if (!user) return;
 
       // Check if user is a member first
-      const member = await isMember(user.id, classId);
+      const member = await isMember(user.id, id);
       setIsUserMember(member);
 
       if (!member) return; // don't fetch class if not a member
 
       // Fetch the class
-      const data = await getTypingClassById(classId);
+      const data = await getTypingClassById(id);
       setClassData(data);
 
       // Sync context
@@ -47,7 +47,7 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
     }
 
     initClass();
-  }, [classId, setActiveClass, setMode, user]);
+  }, [id, setActiveClass, setMode, user]);
 
   if (isUserMember === null) return <p>Loading...</p>; // still checking membership
   if (!isUserMember) return <p>You are not a member of this class.</p>;
