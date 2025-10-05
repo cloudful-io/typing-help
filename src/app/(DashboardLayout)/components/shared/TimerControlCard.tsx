@@ -78,7 +78,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
     return () => {
       if (intervalRef.current) clearTimeout(intervalRef.current);
     };
-  }, [running, timer, onSessionEnd, selectedTime]);
+  }, [running, timer, selectedTime]);
 
   const handleTimeToggle = (_e: React.MouseEvent<HTMLElement>, newTime: number | string | null) => {
     if (newTime != null) {

@@ -12,6 +12,17 @@ import { getLanguageName } from "@/utils/language";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { get } from "lodash";
 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
 const StatsPage: React.FC = () => {
   const { getPracticeSessions, clearPracticeSessions } = usePracticeSessions();
 
@@ -21,7 +32,7 @@ const StatsPage: React.FC = () => {
   });
 
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const stored = getPracticeSessions();   
@@ -35,20 +46,14 @@ const StatsPage: React.FC = () => {
       return { avgWPM: null, avgWordsTyped: 0, bestWPM: null, bestWordsTyped: 0, totalSessions: 0, totalChars: 0, correctChars: 0 };
 
     const totalWPM = sessions.reduce((sum, s) => sum + s.wpm, 0);
-
-    // Find session with best WPM
     const bestSession = sessions.reduce((best, s) =>
       s.wpm > best.wpm ? s : best,
       sessions[0]
     );
-    
     const lastPractice = new Date(
       Math.max(...sessions.map((s) => new Date(s.date).getTime()))
     );
-
     const avgWordsTyped = sessions.reduce((sum, s) => sum + s.wordsTyped, 0) / sessions.length;
-
-    // Summing total and correct characters
     const totalChars = sessions.reduce((sum, s) => sum + s.totalChars, 0);
     const correctChars = sessions.reduce((sum, s) => sum + s.correctChars, 0);
     
@@ -64,6 +69,15 @@ const StatsPage: React.FC = () => {
     };
   }, [sessions]);
 
+  // Chart data — one point per session
+  const chartData = useMemo(() => {
+    return sessions.map((s, index) => ({
+      sessionNumber: index + 1,
+      date: new Date(s.date).toLocaleString(),
+      wpm: s.wpm,
+      accuracy: Math.round((s.correctChars / s.totalChars) * 100),
+    }));
+  }, [sessions]);
 
   // DataGrid columns
   const columns: GridColDef<PracticeSession>[] = useMemo(() => [
@@ -71,52 +85,43 @@ const StatsPage: React.FC = () => {
       field: 'date',
       headerName: "Date",
       valueGetter: (value) => {
-        if (!value) {
-          return value;
-        }
-        // Convert the decimal value to a percentage
+        if (!value) return value;
         return new Date(value).toLocaleDateString();
       },
     },
     {
       field: 'language',
       headerName: "Language",
-      valueGetter: (value) => {
-        if (!value) {
-          return value;
-        }
-        // Convert the decimal value to a percentage
-        return getLanguageName(value);
-      },
+      valueGetter: (value) => value ? getLanguageName(value) : value,
     },
     { field: "wpm", headerName: "WPM", type: "number", flex: 1 },
     {
-        field: 'totalChars', headerName: "Accuracy (%)", flex: 1,
-        valueGetter: (value, row) => {
+      field: 'totalChars',
+      headerName: "Accuracy (%)",
+      flex: 1,
+      valueGetter: (value, row) => {
         if (!row.totalChars || !row.correctChars || row.totalChars === 0) {
-            return 0;
+          return 0;
         }
-        return Math.round(row.correctChars / row.totalChars * 100);
-        },
+        return Math.round((row.correctChars / row.totalChars) * 100);
+      },
     },
     { field: "duration", headerName: "Duration (s)", type: "number", flex: 1 },
-  ], []); // Memoize columns to prevent re-creation
+  ], []);
 
-  // Show a loading indicator until data is ready
   if (loading) {
     return <Box sx={{ p: 3 }}>Loading sessions...</Box>;
   }
 
   const handleClearSessions = () => {
     clearPracticeSessions();
-
-    // Clear React state
     setSessions([]);
   };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
       <Typography variant="h3">Typing Practice Stats</Typography>
+
       {/* Summary Cards */}
       <Grid container spacing={2} alignItems="stretch">
         <Grid size={{xs: 6, md: 3}} sx={{ display: "flex", flex: 1 }}>
@@ -130,27 +135,48 @@ const StatsPage: React.FC = () => {
         </Grid>
         <Grid size={{xs: 6, md: 3}} sx={{ display: "flex", flex: 1 }}>
           <WPMCard title="Best WPM" wpm={summary.bestWPM} wordsTyped={summary.bestWordsTyped} language=""/>
-        </Grid>
-      </Grid>
+        </Grid>     </Grid>
+
+      {/* Line Chart */}
+      <Paper sx={{ p: 2, height: 350 }}>
+        <Typography variant="h6" mb={2}>Performance Over Sessions</Typography>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="sessionNumber" label={{ value: "Session", position: "insideBottomRight", offset: -5 }} />
+            <YAxis />
+            <Tooltip
+              formatter={(value, name) => [value, name]}
+              labelFormatter={(label) => {
+                const session = chartData.find(c => c.sessionNumber === label);
+                return session ? session.date : label;
+              }}
+            />
+            <Legend />
+            <Line type="monotone" dataKey="wpm" stroke="#1976d2" name="WPM" />
+            <Line type="monotone" dataKey="accuracy" stroke="#2e7d32" name="Accuracy (%)" />
+          </LineChart>
+        </ResponsiveContainer>
+      </Paper>
+
       {/* DataGrid for sessions */}
       <Paper sx={{ p: 2, height: 400 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h6" color="text.primary">
-          All Sessions
-        </Typography>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={handleClearSessions}
-          startIcon={<DeleteIcon/>}
-        >
-          Clear All
-        </Button>
+          <Typography variant="h6" color="text.primary">
+            All Sessions
+          </Typography>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleClearSessions}
+            startIcon={<DeleteIcon/>}
+          >
+            Clear All
+          </Button>
         </Box>
         <DataGrid
           rows={sessions}
           columns={columns}
-          //getRowId={(row) => row.id}
           onPaginationModelChange={setPaginationModel}
           pageSizeOptions={[10, 25, 50]}
           disableRowSelectionOnClick
