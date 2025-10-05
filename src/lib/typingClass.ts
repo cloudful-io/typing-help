@@ -1,7 +1,7 @@
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 
 export async function generateUniqueClassCode(length = 6, maxRetries = 5): Promise<string> {
-  const supabase = createClient();
+  //const supabase = createClient();
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz23456789";
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -26,7 +26,6 @@ export async function generateUniqueClassCode(length = 6, maxRetries = 5): Promi
 }
 
 export async function getTypingClassByCode(code: string) {
-  const supabase = createClient();
 
   const { data, error } = await supabase
     .from("typing_classes")
@@ -47,7 +46,6 @@ export async function getTypingClassByCode(code: string) {
 }
 
 export async function getTypingClassById(classId: string) {
-  const supabase = createClient();
 
   const { data: classData, error: classError } = await supabase
     .from('typing_classes')
@@ -70,7 +68,7 @@ export async function getTypingClassById(classId: string) {
 }
 
 export async function getTypingClassesForTeacher(teacherId: string) {
-  const supabase = createClient();
+  //const supabase = createClient();
   const { data, error } = await supabase
     .from("typing_classes")
     .select("*")
@@ -85,7 +83,6 @@ export async function getTypingClassesForTeacher(teacherId: string) {
 }
 
 export async function createTypingClass(teacherId: string, title: string) {
-  const supabase = createClient();
   
   const code = await generateUniqueClassCode();
 
@@ -100,7 +97,6 @@ export async function createTypingClass(teacherId: string, title: string) {
 }
 
 export async function joinTypingClass(studentId: string, classId: string) {
-  const supabase = createClient();
   
   const { data, error } = await supabase
     .from("student_classes")
@@ -113,7 +109,6 @@ export async function joinTypingClass(studentId: string, classId: string) {
 }
 
 export async function getTypingClassesForStudent(studentId: string) {
-  const supabase = createClient();
 
   const { data, error } = await supabase
     .from("student_classes")
@@ -130,8 +125,6 @@ export async function getTypingClassesForStudent(studentId: string) {
 }
 
 export async function isMember(userId: string, classId: string) {
-  const supabase = createClient();
-
   // Check if the user is the teacher
   const { data: teacherData, error: teacherError } = await supabase
     .from("typing_classes")
@@ -167,9 +160,9 @@ export async function isMember(userId: string, classId: string) {
 }
 
 export async function getStudentsForClass(classId: string) {
-  const supabase = createClient();
+  //const supabase = createClient();
 
-  // 1️⃣ Fetch student IDs
+  // Fetch student IDs
   const { data: studentRows, error: studentError } = await supabase
     .from('student_classes')
     .select('student_id')
@@ -184,7 +177,7 @@ export async function getStudentsForClass(classId: string) {
 
   if (studentIds.length === 0) return [];
 
-  // 2️⃣ Fetch user info
+  // Fetch user info
   const { data: usersData, error: usersError } = await supabase
     .from('users') // or 'profiles' if you use auth.users + profiles
     .select('id, full_name, email')
