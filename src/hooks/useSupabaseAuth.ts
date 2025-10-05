@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createClient } from '@/utils/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { useSearchParams } from "next/navigation";
 import { useUserRoles } from "@/contexts/UserRolesContext";
@@ -25,7 +25,7 @@ type Provider =
 export function useSupabaseAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  //const supabase = createClient();
   const router = useRouter();
   const { setRoles } = useUserRoles(); // <-- access context
   const { setMode } = useMode();
@@ -50,7 +50,7 @@ export function useSupabaseAuth() {
     });
 
     return () => listener.subscription.unsubscribe();
-  }, []);
+  }, [setRoles]);
 
   const signInWithProvider = (provider: Provider) =>
     supabase.auth.signInWithOAuth({

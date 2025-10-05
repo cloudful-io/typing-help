@@ -10,6 +10,7 @@ import WPMCard from "./WPMCard";
 import { usePracticeSessions, PracticeSession } from "@/hooks/usePracticeSessions";
 import { getLanguageName } from "@/utils/language";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { get } from "lodash";
 
 const StatsPage: React.FC = () => {
   const { getPracticeSessions, clearPracticeSessions } = usePracticeSessions();

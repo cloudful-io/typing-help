@@ -55,7 +55,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
       setSelectedTime(fallback);
       onDurationChange?.(fallback);
     }
-  }, [presetTimes]);
+  }, [presetTimes, onDurationChange, selectedTime]);
 
   // Update timer when selectedTime changes
   useEffect(() => {
@@ -78,7 +78,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
     return () => {
       if (intervalRef.current) clearTimeout(intervalRef.current);
     };
-  }, [running, timer]);
+  }, [running, timer, onSessionEnd, selectedTime]);
 
   const handleTimeToggle = (_e: React.MouseEvent<HTMLElement>, newTime: number | string | null) => {
     if (newTime != null) {
