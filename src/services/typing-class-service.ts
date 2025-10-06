@@ -14,6 +14,17 @@ type TypingClassRow = Database["public"]["Tables"]["typing_classes"]["Row"];
 type UserRow = Database["public"]["Tables"]["users"]["Row"];
 type StudentClassRow = Database["public"]["Tables"]["student_classes"]["Row"];
 
+
+const DEFAULT_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz23456789";
+
+export function generateCode(length = 6, chars = DEFAULT_CHARS) {
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
 export async function generateUniqueClassCode(
   length = 6,
   maxAttempts = 10,
@@ -45,19 +56,15 @@ export const TypingClassService = {
     const maxCreateAttempts = 6;
 
     for (let attempt = 0; attempt < maxCreateAttempts; attempt++) {
-      const code = generateCode(codeLength);
+      const code = generateUniqueClassCode(codeLength);
 
       try {
-        const { data, error } = await supabase
-          .from("typing_classes")
-          .insert([{ teacher_id: teacherId, title, code }])
-          .select()
-          .maybeSingle();
+        const data = await insertSingle<TypingClassRow>(
+          supabase.from("typing_classes"),
+          [{ teacher_id: teacherId, title, code }]
+        );
 
-        if (error) throw error;
-        if (!data) throw new Error("Insert returned no data");
-
-        return data as TypingClassRow;
+        return data;
       } catch (err: any) {
         const isUniqueViolation =
           err?.code === "23505" ||
@@ -74,8 +81,9 @@ export const TypingClassService = {
       }
     }
 
-    throw new Error("Failed to create class after multiple attempts due to code collisions");
+    throw new Error("Failed to generate a unique class code after multiple attempts");
   },
+
 
   async getTypingClassByCode(code: string) {
     return await selectMaybeSingle<TypingClassRow>(
@@ -84,23 +92,27 @@ export const TypingClassService = {
   },
 
   async getTypingClassById(classId: string) {
-    const { data, error } = await supabase
-      .from("typing_classes")
-      .select("*, teacher:users!typing_classes_teacher_id_fkey(full_name)")
-      .eq("id", classId)
-      .maybeSingle();
+    const { data: classData, error: classError } = await supabase
+      .from('typing_classes')
+      .select('*')
+      .eq('id', classId)
+      .single();
 
-    if (error) throw wrapError("getTypingClassById failed", error);
-    if (!data) return null;
+    if (!classData) return null;
 
-    const teacherName = (data as any).teacher?.full_name ?? "Unknown";
-    const { teacher, ...classData } = data as any;
+    // Get teacher name
+    const { data: teacherData } = await supabase
+      .from('users') 
+      .select('full_name')
+      .eq('id', classData.teacher_id)
+      .single();
 
     return {
-      ...(classData as TypingClassRow),
-      teacherName,
+      ...classData,
+      teacherName: teacherData?.full_name || 'Unknown',
     };
   },
+
 
   async getTypingClassesForTeacher(teacherId: string) {
     try {
@@ -188,13 +200,3 @@ export const TypingClassService = {
 
 export default TypingClassService;
 
-
-const DEFAULT_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz23456789";
-
-export function generateCode(length = 6, chars = DEFAULT_CHARS) {
-  let code = "";
-  for (let i = 0; i < length; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}

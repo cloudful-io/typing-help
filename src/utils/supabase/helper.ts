@@ -28,14 +28,18 @@ export async function select<T = any>(query: any): Promise<T[]> {
     return data ?? [];
 }
 
-export async function insertSingle<T = any>(query: any): Promise<T> {
-    const { data, error } = await query.select().maybeSingle();
+export async function insertSingle<T = any>(
+  table: any,
+  values: any[]
+): Promise<T> {
+  const { data, error } = await table.insert(values).select().maybeSingle();
 
-    if (error) throw wrapError("Database insert error", error);
-    if (!data) throw new ServiceError("Insert returned no data");
+  if (error) throw wrapError("Database insert error", error);
+  if (!data) throw new ServiceError("Insert returned no data");
 
-    return data as T;
+  return data as T;
 }
+
 
 export function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
