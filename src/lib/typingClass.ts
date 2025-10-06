@@ -1,7 +1,7 @@
 import { supabase } from "@/utils/supabase/client";
 
 export async function generateUniqueClassCode(length = 6, maxRetries = 5): Promise<string> {
-  //const supabase = createClient();
+
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz23456789";
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -25,6 +25,7 @@ export async function generateUniqueClassCode(length = 6, maxRetries = 5): Promi
   throw new Error("Failed to generate a unique class code after multiple attempts");
 }
 
+// Get class by code
 export async function getTypingClassByCode(code: string) {
 
   const { data, error } = await supabase
@@ -45,6 +46,7 @@ export async function getTypingClassByCode(code: string) {
   return data; // will be a single object or null
 }
 
+//  Get class by ID, including teacher name
 export async function getTypingClassById(classId: string) {
 
   const { data: classData, error: classError } = await supabase
@@ -55,8 +57,9 @@ export async function getTypingClassById(classId: string) {
 
   if (!classData) return null;
 
+  // Get teacher name
   const { data: teacherData } = await supabase
-    .from('users') // or 'users' if you store teacher names there
+    .from('users') 
     .select('full_name')
     .eq('id', classData.teacher_id)
     .single();
@@ -67,8 +70,9 @@ export async function getTypingClassById(classId: string) {
   };
 }
 
+// Get list of classes for a teacher
 export async function getTypingClassesForTeacher(teacherId: string) {
-  //const supabase = createClient();
+
   const { data, error } = await supabase
     .from("typing_classes")
     .select("*")
@@ -82,32 +86,7 @@ export async function getTypingClassesForTeacher(teacherId: string) {
   return data || [];
 }
 
-export async function createTypingClass(teacherId: string, title: string) {
-  
-  const code = await generateUniqueClassCode();
-
-  const { data, error } = await supabase
-    .from("typing_classes")
-    .insert([{ teacher_id: teacherId, title, code }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function joinTypingClass(studentId: string, classId: string) {
-  
-  const { data, error } = await supabase
-    .from("student_classes")
-    .insert([{ student_id: studentId, class_id: classId }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
+// Get list of classes for a student
 export async function getTypingClassesForStudent(studentId: string) {
 
   const { data, error } = await supabase
@@ -124,6 +103,35 @@ export async function getTypingClassesForStudent(studentId: string) {
   return (data || []).map((row: any) => row.typing_classes);
 }
 
+// Create a new class as teacher
+export async function createTypingClass(teacherId: string, title: string) {
+  
+  const code = await generateUniqueClassCode();
+
+  const { data, error } = await supabase
+    .from("typing_classes")
+    .insert([{ teacher_id: teacherId, title, code }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Join a class as student
+export async function joinTypingClass(studentId: string, classId: string) {
+  
+  const { data, error } = await supabase
+    .from("student_classes")
+    .insert([{ student_id: studentId, class_id: classId }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Check if user is member (teacher or student) of the class
 export async function isMember(userId: string, classId: string) {
   // Check if the user is the teacher
   const { data: teacherData, error: teacherError } = await supabase
@@ -159,8 +167,8 @@ export async function isMember(userId: string, classId: string) {
   return false;
 }
 
+// Get list of students in a class
 export async function getStudentsForClass(classId: string) {
-  //const supabase = createClient();
 
   // Fetch student IDs
   const { data: studentRows, error: studentError } = await supabase
@@ -179,7 +187,7 @@ export async function getStudentsForClass(classId: string) {
 
   // Fetch user info
   const { data: usersData, error: usersError } = await supabase
-    .from('users') // or 'profiles' if you use auth.users + profiles
+    .from('users') 
     .select('id, full_name, email')
     .in('id', studentIds);
 
