@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getStudentsForClass } from '@/lib/typingClass';
+import TypingClassService from "@/services/typing-class-service";
+
 import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 
 interface StudentsListProps {
@@ -9,12 +10,12 @@ interface StudentsListProps {
 }
 
 export default function StudentsList({ classId }: StudentsListProps) {
-  const [students, setStudents] = useState<{ id: string; full_name: string }[]>([]);
+  const [students, setStudents] = useState<{ id: string; full_name: string | null; email: string; onboarding_complete: boolean; created_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStudents() {
-      const data = await getStudentsForClass(classId);
+      const data = await TypingClassService.getStudentsForClass(classId);
       setStudents(data);
       setLoading(false);
     }

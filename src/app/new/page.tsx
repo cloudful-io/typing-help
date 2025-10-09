@@ -48,7 +48,6 @@ export default function OnboardingPage() {
   // Step 2: Profile
   const [selectedRole, setSelectedRole] = useState<"teacher" | "student" | null>(null);
 
-
   // Step navigation
   const [activeStep, setActiveStep] = useState(0);
 
@@ -61,11 +60,17 @@ export default function OnboardingPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const { user } = useSupabaseAuth();
   
+  useEffect(() => {
+    if (user === null) {
+      router.push("/?m=practice");
+    }
+  }, [user, router]);
+  
   const handleSave = async () => {
     // Anonymous users
     if (!user) {
-        // Redirect user to classroom mode
-        router.push("/?m=classroom");
+        // Redirect user to practice mode
+        router.push("/?m=practice");
         return;
     }
     else if (!selectedRole) {
@@ -109,8 +114,8 @@ export default function OnboardingPage() {
         setRoles([selectedRole]);
         setMode("classroom");
 
-        // Redirect user to dashboard
-        router.push("/");
+        // Redirect user to Classroom mode
+        setTimeout(() => router.push("/m=classroom"), 0);
     } catch (error) {
         setErrorMsg("Failed to add role to user. Please try again.");
     } finally {
@@ -118,6 +123,14 @@ export default function OnboardingPage() {
     }
   };
   
+  if (user === undefined) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box
       display="flex"

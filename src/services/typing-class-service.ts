@@ -56,12 +56,13 @@ export const TypingClassService = {
     const maxCreateAttempts = 6;
 
     for (let attempt = 0; attempt < maxCreateAttempts; attempt++) {
-      const code = generateUniqueClassCode(codeLength);
+      const code = await generateUniqueClassCode(codeLength);
 
       try {
         const data = await insertSingle<TypingClassRow>(
-          supabase.from("typing_classes"),
-          [{ teacher_id: teacherId, title, code }]
+          supabase
+            .from("typing_classes"),
+            [{ teacher_id: teacherId, title, code }]
         );
 
         return data;
@@ -87,7 +88,11 @@ export const TypingClassService = {
 
   async getTypingClassByCode(code: string) {
     return await selectMaybeSingle<TypingClassRow>(
-      supabase.from("typing_classes").select("*").eq("code", code)
+      supabase
+        .from("typing_classes")
+        .select("*")
+        .eq("code", code)
+        .maybeSingle()
     );
   },
 
@@ -117,7 +122,11 @@ export const TypingClassService = {
   async getTypingClassesForTeacher(teacherId: string) {
     try {
       return await select<TypingClassRow>(
-        supabase.from("typing_classes").select("*").eq("teacher_id", teacherId)
+        supabase
+        .from("typing_classes")
+        .select("*")
+        .eq("teacher_id", teacherId)
+        .order("title")
       );
     } catch {
       return [];
@@ -131,6 +140,7 @@ export const TypingClassService = {
           .from("student_classes")
           .select("typing_classes(*)")
           .eq("student_id", studentId)
+          .order("typing_classes(title)")
       );
 
       return rows.map((r: any) => r.typing_classes) as TypingClassRow[];
@@ -139,15 +149,12 @@ export const TypingClassService = {
     }
   },
 
-  async joinTypingClass(studentId: string, classId: string) {
-    const { data, error } = await supabase
-      .from("student_classes")
-      .insert([{ student_id: studentId, class_id: classId }])
-      .select()
-      .maybeSingle();
+  async joinTypingClass(studentId: string, classId: number) {
 
-    if (error) throw wrapError("joinTypingClass failed", error);
-    return data as StudentClassRow;
+    return await insertSingle<StudentClassRow>(
+      supabase.from("student_classes"),
+      [{ student_id: studentId, class_id: classId }]
+    );
   },
 
   async isMember(userId: string, classId: string): Promise<boolean> {
@@ -165,27 +172,40 @@ export const TypingClassService = {
       .eq("student_id", userId)
       .maybeSingle();
 
-    const [teacherRes, studentRes] = await Promise.all([teacherQuery, studentQuery]);
-    return Boolean(teacherRes?.data || studentRes?.data);
+    const [teacher, student] = await Promise.all([
+      selectMaybeSingle<{ id: string }>(teacherQuery),
+      selectMaybeSingle<{ id: string }>(studentQuery),
+    ]);
+
+    return Boolean(teacher || student);
   },
 
   async getStudentsForClass(classId: string) {
     try {
-      const rows = await select<UserRow>(
-        supabase
-          .from("student_classes")
-          .select("users(id, full_name, email)")
-          .eq("class_id", classId)
+      // Step 1: get all student_ids for the given class
+      const studentClassRows = await select<{ student_id: string }>(
+        supabase.from("student_classes").select("student_id").eq("class_id", classId)
       );
 
-      return rows.map((r: any) => r.users) as UserRow[];
-    } catch {
+      if (!studentClassRows.length) return [];
+
+      const studentIds = studentClassRows.map((r) => r.student_id);
+
+      // Step 2: get user details for those student_ids
+      const users = await select<UserRow>(
+        supabase.from("users").select("id, full_name, email").in("id", studentIds)
+      );
+
+      return users;
+    } catch (error) {
+      console.error("getStudentsForClass failed:", error);
       return [];
     }
   },
 
+
   async removeStudentFromClass(classId: string, studentId: string) {
-    const { data, error } = await supabase
+    const query = supabase
       .from("student_classes")
       .delete()
       .eq("class_id", classId)
@@ -193,8 +213,7 @@ export const TypingClassService = {
       .select()
       .maybeSingle();
 
-    if (error) throw wrapError("removeStudentFromClass failed", error);
-    return data as StudentClassRow | null;
+    return await selectMaybeSingle<StudentClassRow>(query);
   },
 };
 

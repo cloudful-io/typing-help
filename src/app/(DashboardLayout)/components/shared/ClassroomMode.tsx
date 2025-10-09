@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useUserRoles } from "@/contexts/UserRolesContext";
-import { getTypingClassesForStudent, getTypingClassesForTeacher } from "@/lib/typingClass";
+import TypingClassService from "@/services/typing-class-service";
 
 interface TypingClass {
   id: number;
@@ -29,9 +29,9 @@ export default function ClassroomMode() {
     async function checkClasses() {
       let data: TypingClass[] = [];
       if (roles.includes("teacher")) {
-        data = await getTypingClassesForTeacher(user!.id);
+        data = await TypingClassService.getTypingClassesForTeacher(user!.id);
       } else if (roles.includes("student")) {
-        data = await getTypingClassesForStudent(user!.id);
+        data = await TypingClassService.getTypingClassesForStudent(user!.id);
       }
 
       if (data.length > 0) {

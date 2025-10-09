@@ -12,11 +12,11 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { getTypingClassByCode, joinTypingClass } from '@/lib/typingClass';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
 import InputIcon from '@mui/icons-material/Input';
+import TypingClassService from "@/services/typing-class-service";
 
 const JoinTypingClass: React.FC = () => {
   const { user } = useSupabaseAuth();
@@ -27,7 +27,6 @@ const JoinTypingClass: React.FC = () => {
   const [classCode, setClassCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const isStudent = roles.includes('student');
   if (!isStudent) {
@@ -41,27 +40,26 @@ const JoinTypingClass: React.FC = () => {
 
     setLoading(true);
     setError(null);
-    setSuccess(false);
 
     try {
-      const joinClass = await getTypingClassByCode(classCode);
+      // Find class by code
+      const typingClass = await TypingClassService.getTypingClassByCode(classCode);
 
-      if (!joinClass) {
-        console.error("Unable to find class");
-        setError('Unable to find class');
+      if (!typingClass) {
+        setError('No class found with that code.');
+        setLoading(false);
+        return;
       }
-      else {
-        const data = await joinTypingClass(user.id, joinClass.id);
-        setClassCode(joinClass.title);
-      }
-      
-      setClassCode(''); // reset form
 
-      setSuccess(true);
-      setClassCode('');
+      // Join the class
+      await TypingClassService.joinTypingClass(user.id, typingClass.id);
+
+      // Close dialog and redirect
+      setOpen(false);
+      router.push(`/class/${typingClass.id}`); 
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to join class');
+      setError(err.message || 'Failed to join class.');
     } finally {
       setLoading(false);
     }
@@ -90,21 +88,17 @@ const JoinTypingClass: React.FC = () => {
               required
               fullWidth
               margin="dense"
+              disabled={loading}
             />
-
-            {success && (
-              <Typography color="success.main" sx={{ mt: 2 }}>
-                Successfully joined the class!
-              </Typography>
-            )}
-
             {error && (
               <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>
             )}
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => setOpen(false)} disabled={loading}>
+              Cancel
+            </Button>
             <Button type="submit" variant="contained" disabled={loading}>
               {loading ? <CircularProgress size={24} /> : 'Join'}
             </Button>

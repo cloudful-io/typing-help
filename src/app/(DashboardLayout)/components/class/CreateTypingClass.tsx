@@ -12,11 +12,11 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { createTypingClass } from '@/lib/typingClass';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
+import TypingClassService from "@/services/typing-class-service";
 
 const CreateTypingClass: React.FC = () => {
   const { user } = useSupabaseAuth();
@@ -27,7 +27,6 @@ const CreateTypingClass: React.FC = () => {
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successCode, setSuccessCode] = useState<string | null>(null);
 
   const isTeacher = roles.includes('teacher');
   if (!isTeacher) {
@@ -41,12 +40,13 @@ const CreateTypingClass: React.FC = () => {
 
     setLoading(true);
     setError(null);
-    setSuccessCode(null);
 
     try {
-      const newClass = await createTypingClass(user.id, title);
-      setSuccessCode(newClass.code);
-      setTitle('');
+      const newClass = await TypingClassService.createTypingClass(user.id, title);
+
+      // Close dialog first for smoother experience
+      setOpen(false); 
+      router.push(`/class/${newClass.id}`); 
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Failed to create class');
@@ -79,13 +79,6 @@ const CreateTypingClass: React.FC = () => {
               fullWidth
               margin="dense"
             />
-
-            {successCode && (
-              <Typography color="success.main" sx={{ mt: 2 }}>
-                Class created successfully! Code: <strong>{successCode}</strong>
-              </Typography>
-            )}
-
             {error && (
               <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>
             )}
