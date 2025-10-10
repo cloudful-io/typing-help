@@ -1,15 +1,53 @@
 "use client";
 
 import { useMode } from "@/contexts/ModeContext";
-import { useEffect } from "react"; 
+import { useEffect, useState } from "react"; 
+import { useRouter } from 'next/navigation';
 import { useSearchParams } from "next/navigation";
 import PracticeMode from "./PracticeMode";
 import ClassroomMode from "./ClassroomMode";
 import GameMode from "./GameMode";
+import { User } from '@supabase/supabase-js';
+import UserService from "@/services/user-service";
+import { Box, CircularProgress } from "@mui/material";
 
-export default function ModeContent() {
+interface ModeContentProps {
+  user: User;
+}
+
+export default function ModeContent({ user }: ModeContentProps) {
+
   const searchParams = useSearchParams();
   const { mode, setMode } = useMode();
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function checkOnboarding() {
+      try {
+        // Create or update user in DB
+        const userObject = await UserService.getOrCreateOrUpdate({
+          id: user.id,
+          email: user.email!,
+        });
+        // Redirect if not onboarded
+        if (!userObject.onboarding_complete) {
+          router.replace('/new');
+        }
+      } catch (error) {
+        console.error('Error checking onboarding:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (user !== null) {
+      checkOnboarding();
+    }
+    else {
+      setLoading(false);
+    }
+  }, [user, router]);
 
   useEffect(() => {
     const m = searchParams.get("m"); 
@@ -21,6 +59,21 @@ export default function ModeContent() {
     } 
   }, [searchParams, setMode]);
 
+  if (loading) {
+    // Centered spinner
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "60vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
       {mode === "practice" && 

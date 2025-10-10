@@ -13,7 +13,7 @@ export function wrapError(context: string, error: unknown) {
 }
 
 export async function selectMaybeSingle<T = any>(query: any): Promise<T | null> {
-    const { data, error } = await query;
+    const { data, error } = await query.maybeSingle();
 
         if (error) throw wrapError("Database select error", error);
 
@@ -40,6 +40,21 @@ export async function insertSingle<T = any>(
   return data as T;
 }
 
+export async function upsertSingle<T>(
+  query: { upsert: (payload: Partial<T>, options?: { onConflict?: string }) => any },
+  payload: Partial<T>,
+  options: { onConflict?: string } = {}
+): Promise<T> {
+  const { data, error } = await query
+    .upsert(payload, options)
+    .select()
+    .maybeSingle();
+
+  if (error) throw wrapError("upsertSingle failed", error);
+  if (!data) throw new Error("upsertSingle returned no data");
+
+  return data as T;
+}
 
 export function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));

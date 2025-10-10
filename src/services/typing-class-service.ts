@@ -11,7 +11,7 @@ import {
 import { Database } from "@/types/database.types";
 
 type TypingClassRow = Database["public"]["Tables"]["typing_classes"]["Row"];
-type UserRow = Database["public"]["Tables"]["users"]["Row"];
+type UserProfileRow = Database["public"]["Tables"]["user_profiles"]["Row"];
 type StudentClassRow = Database["public"]["Tables"]["student_classes"]["Row"];
 
 
@@ -92,7 +92,6 @@ export const TypingClassService = {
         .from("typing_classes")
         .select("*")
         .eq("code", code)
-        .maybeSingle()
     );
   },
 
@@ -107,14 +106,14 @@ export const TypingClassService = {
 
     // Get teacher name
     const { data: teacherData } = await supabase
-      .from('users') 
-      .select('full_name')
+      .from('user_profiles') 
+      .select('display_name')
       .eq('id', classData.teacher_id)
       .single();
 
     return {
       ...classData,
-      teacherName: teacherData?.full_name || 'Unknown',
+      teacherName: teacherData?.display_name || 'Unknown',
     };
   },
 
@@ -162,15 +161,13 @@ export const TypingClassService = {
       .from("typing_classes")
       .select("id")
       .eq("id", classId)
-      .eq("teacher_id", userId)
-      .maybeSingle();
+      .eq("teacher_id", userId);
 
     const studentQuery = supabase
       .from("student_classes")
       .select("id")
       .eq("class_id", classId)
-      .eq("student_id", userId)
-      .maybeSingle();
+      .eq("student_id", userId);
 
     const [teacher, student] = await Promise.all([
       selectMaybeSingle<{ id: string }>(teacherQuery),
@@ -191,9 +188,10 @@ export const TypingClassService = {
 
       const studentIds = studentClassRows.map((r) => r.student_id);
 
+      //console.log(studentIds);
       // Step 2: get user details for those student_ids
-      const users = await select<UserRow>(
-        supabase.from("users").select("id, full_name, email").in("id", studentIds)
+      const users = await select<UserProfileRow>(
+        supabase.from("user_profiles").select("id, display_name").in("id", studentIds)
       );
 
       return users;

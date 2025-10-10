@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useMode } from "@/contexts/ModeContext";
 import { useUserRoles } from "@/contexts/UserRolesContext";
+import UserService from "@/services/user-service";
+import UserRoleService from "@/services/user-role-service";
+import UserProfileService from "@/services/user-profile-service";
 
 import {
   Box,
@@ -23,6 +26,7 @@ import {
   Stepper,
   Typography,
   CircularProgress,
+  TextField,
   Snackbar,
   Alert
 } from "@mui/material";
@@ -34,6 +38,7 @@ const steps = ["Agreements", "Profile"];
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { user } = useSupabaseAuth();
   const { setMode } = useMode();
   const { setRoles } = useUserRoles();
   
@@ -46,25 +51,19 @@ export default function OnboardingPage() {
   const [showPrivacy, setShowPrivacy] = useState(false);
 
   // Step 2: Profile
+  const [displayName, setDisplayName] = useState("");
   const [selectedRole, setSelectedRole] = useState<"teacher" | "student" | null>(null);
 
   // Step navigation
   const [activeStep, setActiveStep] = useState(0);
 
   const canContinueStep1 = agreeTerms && agreePrivacy;
-  const canContinueStep2 = selectedRole;
+  const canContinueStep2 = selectedRole && displayName;
 
   const handleNext = () => setActiveStep((prev) => prev + 1);
   const handleBack = () => setActiveStep((prev) => prev - 1);
 
   const [errorMsg, setErrorMsg] = useState("");
-  const { user } = useSupabaseAuth();
-  
-  useEffect(() => {
-    if (user === null) {
-      router.push("/?m=practice");
-    }
-  }, [user, router]);
   
   const handleSave = async () => {
     // Anonymous users
@@ -73,6 +72,10 @@ export default function OnboardingPage() {
         router.push("/?m=practice");
         return;
     }
+    else if (!displayName) {
+      setErrorMsg("Please provide a display name.");
+      return;
+    }
     else if (!selectedRole) {
       setErrorMsg("Please select a role before saving.");
       return;
@@ -80,48 +83,36 @@ export default function OnboardingPage() {
 
     setIsSaving(true);
     try {
-      const userRoleRes = await fetch("/api/userRole", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            roleName: selectedRole
-          }),
-        });
+      const userObject = await UserService.getOrCreateOrUpdate({
+        id: user.id,
+        email: user.email!,
+        onboardingComplete: true,
+      });
 
-        const userRole = await userRoleRes.json();
+      if (!userObject?.id) throw new Error("Failed to get user ID from database");
 
-        if (!userRole) {
-          setErrorMsg("Failed to add role to user. Please try again.");
-          return;
-        }
+      await UserProfileService.getOrCreateOrUpdate({
+        id: user.id,
+        display_name: displayName,
+      });
+      await UserRoleService.addUserRoleByName({ userId: user.id, roleName: selectedRole });
 
-        const userRes = await fetch("/api/user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: user.id,
-            email: user.email!,
-            fullName: user.user_metadata?.full_name,
-            onboardingComplete: true,
-          }),
-        });
-        const userObject = await userRes.json();
-
-        if (!userObject?.id) {
-          throw new Error("Failed to get user ID from database");
-        }
-        setRoles([selectedRole]);
-        setMode("classroom");
+      setRoles([selectedRole]);
+      setMode("classroom");
 
         // Redirect user to Classroom mode
-        setTimeout(() => router.push("/m=classroom"), 0);
+        setTimeout(() => router.push("/?m=classroom"), 0);
     } catch (error) {
-        setErrorMsg("Failed to add role to user. Please try again.");
+        setErrorMsg("Failed to save profile. Please try again.");
     } finally {
         setIsSaving(false);
     }
   };
+  useEffect(() => {
+    if (user != null) {
+      setDisplayName(user.user_metadata?.full_name);
+    }
+  }, [user]);
   
   if (user === undefined) {
     return (
@@ -213,60 +204,71 @@ export default function OnboardingPage() {
 
         {activeStep === 1 && (
           <>
-            <Typography variant="h5" gutterBottom>
-              Select Your Role
-            </Typography>
+            <Box display="flex" flexDirection="column" gap={2} mt={2}>
+              <TextField
+                label="Display Name"
+                value={displayName}
+                disabled={isSaving}
+                onChange={(e) => setDisplayName(e.target.value)}
+                fullWidth
+              />
+            </Box>
+            <Box display="flex" flexDirection="column" gap={2} mt={2}>
+              <Typography variant="h5" gutterBottom>
+                Select Your Role
+              </Typography>
 
-            <Box display="flex" justifyContent="center" gap={3}>
-              {/* Teacher Card */}
-              <Paper
-                elevation={selectedRole === "teacher" ? 6 : 3}
-                sx={{
-                  p: 4,
-                  textAlign: "center",
-                  cursor: "pointer",
-                  borderRadius: 3,
-                  width: 200,
-                  border: selectedRole === "teacher" ? "3px solid" : "1px solid",
-                  borderColor: selectedRole === "teacher" ? "primary.main" : "divider",
-                  "&:hover": { boxShadow: 6, transform: "scale(1.03)" },
-                  transition: "all 0.2s ease-in-out",
-                }}
-                onClick={() => setSelectedRole("teacher")}
-              >
-                <Box mb={2}>
-                  <Image src="/images/icons/teacher.png" alt="Teacher" height={64} width={64} />
-                </Box>
-                <Typography variant="h6">Teacher</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Create classes, manage students, and track progress.
-                </Typography>
-              </Paper>
+              <Box display="flex" justifyContent="center" gap={3}>
+                {/* Teacher Card */}
+                <Paper
+                  elevation={selectedRole === "teacher" ? 6 : 3}
+                  sx={{
+                    p: 4,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    borderRadius: 3,
+                    width: 200,
+                    border: selectedRole === "teacher" ? "3px solid" : "1px solid",
+                    borderColor: selectedRole === "teacher" ? "primary.main" : "divider",
+                    "&:hover": { boxShadow: 6, transform: "scale(1.03)" },
+                    transition: "all 0.2s ease-in-out",
+                  }}
+                  onClick={() => setSelectedRole("teacher")}
+                >
+                  <Box mb={2}>
+                    <Image src="/images/icons/teacher.png" alt="Teacher" height={64} width={64} />
+                  </Box>
+                  <Typography variant="h6">Teacher</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Create classes, manage students, and track progress.
+                  </Typography>
+                </Paper>
 
-              {/* Student Card */}
-              <Paper
-                elevation={selectedRole === "student" ? 6 : 3}
-                sx={{
-                  p: 4,
-                  textAlign: "center",
-                  cursor: "pointer",
-                  borderRadius: 3,
-                  width: 200,
-                  border: selectedRole === "student" ? "3px solid" : "1px solid",
-                  borderColor: selectedRole === "student" ? "primary.main" : "divider",
-                  "&:hover": { boxShadow: 6, transform: "scale(1.03)" },
-                  transition: "all 0.2s ease-in-out",
-                }}
-                onClick={() => setSelectedRole("student")}
-              >
-                <Box mb={2}>
-                  <Image src="/images/icons/student.png" alt="Student" height={64} width={64} />
-                </Box>
-                <Typography variant="h6">Student</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Join classes, complete exercises, and improve your skills.
-                </Typography>
-              </Paper>
+                {/* Student Card */}
+                <Paper
+                  elevation={selectedRole === "student" ? 6 : 3}
+                  sx={{
+                    p: 4,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    borderRadius: 3,
+                    width: 200,
+                    border: selectedRole === "student" ? "3px solid" : "1px solid",
+                    borderColor: selectedRole === "student" ? "primary.main" : "divider",
+                    "&:hover": { boxShadow: 6, transform: "scale(1.03)" },
+                    transition: "all 0.2s ease-in-out",
+                  }}
+                  onClick={() => setSelectedRole("student")}
+                >
+                  <Box mb={2}>
+                    <Image src="/images/icons/student.png" alt="Student" height={64} width={64} />
+                  </Box>
+                  <Typography variant="h6">Student</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Join classes, complete exercises, and improve your skills.
+                  </Typography>
+                </Paper>
+              </Box>
             </Box>
             <Box mt={3} display="flex" justifyContent="space-between" gap={2}>
               <Button variant="outlined" disabled={isSaving} onClick={handleBack}>

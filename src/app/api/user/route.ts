@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOrCreateOrUpdateUser } from "@/lib/user";
+//import UserService from "@/services/user-service";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, email, fullName, onboardingComplete } = body;
+    const { id, email, displayName, onboardingComplete } = body;
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
@@ -14,18 +15,19 @@ export async function POST(req: NextRequest) {
     const userPayload: {
       id: string;
       email: string;
-      fullName: string;
+      //fullName: string;
       onboardingComplete?: boolean;
     } = {
       id,
       email,
-      fullName,
+      //fullName,
     };
 
     if (onboardingComplete !== undefined) {
       userPayload.onboardingComplete = onboardingComplete;
     }
 
+    //const user = await UserService.getOrCreateOrUpdate(userPayload);
     const user = await getOrCreateOrUpdateUser(userPayload);
     return NextResponse.json(user);
   } catch (error: any) {

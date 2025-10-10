@@ -10,7 +10,7 @@ interface StudentsListProps {
 }
 
 export default function StudentsList({ classId }: StudentsListProps) {
-  const [students, setStudents] = useState<{ id: string; full_name: string | null; email: string; onboarding_complete: boolean; created_at: string }[]>([]);
+  const [students, setStudents] = useState<{ id: string; display_name: string; }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function StudentsList({ classId }: StudentsListProps) {
     <List>
       {students.map((student) => (
         <ListItem key={student.id}>
-          <ListItemText primary={student.full_name} />
+          <ListItemText primary={student.display_name} />
         </ListItem>
       ))}
     </List>

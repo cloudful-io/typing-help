@@ -4,7 +4,6 @@ import { UUID } from 'crypto';
 type UserInput = {
   id: string;
   email: string;
-  fullName: string;
   onboardingComplete?: boolean;
 };
 
@@ -32,7 +31,6 @@ export async function getOrCreateOrUpdateUser(user: UserInput) {
   const payload: any = {
     id: user.id,
     email: user.email,
-    full_name: user.fullName,
   };
 
   if (user.onboardingComplete !== undefined) {
