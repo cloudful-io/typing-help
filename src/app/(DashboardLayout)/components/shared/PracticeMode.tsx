@@ -8,6 +8,7 @@ import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerCon
 import TimeUpModal from '@/app/(DashboardLayout)/components/shared/TimeUpModal'
 import { computeTypingResults, countWords } from "@/utils/typing";
 import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
+import { PracticeTextService } from '@/services/practice-text-service';
 
 const PracticeMode: React.FC = () => {
   type SessionState = "idle" | "running" | "paused" | "ended";
@@ -42,14 +43,11 @@ const PracticeMode: React.FC = () => {
     setCommittedTextLength(0);
   }, []);
 
-  // Fetch practice text from API
+  // Fetch practice text 
   const fetchPracticeText = useCallback(async (selectedLanguage?: string) => {
     const lang = selectedLanguage || language;
     try {
-      const res = await fetch(`/api/practice-text?language=${lang}`);
-      if (!res.ok) throw new Error("Failed to fetch practice text");
-
-      const data = await res.json();
+      const data = await PracticeTextService.getPublicPracticeText(lang);
 
       setTargetText(data.content);
       setLanguage(lang);
