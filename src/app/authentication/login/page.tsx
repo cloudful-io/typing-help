@@ -50,9 +50,10 @@ const Login2 = () => {
               <AuthLogin
                 subtext={
                   <Typography
-                    variant="subtitle1"
+                    variant="h3"
                     textAlign="center"
                     color="textSecondary"
+                    fontWeight="500"
                     mb={1}
                   >
                     Typing Help

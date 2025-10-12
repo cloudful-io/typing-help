@@ -16,6 +16,7 @@ import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
+import SchoolIcon from '@mui/icons-material/School';
 import TypingClassService from "@/services/typing-class-service";
 
 const CreateTypingClass: React.FC = () => {

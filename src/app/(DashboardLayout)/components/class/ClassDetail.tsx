@@ -12,7 +12,6 @@ import ClassHeader from './ClassHeader';
 import StudentsList from './StudentList';
 import TypingClassService from "@/services/typing-class-service";
 
-
 interface TypingClass {
   id: number;
   title: string;

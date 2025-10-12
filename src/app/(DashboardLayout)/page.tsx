@@ -3,7 +3,6 @@ import ModeContent from '@/app/(DashboardLayout)/components/shared/ModeContent';
 import { Container } from "@mui/material";
 import { createClient } from '@/utils/supabase/server'
 
-
 export default async function Dashboard() {
   const supabase = await createClient()
   const { data, error } = await supabase.auth.getUser()

@@ -8,5 +8,9 @@ interface ClassPageProps {
 export default function ClassPage({params}: {params: Promise<{ id: string }>}) {
   const { id } = use(params);
 
-  return <ClassDetail classId={id} />;
+  return (
+    <>
+      <ClassDetail classId={id} />
+    </>
+  );
 }
