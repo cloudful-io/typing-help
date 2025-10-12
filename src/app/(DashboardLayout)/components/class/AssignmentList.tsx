@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import PracticeTextService from "@/services/practice-text-service";
 import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import KeyboardIcon from '@mui/icons-material/Keyboard';
 
 interface AssignmentListProps {
   classId: string;
@@ -56,6 +57,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                 backgroundColor: 'action.hover', // MUI theme-aware hover color
               },
             }}>
+            <KeyboardIcon color="action" sx={({mr:1})}/>
             <Typography variant="subtitle1">
               Assignment #{index + 1}
             </Typography>
