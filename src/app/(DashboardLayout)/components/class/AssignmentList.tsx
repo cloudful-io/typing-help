@@ -20,6 +20,7 @@ interface Assignment {
   duration_seconds: number;
   is_public: boolean | null;
   content: string;
+  assigned_at: string | null;
   created_at: string;
 }
 
@@ -68,7 +69,10 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
             </Typography>
             <Box mt={1}>
               <Typography variant="caption" color="text.secondary">
-                Date: {(new Date(assignment.created_at)).toLocaleDateString('en-US')}
+                Date:{' '}
+                {assignment.assigned_at
+                  ? new Date(assignment.assigned_at).toLocaleDateString('en-US')
+                  : 'N/A'}
               </Typography>
             </Box>
           </AccordionDetails>

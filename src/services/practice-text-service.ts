@@ -33,7 +33,7 @@ export const PracticeTextService = {
         .from("PracticeTexts")
         .select("*")
         .eq("class_id", class_id)
-        .order("created_at")
+        .order("assigned_at")
       );
     } catch (err) {
       console.error("getPracticeTextByClass failed:", err);
