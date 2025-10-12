@@ -10,7 +10,7 @@ import {
 } from "@/utils/supabase/helper";
 import { Database } from "@/types/database.types";
 
-type PracticeTextRow = Database["public"]["Tables"]["Practice_Text"]["Row"];
+type PracticeTextRow = Database["public"]["Tables"]["PracticeTexts"]["Row"];
 
 export const PracticeTextService = {
   async getPublicPracticeText(language: string) {
@@ -25,6 +25,19 @@ export const PracticeTextService = {
     }
 
     return data?.[0] || null;
+  },
+  async getPracticeTextByClass(class_id: number) {
+    try {
+      return await select<PracticeTextRow>(
+        supabase
+        .from("PracticeTexts")
+        .select("*")
+        .eq("class_id", class_id)
+      );
+    } catch (err) {
+      console.error("getPracticeTextByClass failed:", err);
+      return [];
+    }
   },
 };
 

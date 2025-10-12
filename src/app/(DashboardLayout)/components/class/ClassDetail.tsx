@@ -10,6 +10,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import ClassHeader from './ClassHeader';
 import StudentsList from './StudentList';
+import AssignmentList from './AssignmentList';
 import TypingClassService from "@/services/typing-class-service";
 
 interface TypingClass {
@@ -73,15 +74,15 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
       <Box sx={{ width: '100%', typography: 'body1' }}>
         <TabContext value={activeTab}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="Practice" value="0" />
+            <TabList onChange={handleChange} aria-label="Class Detail">
+              <Tab label="Assignments" value="0" />
               <Tab label="Students" value="1" />
             </TabList>
           </Box>
           <TabPanel value="0">
             <Box>
               {/* Render your Practice content here */}
-              <Typography>Practice assignments will go here.</Typography>
+              <AssignmentList classId={classId}/>
             </Box>
 
           </TabPanel>

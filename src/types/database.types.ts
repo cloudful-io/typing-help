@@ -7,7 +7,7 @@ export type Database = {
       user_profiles: {Row: { id: string; display_name: string; avatar_url: string | null; bio: string | null; created_at: string; updated_at: string }}
       roles: {Row: { id: string; name: string; description: string | null }}
       user_roles: {Row: { user_id: string; role_id: string }}
-      Practice_Text: {Row: {owner_id: number | null; class_id: number | null; student_id: number | null; language: string; grade_level: number | null; duration_seconds: number; is_public: boolean | null; content: string; created_at: string}}
+      PracticeTexts: {Row: {id: number; owner_teacher_id: number | null; class_id: number | null; student_id: number | null; language: string; grade_level: number | null; duration_seconds: number; is_public: boolean | null; content: string; created_at: string}}
     }
   }
 }
