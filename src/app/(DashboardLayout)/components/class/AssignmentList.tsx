@@ -2,21 +2,29 @@
 
 import { useEffect, useState } from 'react';
 import PracticeTextService from "@/services/practice-text-service";
-
-import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface AssignmentListProps {
   classId: string;
 }
 
-export default function AssignmentList({ classId }: AssignmentListProps) {
-  const [assignments, setAssignments] = useState<{ id: number; owner_teacher_id: number | null; class_id: number | null; student_id: number | null; language: string; grade_level: number | null; duration_seconds: number; is_public: boolean | null; content: string; created_at: string }[]>([]);
-  const [loading, setLoading] = useState(true);
+interface Assignment {
+  id: number;
+  owner_teacher_id: number | null;
+  class_id: number | null;
+  student_id: number | null;
+  language: string;
+  grade_level: number | null;
+  duration_seconds: number;
+  is_public: boolean | null;
+  content: string;
+  created_at: string;
+}
 
-  function truncateText(text: string, maxLength: number): string {
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + "...";
-  }
+export default function AssignmentList({ classId }: AssignmentListProps) {
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPracticeText() {
@@ -28,16 +36,42 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
     fetchPracticeText();
   }, [classId]);
 
-  if (loading) return <Typography>Loading assignments...</Typography>;
+  if (loading)
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" p={2}>
+        <CircularProgress />
+      </Box>
+    );
+    
   if (assignments.length === 0) return <Typography>No assignments in this class.</Typography>;
 
   return (
-    <List>
-      {assignments.map((assignment) => (
-        <ListItem key={assignment.id}>
-          <ListItemText primary={truncateText(assignment.content, 50)} />
-        </ListItem>
+    <Box>
+      {assignments.map((assignment, index) => (
+        <Accordion key={assignment.id} disableGutters>
+          <AccordionSummary 
+            expandIcon={<ExpandMoreIcon />}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'action.hover', // MUI theme-aware hover color
+              },
+            }}>
+            <Typography variant="subtitle1">
+              Assignment #{index + 1}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+              {assignment.content}
+            </Typography>
+            <Box mt={1}>
+              <Typography variant="caption" color="text.secondary">
+                Date: {(new Date(assignment.created_at)).toLocaleDateString('en-US')}
+              </Typography>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
       ))}
-    </List>
+    </Box>
   );
 }
