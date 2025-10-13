@@ -10,7 +10,14 @@ interface ClassHeaderProps {
 
 export default function ClassHeader({ title, code, teacher }: ClassHeaderProps) {
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+    <Box
+      display="flex"
+      flexDirection={{ xs: 'column', sm: 'row' }} 
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-start', sm: 'center' }}
+      mb={2}
+      gap={1}
+     >
       {/* Left side: title + teacher */}
       <Box display="flex" flexDirection="column">
         <Typography variant="h2" sx={{ fontWeight: 700 }}>

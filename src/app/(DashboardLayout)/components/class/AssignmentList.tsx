@@ -70,7 +70,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                   Assignment #{index + 1}
                   </Typography>
                 <Typography variant="subtitle1" >
-                  Assigned at: {' '}
+                  Assigned: {' '}
                     {assignment.assigned_at
                       ? new Date(assignment.assigned_at).toLocaleDateString('en-US')
                       : 'N/A'}
