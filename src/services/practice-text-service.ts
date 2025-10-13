@@ -40,6 +40,42 @@ export const PracticeTextService = {
       return [];
     }
   },
+  async addPracticeText({
+    owner_teacher_id,
+    class_id,
+    content,
+    language,
+    duration_seconds,
+    assigned_at,
+  }: {
+    owner_teacher_id: string | null;
+    class_id: number | null;
+    content: string;
+    language: string;
+    duration_seconds: number;
+    assigned_at: string;
+  }) {
+    try {
+      const newText = await insertSingle<PracticeTextRow>(
+        supabase
+          .from("PracticeTexts"),
+          [{
+            owner_teacher_id,
+            class_id,
+            content,
+            language,
+            duration_seconds,
+            is_public: false,
+            assigned_at,
+          }]
+        );
+
+      return newText;
+    } catch (error) {
+      console.error("Failed to add practice text:", error);
+      throw wrapError("addPracticeText failed", error);
+    }
+  },
 };
 
 export default PracticeTextService;

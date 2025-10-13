@@ -59,6 +59,7 @@ const CreateTypingClass: React.FC = () => {
   return (
     <>
       {/* Button that opens dialog */}
+      
       <Button
         variant="contained"
         startIcon={<AddIcon />}

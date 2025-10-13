@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useUserRoles } from "@/contexts/UserRolesContext";
 import PracticeTextService from "@/services/practice-text-service";
 import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
+import AddAssignment from './AddAssignment';
 
 interface AssignmentListProps {
   classId: string;
@@ -27,11 +29,12 @@ interface Assignment {
 export default function AssignmentList({ classId }: AssignmentListProps) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
+  const { roles } = useUserRoles();
+  const isTeacher = roles.includes('teacher');
 
   useEffect(() => {
     async function fetchPracticeText() {
       const data = await PracticeTextService.getPracticeTextByClass(Number(classId));
-      console.log(data);
       setAssignments(data);
       setLoading(false);
     }
@@ -45,45 +48,49 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
       </Box>
     );
     
-  if (assignments.length === 0) return <Typography>No assignments in this class.</Typography>;
-
   return (
-    <Box>
-      {assignments.map((assignment, index) => (
-        <Accordion key={assignment.id} disableGutters>
-          <AccordionSummary 
-            expandIcon={<ExpandMoreIcon />}
-            sx={{
-              '&:hover': {
-                backgroundColor: 'action.hover', // MUI theme-aware hover color
-              },
-            }}>
-            <KeyboardIcon color="action" sx={({mr:1})}/>
-            <Typography variant="subtitle1"  sx={({mr:3})}>
-              Assignment #{index + 1}
-              </Typography>
-            <Typography variant="subtitle1" >
-              Assigned at: {' '}
-                {assignment.assigned_at
-                  ? new Date(assignment.assigned_at).toLocaleDateString('en-US')
-                  : 'N/A'}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-              {assignment.content}
-            </Typography>
-            <Box mt={1}>
-              <Typography variant="caption" color="text.secondary">
-                Date:{' '}
-                {assignment.assigned_at
-                  ? new Date(assignment.assigned_at).toLocaleDateString('en-US')
-                  : 'N/A'}
-              </Typography>
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-      ))}
-    </Box>
+    <>
+      {isTeacher && <AddAssignment classId={classId}/>}
+      {assignments.length === 0 &&
+        <Typography>No assignments in this class.</Typography>
+      }
+      {assignments.length > 0 && 
+        <Box>
+          {assignments.map((assignment, index) => (
+            <Accordion key={assignment.id} disableGutters>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'action.hover', // MUI theme-aware hover color
+                  },
+                }}>
+                <KeyboardIcon color="action" sx={({mr:1})}/>
+                <Typography variant="subtitle1"  sx={({mr:3})}>
+                  Assignment #{index + 1}
+                  </Typography>
+                <Typography variant="subtitle1" >
+                  Assigned at: {' '}
+                    {assignment.assigned_at
+                      ? new Date(assignment.assigned_at).toLocaleDateString('en-US')
+                      : 'N/A'}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+                  {assignment.content}
+                </Typography>
+                <Box mt={1}>
+                  <Typography variant="caption" color="text.secondary">
+                    Date:{' '}
+                    {new Date(assignment.created_at).toLocaleDateString('en-US')}
+                  </Typography>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </Box>
+      }
+    </>
   );
 }
