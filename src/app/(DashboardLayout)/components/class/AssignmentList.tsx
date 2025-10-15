@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import PracticeTextService from "@/services/practice-text-service";
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress, Snackbar, Alert } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import AddAssignment from './AddAssignment';
@@ -32,15 +32,30 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
   const { roles } = useUserRoles();
   const isTeacher = roles.includes('teacher');
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
+  });
+
+  const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
+
+  const fetchAssignments = async () => {
+    setLoading(true);
+    const data = await PracticeTextService.getPracticeTextByClass(Number(classId));
+    setAssignments(data);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    async function fetchPracticeText() {
-      const data = await PracticeTextService.getPracticeTextByClass(Number(classId));
-      setAssignments(data);
-      setLoading(false);
-    }
-    fetchPracticeText();
+    fetchAssignments();
   }, [classId]);
 
+  const handleAssignmentAdded = (success: boolean, message: string) => {
+    setSnackbar({ open: true, message, severity: success ? 'success' : 'error' });
+    if (success) fetchAssignments();
+  };
+  
   if (loading)
     return (
       <Box display="flex" justifyContent="center" alignItems="center" p={2}>
@@ -50,7 +65,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
     
   return (
     <>
-      {isTeacher && <AddAssignment classId={classId}/>}
+      {isTeacher && <AddAssignment classId={classId} onAdded={handleAssignmentAdded}/>}
       {assignments.length === 0 &&
         <Typography>No assignments in this class.</Typography>
       }
@@ -91,6 +106,20 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
           ))}
         </Box>
       }
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

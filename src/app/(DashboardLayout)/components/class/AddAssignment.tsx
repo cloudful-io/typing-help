@@ -17,6 +17,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useUserRoles } from "@/contexts/UserRolesContext";
@@ -30,9 +32,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 interface AddAssignmentProps {
   classId: string;
+  onAdded?: (success: boolean, message: string) => void;
 }
 
-const AddAssignment: React.FC<AddAssignmentProps> = ({ classId }) => {
+const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
   const { user } = useSupabaseAuth();
   const { roles } = useUserRoles();
   const router = useRouter();
@@ -44,7 +47,8 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId }) => {
   const [duration, setDuration] = React.useState<number>(60);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [contentError, setContentError] = useState<string | null>(null);
+  const [assignedAtError, setAssignedAtError] = useState<string | null>(null);
 
   const isTeacher = roles.includes('teacher');
   if (!isTeacher) {
@@ -52,18 +56,45 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId }) => {
     return null;
   }
 
+  const handleCancel = () => {
+    // Reset all input fields
+    setContent('');
+    setAssignedAt(dayjs());
+    setLanguage('en-US');
+    setDuration(60);
+
+    // Reset error and loading states
+    setContentError(null);
+    setAssignedAtError(null);
+    setLoading(false);
+
+    // Close dialog
+    setOpen(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
     setLoading(true);
-    setError(null);
+    setContentError(null);
+    setAssignedAtError(null);
+
+   let valid = true;
+
+    if (!content.trim()) {
+      setContentError("Content cannot be empty.");
+      valid = false;
+    }
 
     if (!assignedAt) {
-      setError("Assigned At must be specified.");
-      return;
+      setAssignedAtError("Assigned date is required.");
+      valid = false;
     }
-    setError("");
+
+    if (!valid) return;
+    setLoading(true);   
+    
     try {
       const newAssignment = await PracticeTextService.addPracticeText({
         owner_teacher_id: null,
@@ -75,11 +106,12 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId }) => {
       });
       // Close dialog first for smoother experience
       setOpen(false);
-      router.push(`/class/${classId}`);
+
+      onAdded?.(true, 'Assignment added successfully!');
 
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to add assignment');
+      onAdded?.(false, err.message || 'Failed to add assignment.');
     } finally {
       setLoading(false);
     }
@@ -110,8 +142,15 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId }) => {
                 multiline
                 minRows={5}
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => {
+                  setContent(e.target.value);
+                  setContentError(null);
+                  setLoading(false)
+                }}
                 fullWidth
+                error={!!contentError}
+                helperText={contentError}
+                
               />
 
               {/* Assigned At Date */}
@@ -119,12 +158,22 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId }) => {
                 <DatePicker
                   label="Assigned At"
                   value={assignedAt}
-                  onChange={(newValue) => setAssignedAt(newValue)}
+                  onChange={(newValue) => {
+                    setAssignedAt(newValue)
+                    setAssignedAtError(null)
+                    setLoading(false);
+                  }}
                   slotProps={{
-                    textField: { fullWidth: true },
+                    textField: {
+                      fullWidth: true,
+                      required: true,
+                      error: !!assignedAtError,
+                      helperText: assignedAtError,
+                    },
                   }}
                 />
               </LocalizationProvider>
+
               {/* Language Select */}
               <FormControl fullWidth>
                 <InputLabel>Language</InputLabel>
@@ -160,7 +209,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId }) => {
             </DialogContent>
           </Box>
             <DialogActions>
-              <Button onClick={() => setOpen(false)}>Cancel</Button>
+              <Button onClick={handleCancel}>Cancel</Button>
               <Button type="submit" variant="contained" disabled={loading} onClick={handleSubmit}>
                 {loading ? <CircularProgress size={24} /> : 'Add Assignment'}
               </Button>
