@@ -26,6 +26,19 @@ export const PracticeTextService = {
 
     return data?.[0] || null;
   },
+  async getPracticeTextById(id: number) {
+    try {
+      return await selectMaybeSingle<PracticeTextRow>(
+        supabase
+        .from("PracticeTexts")
+        .select("*")
+        .eq("id", id)
+      );
+    } catch (err) {
+      console.error("getPracticeTextByClass failed:", err);
+      return null;
+    }
+  },
   async getPracticeTextByClass(class_id: number) {
     try {
       return await select<PracticeTextRow>(

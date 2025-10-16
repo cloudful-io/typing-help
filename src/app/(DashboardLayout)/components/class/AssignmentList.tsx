@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import PracticeTextService from "@/services/practice-text-service";
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress, Button, Snackbar, Alert } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AddAssignment from './AddAssignment';
+import Link from 'next/link';
 
 interface AssignmentListProps {
   classId: string;
@@ -31,6 +33,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
   const [loading, setLoading] = useState(true);
   const { roles } = useUserRoles();
   const isTeacher = roles.includes('teacher');
+  const isStudent = roles.includes('student');
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -92,7 +95,10 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+                {isStudent && 
+                  <Button variant='contained' startIcon={<ExitToAppIcon/>} component={Link} href={`/practice/${assignment.id}`}>Practice</Button>
+                }
+                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mt:2 }}>
                   {assignment.content}
                 </Typography>
                 <Box mt={1}>
