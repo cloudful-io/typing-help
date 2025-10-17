@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from "next/navigation";
 import PracticeMode from "./PracticeMode";
+import Practice from "../class/Practice";
 import ClassroomMode from "./ClassroomMode";
 import GameMode from "./GameMode";
 import { User } from '@supabase/supabase-js';
@@ -77,7 +78,7 @@ export default function ModeContent({ user }: ModeContentProps) {
   return (
     <>
       {mode === "practice" && 
-        <PracticeMode/>
+        <Practice/>
       }
       {mode === "classroom" && 
         <ClassroomMode/>

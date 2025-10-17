@@ -10,7 +10,7 @@ import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSes
 import { PracticeTextService } from '@/services/practice-text-service';
 
 interface PracticeProps {
-  id: string;
+  id?: string;
 }
 
 const Practice: React.FC<PracticeProps> = ({ id }) => {
@@ -46,7 +46,15 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const fetchPracticeText = useCallback(async (selectedLanguage?: string) => {
     const lang = selectedLanguage || language;
     try {
-      const data = await PracticeTextService.getPracticeTextById(Number(id));
+      let data;
+
+      if (id) {
+        // fetch specific practice text by ID
+        data = await PracticeTextService.getPracticeTextById(Number(id));
+      } else {
+        // fetch random practice text
+        data = await PracticeTextService.getPublicPracticeText(lang);
+      }
 
       if (!data || typeof data !== 'object' || !data.content) {
         console.warn('Invalid or missing practice text:', data);
@@ -60,9 +68,11 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
 
       resetTypingState();
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching practice text:", err);
+      setTargetText("");
+      setSessionState("ended");
     }
-  }, [language, resetTypingState]);
+  }, [id, language, resetTypingState]);
 
   useEffect(() => {
     fetchPracticeText();
@@ -217,7 +227,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {/* Show Language selector and Load New Sentence button only if id is not specified */}
-        {id === null &&
+        {!id &&
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button variant="outlined" size="small" disabled={sessionActive} onClick={handleNewSentence}>
               Load New Sentence
