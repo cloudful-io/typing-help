@@ -26,31 +26,14 @@ export function usePracticeSessions() {
   const STORAGE_KEY = "typingAppSessions";
   const { user } = useSupabaseAuth();
 
-
-  /*const getPracticeSessions = (): PracticeSession[] => {
-    if (typeof window === "undefined") return []; // SSR: return empty
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  };*/
   const getPracticeSessions = useCallback(async () => {
     return await PracticeSessionService.getByUser(user?.id);
   }, [user]);
 
-  /*const savePracticeSession = (session: PracticeSession) => {
-    if (typeof window === "undefined") return; // SSR safety
-    const sessions = getPracticeSessions();
-    sessions.push(session);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-  };*/
   const savePracticeSession = useCallback(async (session: PracticeSession) => {
     return await PracticeSessionService.save(session, user?.id);
   }, [user]);
 
-  /*const clearPracticeSessions = () => {
-    console.log("start");
-    if (typeof window === "undefined") return; // SSR safety
-    localStorage.removeItem(STORAGE_KEY);
-    console.log("end");
-  }*/
   const clearPracticeSessions = useCallback(async () => {
     return await PracticeSessionService.clear(user?.id);
   }, [user]);
