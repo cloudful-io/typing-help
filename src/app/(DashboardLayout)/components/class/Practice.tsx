@@ -21,6 +21,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const sessionActive = sessionState === "running" || sessionState === "paused";
   const [showTimeUpModal, setShowTimeUpModal] = useState(false);
 
+  const [textId, setTextId] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");
   const [committedTextLength, setCommittedTextLength] = useState(0);
@@ -62,7 +63,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
         setSessionState('ended');
         return;
       }
-      
+      setTextId(data.id);
       setTargetText(data.content);
       setLanguage(lang);
 
@@ -134,14 +135,16 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
 
     savePracticeSession({
       id: crypto.randomUUID(),
-      date: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       language,
       wpm: wpm || 0,
-      totalChars,
-      correctChars,
-      wordsTyped,
+      total_chars: totalChars,
+      correct_chars: correctChars,
+      words_typed: wordsTyped,
       duration: elapsedSeconds,
-      characterStats,
+      character_stats: characterStats,
+      text_id: textId,
+      user_id: "",
     });
   }
 

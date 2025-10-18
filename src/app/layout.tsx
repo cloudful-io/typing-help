@@ -1,7 +1,7 @@
 import "./global.css";
 import { UserRolesProvider } from "@/contexts/UserRolesContext";
 import Providers from "./providers"; // <- client wrapper
-import { getUserRolesByName} from "@/lib/userRole";
+import { getUserRolesByName } from "@/lib/userRole"
 import { createClient } from '@/utils/supabase/server'
 
 export default async function RootLayout({

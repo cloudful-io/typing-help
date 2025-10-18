@@ -34,18 +34,28 @@ const StatsPage: React.FC = () => {
   const [metric, setMetric] = useState<"wpm" | "accuracy">("wpm"); // toggle state
 
   useEffect(() => {
-    const stored = getPracticeSessions();   
-    setSessions(stored);
-    setLoading(false);
-  }, []);
+  const loadSessions = async () => {
+    setLoading(true);
+    try {
+      const stored = await getPracticeSessions();
+      setSessions(stored);
+    } catch (err) {
+      console.error("Error loading sessions:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadSessions();
+}, [getPracticeSessions]);
 
   // Transform sessions into chart-ready data
   const chartData = useMemo(() => {
     return sessions.map((s, idx) => ({
       id: idx + 1,
-      date: new Date(s.date).toLocaleString(), // show datetime
+      date: new Date(s.created_at).toLocaleString(), // show datetime
       wpm: s.wpm,
-      accuracy: s.totalChars > 0 ? Math.round((s.correctChars / s.totalChars) * 100) : 0,
+      accuracy: s.total_chars! > 0 ? Math.round((s.correct_chars! / s.total_chars!) * 100) : 0,
     }));
   }, [sessions]);
 
@@ -54,12 +64,12 @@ const StatsPage: React.FC = () => {
     if (sessions.length === 0)
       return { avgWPM: null, avgWordsTyped: 0, bestWPM: null, bestWordsTyped: 0, totalSessions: 0, totalChars: 0, correctChars: 0 };
 
-    const totalWPM = sessions.reduce((sum, s) => sum + s.wpm, 0);
-    const bestSession = sessions.reduce((best, s) => s.wpm > best.wpm ? s : best, sessions[0]);
-    const lastPractice = new Date(Math.max(...sessions.map((s) => new Date(s.date).getTime())));
-    const avgWordsTyped = sessions.reduce((sum, s) => sum + s.wordsTyped, 0) / sessions.length;
-    const totalChars = sessions.reduce((sum, s) => sum + s.totalChars, 0);
-    const correctChars = sessions.reduce((sum, s) => sum + s.correctChars, 0);
+    const totalWPM = sessions.reduce((sum, s) => sum + s.wpm!, 0);
+    const bestSession = sessions.reduce((best, s) => s.wpm! > best.wpm! ? s : best, sessions[0]);
+    const lastPractice = new Date(Math.max(...sessions.map((s) => new Date(s.created_at).getTime())));
+    const avgWordsTyped = sessions.reduce((sum, s) => sum + s.words_typed!, 0) / sessions.length;
+    const totalChars = sessions.reduce((sum, s) => sum + s.total_chars!, 0);
+    const correctChars = sessions.reduce((sum, s) => sum + s.correct_chars!, 0);
 
     return {
       avgWPM: totalWPM / sessions.length,
@@ -67,7 +77,7 @@ const StatsPage: React.FC = () => {
       totalChars,
       correctChars,
       bestWPM: bestSession.wpm,
-      bestWordsTyped: bestSession.wordsTyped,
+      bestWordsTyped: bestSession.words_typed,
       totalSessions: sessions.length,
       lastPractice
     };
@@ -76,7 +86,7 @@ const StatsPage: React.FC = () => {
   // DataGrid columns
   const columns: GridColDef<PracticeSession>[] = useMemo(() => [
     {
-      field: 'date',
+      field: 'created_at',
       headerName: "Date",
       valueGetter: (value) => value ? new Date(value).toLocaleString() : value,
       flex: 1,
@@ -93,8 +103,8 @@ const StatsPage: React.FC = () => {
       headerName: "Accuracy (%)",
       flex: 1,
       valueGetter: (value, row) => {
-        if (!row.totalChars || !row.correctChars || row.totalChars === 0) return 0;
-        return Math.round((row.correctChars / row.totalChars) * 100);
+        if (!row.total_chars || !row.correct_chars || row.total_chars === 0) return 0;
+        return Math.round((row.correct_chars / row.total_chars) * 100);
       },
     },
     { field: "duration", headerName: "Duration (s)", type: "number", flex: 1 },
@@ -125,7 +135,7 @@ const StatsPage: React.FC = () => {
           <WPMCard title="Average WPM" wpm={summary.avgWPM} wordsTyped={summary.avgWordsTyped} language="" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }} sx={{ display: "flex", flex: 1 }}>
-          <WPMCard title="Best WPM" wpm={summary.bestWPM} wordsTyped={summary.bestWordsTyped} language="" />
+          <WPMCard title="Best WPM" wpm={summary.bestWPM} wordsTyped={summary.bestWordsTyped!} language="" />
         </Grid>
       </Grid>
 

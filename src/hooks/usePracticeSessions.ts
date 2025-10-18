@@ -1,4 +1,6 @@
 import { useCallback } from "react";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { PracticeSessionService } from "@/services/practice-session-service";
 
 export interface CharacterStats {
   char: string;
@@ -8,38 +10,50 @@ export interface CharacterStats {
 
 export interface PracticeSession {
   id: string;
-  date: string;
+  user_id: string;
+  created_at: string;
   language: string;
-  wpm: number;
-  correctChars: number;
-  totalChars: number;
-  wordsTyped: number;
-  duration: number; // seconds
-  textId?: string;
-  characterStats: CharacterStats[];
+  wpm: number | null;
+  correct_chars: number | null;
+  total_chars: number | null;
+  words_typed: number | null;
+  duration: number | null; 
+  text_id: number | null;
+  character_stats: Record<string, any>;
 }
 
 export function usePracticeSessions() {
   const STORAGE_KEY = "typingAppSessions";
+  const { user } = useSupabaseAuth();
 
-  const getPracticeSessions = (): PracticeSession[] => {
+
+  /*const getPracticeSessions = (): PracticeSession[] => {
     if (typeof window === "undefined") return []; // SSR: return empty
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  };
+  };*/
+  const getPracticeSessions = useCallback(async () => {
+    return await PracticeSessionService.getByUser(user?.id);
+  }, [user]);
 
-  const savePracticeSession = (session: PracticeSession) => {
+  /*const savePracticeSession = (session: PracticeSession) => {
     if (typeof window === "undefined") return; // SSR safety
     const sessions = getPracticeSessions();
     sessions.push(session);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-  };
+  };*/
+  const savePracticeSession = useCallback(async (session: PracticeSession) => {
+    return await PracticeSessionService.save(session, user?.id);
+  }, [user]);
 
-  const clearPracticeSessions = () => {
+  /*const clearPracticeSessions = () => {
     console.log("start");
     if (typeof window === "undefined") return; // SSR safety
     localStorage.removeItem(STORAGE_KEY);
     console.log("end");
-  }
+  }*/
+  const clearPracticeSessions = useCallback(async () => {
+    return await PracticeSessionService.clear(user?.id);
+  }, [user]);
 
   return { getPracticeSessions, savePracticeSession, clearPracticeSessions };
 }

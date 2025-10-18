@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getRandomPublicPracticeText } from "@/lib/practiceText";
+import { getRandomPublicPracticeText } from "@/lib/practiceText1";
 
 export async function GET(req: Request) {
   try {
