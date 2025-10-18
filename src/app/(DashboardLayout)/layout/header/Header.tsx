@@ -89,7 +89,7 @@ const Header = () => {
             <Button
               variant="contained"
               component={Link}
-              href="authentication/login"
+              href="/authentication/login"
               disableElevation
               color="primary"
               startIcon={<LoginButton/>}
