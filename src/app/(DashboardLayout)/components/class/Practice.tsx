@@ -8,6 +8,7 @@ import TimeUpModal from '@/app/(DashboardLayout)/components/shared/TimeUpModal'
 import { computeTypingResults, countWords } from "@/utils/typing";
 import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
 import { PracticeTextService } from '@/services/practice-text-service';
+import Link from "next/link";
 
 interface PracticeProps {
   id?: string;
@@ -22,6 +23,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const [showTimeUpModal, setShowTimeUpModal] = useState(false);
 
   const [textId, setTextId] = useState(0);
+  const [classId, setClassId] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");
   const [committedTextLength, setCommittedTextLength] = useState(0);
@@ -52,6 +54,10 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
       if (id) {
         // fetch specific practice text by ID
         data = await PracticeTextService.getPracticeTextById(Number(id));
+
+        if (data) {
+          setClassId(data.class_id!);
+        }
       } else {
         // fetch random practice text
         data = await PracticeTextService.getPublicPracticeText(lang);
@@ -190,7 +196,26 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
 };
 
   return (
+    
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
+      {id && classId > 0 &&
+        <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 1 }}>
+          <Typography
+            component={Link}
+            href={`/class/${classId}`}
+            color="primary"
+            sx={{
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              "&:hover": { textDecoration: "underline" },
+              fontWeight: 500,
+            }}
+          >
+            ← Back to Assignment List
+          </Typography>
+        </Box>
+      }
       <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
       {/* Top row: Accuracy, WPM, Timer/Controls */}
       <Grid container spacing={2} alignItems="stretch">
