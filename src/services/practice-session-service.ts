@@ -52,6 +52,19 @@ export const PracticeSessionService = {
         );
   },
 
+  async getByUserAndPracticeText(userId?: string, textId?: string): Promise<PracticeSessionRow[]> {
+    if (!userId || !textId) return [];
+
+    return await select<PracticeSessionRow>(
+        supabase
+            .from("practice_sessions")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("text_id", textId)
+            .order("created_at", { ascending: true })
+        );
+  },
+
   async clear(userId?: string) {
     if (userId) {
       const { error } = await supabase.from("practice_sessions").delete().eq("user_id", userId);

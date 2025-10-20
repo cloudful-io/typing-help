@@ -8,6 +8,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AddAssignment from './AddAssignment';
+import AssignmentStat from './AssignmentStat';
 import Link from 'next/link';
 
 interface AssignmentListProps {
@@ -102,10 +103,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                   {assignment.content}
                 </Typography>
                 <Box mt={1}>
-                  <Typography variant="caption" color="text.secondary">
-                    Date:{' '}
-                    {new Date(assignment.created_at).toLocaleDateString('en-US')}
-                  </Typography>
+                  <AssignmentStat textId={assignment.id.toString()}/>
                 </Box>
               </AccordionDetails>
             </Accordion>
