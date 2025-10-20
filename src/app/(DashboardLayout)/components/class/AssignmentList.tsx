@@ -102,9 +102,11 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                 <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mt:2 }}>
                   {assignment.content}
                 </Typography>
-                <Box mt={1}>
-                  <AssignmentStat textId={assignment.id.toString()}/>
-                </Box>
+                {isStudent &&
+                  <Box mt={1}>
+                    <AssignmentStat textId={assignment.id.toString()}/>
+                  </Box>
+                }
               </AccordionDetails>
             </Accordion>
           ))}
