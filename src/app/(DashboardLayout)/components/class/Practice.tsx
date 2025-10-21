@@ -71,7 +71,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
       }
       setTextId(data.id);
       setTargetText(data.content);
-      setLanguage(lang);
+      setLanguage(data.language);
 
       resetTypingState();
     } catch (err) {
