@@ -11,7 +11,6 @@ import {
 import { IconPoint } from '@tabler/icons-react';
 //import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Upgrade } from "./Updrade";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 
 const renderMenuItems = (items: any, pathDirect: any, roles: any) => {
@@ -93,7 +92,6 @@ const SidebarItems = () => {
           </Stack>
         {renderMenuItems(Menuitems, pathDirect, roles)}
         <Box px={2}>
-          <Upgrade />
         </Box>
       </MUI_Sidebar>
 
