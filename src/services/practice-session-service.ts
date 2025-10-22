@@ -43,14 +43,27 @@ export const PracticeSessionService = {
   async getByPracticeText(textId?: string): Promise<PracticeSessionRow[]> {
     if (!textId) return [];
 
-    return await select<PracticeSessionRow>(
-        supabase
-            .from("practice_sessions")
-            .select("*")
-            .eq("text_id", textId)
-            .order("created_at", { ascending: true })
-        );
+    const { data, error } = await supabase
+      .from("practice_sessions")
+      .select(`
+        *,
+        user_profiles(display_name)
+      `)
+      .eq("text_id", textId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching practice sessions:", error);
+      return [];
+    }
+
+    // Flatten display_name for convenience
+    return data.map((row: any) => ({
+      ...row,
+      display_name: row.user_profiles?.display_name || row.user_id
+    }));
   },
+
 
   async getByUserAndPracticeText(userId?: string, textId?: string): Promise<PracticeSessionRow[]> {
     if (!userId || !textId) return [];

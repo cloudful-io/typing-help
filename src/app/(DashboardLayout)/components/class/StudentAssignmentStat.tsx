@@ -12,7 +12,7 @@ interface AssignmentStatProps {
 
 type PracticeSessionRow = Database["public"]["Tables"]["practice_sessions"]["Row"];
 
-export default function AssignmentStat({ textId }: AssignmentStatProps) {
+export default function StudentAssignmentStat({ textId }: AssignmentStatProps) {
 
   const { user } = useSupabaseAuth();
   const [loading, setLoading] = useState(true);

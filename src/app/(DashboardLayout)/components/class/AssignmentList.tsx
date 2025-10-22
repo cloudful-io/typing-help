@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import PracticeTextService from "@/services/practice-text-service";
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress, Button, Snackbar, Alert } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress, Button, Snackbar, Alert, Link as MuiLink} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AddAssignment from './AddAssignment';
-import AssignmentStat from './AssignmentStat';
-import Link from 'next/link';
+import StudentAssignmentStat from './StudentAssignmentStat';
+import TeacherAssignmentStat from './TeacherAssignmentStat';
+import NextLink from 'next/link';
 
 interface AssignmentListProps {
   classId: string;
@@ -27,6 +28,45 @@ interface Assignment {
   content: string;
   assigned_at: string | null;
   created_at: string;
+}
+
+function TeacherAssignmentDetail({ assignment }: { assignment: any }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Box sx={{ mt: 1 }}>
+      {!expanded ? (
+        <>
+          <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mt:2 }}>
+            {assignment.content.slice(0, 120)}
+          </Typography>
+          {assignment.content.length > 120 &&
+            <MuiLink
+              component="button"
+              underline="hover"
+              onClick={() => setExpanded(true)}
+            >
+              View full text
+            </MuiLink>
+          }
+        </>
+      ) : (
+        <>
+          <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mt:2 }}>
+            {assignment.content}
+          </Typography>
+          <MuiLink
+            component="button"
+            underline="hover"
+            onClick={() => setExpanded(false)}
+          >
+            Hide text
+          </MuiLink>
+        </>
+      )}
+      <TeacherAssignmentStat textId={assignment.id.toString()} />
+    </Box>
+  );
 }
 
 export default function AssignmentList({ classId }: AssignmentListProps) {
@@ -97,16 +137,21 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
               </AccordionSummary>
               <AccordionDetails>
                 {isStudent && 
-                  <Button variant='contained' startIcon={<ExitToAppIcon/>} component={Link} href={`/practice/${assignment.id}`}>Practice</Button>
+                  <>
+                    <Button variant='contained' startIcon={<ExitToAppIcon/>} component={NextLink} href={`/practice/${assignment.id}`}>Practice</Button>
+                    <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mt:2 }}>
+                      {assignment.content}
+                    </Typography>
+                    <Box mt={1}>
+                      <StudentAssignmentStat textId={assignment.id.toString()}/>
+                    </Box>
+                  </>
                 }
-                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mt:2 }}>
-                  {assignment.content}
-                </Typography>
-                {isStudent &&
-                  <Box mt={1}>
-                    <AssignmentStat textId={assignment.id.toString()}/>
-                  </Box>
-                }
+                {isTeacher && (
+                  <>
+                    <TeacherAssignmentDetail assignment={assignment} />
+                  </>
+                )}
               </AccordionDetails>
             </Accordion>
           ))}
