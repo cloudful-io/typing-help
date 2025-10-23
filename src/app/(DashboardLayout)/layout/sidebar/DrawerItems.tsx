@@ -78,17 +78,14 @@ export default function DrawerItems() {
             <Accordion
               expanded={expanded}
               onChange={() => setExpanded(!expanded)}
-              sx={{
-                width: "100%",
-                mx: 1,
-                borderRadius: 2,
-                boxShadow: "none",
-                "&:before": { display: "none" },
-                border: "1px solid",
-                borderColor: "divider",
-              }}
+              disableGutters
             >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: 'action.hover', // MUI theme-aware hover color
+                }}
+              >
                 <Typography
                   variant="subtitle1"
                   sx={{ fontWeight: 600, color: "text.secondary" }}
