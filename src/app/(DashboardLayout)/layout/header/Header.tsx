@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button, Typography } from '@mui/material';
 import Image from "next/image";
@@ -5,12 +6,10 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import LoginButton from '@mui/icons-material/Login'
-
+import AppDrawer from '../sidebar/AppDrawer';
 // components
 import Profile from './Profile';
-import ModeToggle from './ModeToggle';
 import { IconDeviceDesktopAnalytics } from '@tabler/icons-react';
-import ActionButton from './ActionButton';
 
 const Header = () => {
 
@@ -37,6 +36,9 @@ const Header = () => {
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
+        {user &&
+          <AppDrawer/>
+        }
         <Box
           component={Link}
           href="/"
@@ -59,16 +61,6 @@ const Header = () => {
               Typing Help
           </Typography>
         </Box>
-        {user && (
-          <>
-          <Box sx={{ ml: 5 }}>
-          <ModeToggle />
-          </Box>
-          <Box sx={{ ml: 5 }}>
-          <ActionButton/>
-        </Box>
-        </>
-        )}
 
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
