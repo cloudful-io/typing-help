@@ -38,7 +38,6 @@ export async function updateSession(request: NextRequest) {
   // Redirect non-admin users trying to access admin pages to the home page
   if (
     user &&
-    //role !== "admin" &&
     request.nextUrl.pathname.startsWith("/admin")
   ) {
     const url = request.nextUrl.clone();
@@ -57,13 +56,11 @@ export async function updateSession(request: NextRequest) {
     url.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
-
   // Redirect authenticated users attempting to access the sign-in page to the home page
-  if (user && request.nextUrl.pathname.startsWith("/signin")) {
+  if (user && request.nextUrl.pathname.startsWith("/authentication/login")) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
   }
-
   return supabaseResponse;
 }
