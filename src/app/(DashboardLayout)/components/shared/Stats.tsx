@@ -124,17 +124,17 @@ const StatsPage: React.FC = () => {
       <Typography variant="h3">Typing Practice Stats</Typography>
 
       {/* Summary Cards */}
-      <Grid container spacing={2} alignItems="stretch">
-        <Grid size={{ xs: 6, md: 3 }} sx={{ display: "flex", flex: 1 }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <SessionCard total={summary.totalSessions} lastPractice={summary.lastPractice} />
         </Grid>
-        <Grid size={{ xs: 6, md: 3 }} sx={{ flex: 1 }}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <AccuracyCard title="Average Accuracy" correct={summary.correctChars} total={summary.totalChars} />
         </Grid>
-        <Grid size={{ xs: 6, md: 3 }} sx={{ display: "flex", flex: 1 }}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <WPMCard title="Average WPM" wpm={summary.avgWPM} wordsTyped={summary.avgWordsTyped} language="" />
         </Grid>
-        <Grid size={{ xs: 6, md: 3 }} sx={{ display: "flex", flex: 1 }}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <WPMCard title="Best WPM" wpm={summary.bestWPM} wordsTyped={summary.bestWordsTyped!} language="" />
         </Grid>
       </Grid>

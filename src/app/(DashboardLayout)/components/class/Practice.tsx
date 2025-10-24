@@ -17,6 +17,7 @@ interface PracticeProps {
 }
 
 const Practice: React.FC<PracticeProps> = ({ id }) => {
+
   type SessionState = "idle" | "running" | "paused" | "ended";
   const [sessionState, setSessionState] = useState<SessionState>("idle");
 
@@ -220,15 +221,15 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
             </Box>
           }
           <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
-          {/* Top row: Accuracy, WPM, Timer/Controls */}
-          <Grid container spacing={2} alignItems="stretch">
-            <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
+
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, lg: 3 }}>
               <AccuracyCard correct={correctChars} total={totalChars} />
             </Grid>
-            <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
+            <Grid size={{ xs: 12, lg: 3 }}>
               <WPMCard wpm={wpm} wordsTyped={wordsTyped} language={language} />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }} sx={{ flex: 1 }}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <TimerControlCard
                 presetTimes={[30, 60, 120, 240]}
                 onStart={(duration) => {
