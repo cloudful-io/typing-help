@@ -2,6 +2,7 @@
 import { styled, Container, Box } from "@mui/material";
 import React, { useState } from "react";
 import Header from "@/app/(DashboardLayout)/layout/header/Header";
+import ModeBanner from "./layout/footer/ModeBanner";
 
 const MainWrapper = styled("div")(() => ({
   display: "flex",
@@ -59,6 +60,7 @@ export default function RootLayout({
           {/* End Page */}
           {/* ------------------------------------------- */}
         </Container>
+        <ModeBanner/>
       </PageWrapper>
     </MainWrapper>
   );
