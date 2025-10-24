@@ -14,9 +14,9 @@ export default function Footer() {
   const router = useRouter();
 
   const footerLinks = [
+    { label: "Updates", href: "/blog" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
-    //{ label: "Updates", href: "/updates" },
   ];
 
   return (
@@ -28,13 +28,18 @@ export default function Footer() {
         width: "100%",
         bgcolor: "background.paper",
         boxShadow: "0 -2px 6px rgba(0,0,0,0.1)",
-        display: "flex",
         justifyContent: "center",
         alignItems: "center",
         py: 1,
-        zIndex: 1200, // stays above other elements
+        zIndex: 1200, 
       }}
     >
+      <Stack 
+        direction="column"
+        alignItems="center" // Center horizontally within the footer
+        width="100%" // Ensure it spans the full width
+        spacing={1} // Add a small vertical space between the mode toggles and links
+      >
       {user && (
         <ToggleButtonGroup
           value={mode}
@@ -59,7 +64,7 @@ export default function Footer() {
           </ToggleButton>
         </ToggleButtonGroup>
       )}
-      {!user && (
+      
         <Stack
           direction="row"
           spacing={3}
@@ -67,23 +72,23 @@ export default function Footer() {
           alignItems="center"
           flexWrap="wrap"
           sx={{mt:1, mb:1}}
-      >
-        {footerLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            underline="hover"
-            color="text.secondary"
-            sx={{
-              fontSize: "0.9rem",
-              "&:hover": { color: "primary.main" },
-            }}
-          >
-            {link.label}
-          </Link>
-        ))}
+        >
+          {footerLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              underline="hover"
+              color="text.secondary"
+              sx={{
+                fontSize: "0.8rem",
+                "&:hover": { color: "primary.main" },
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </Stack>
       </Stack>
-      )}
     </Box>
   );
 }
