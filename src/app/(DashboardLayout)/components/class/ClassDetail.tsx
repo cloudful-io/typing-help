@@ -1,5 +1,6 @@
 'use client';
-
+import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
+import { Container } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { useMode } from '@/contexts/ModeContext';
 import { useClassContext } from '@/contexts/ClassContext';
@@ -69,30 +70,34 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
 
   return (
     <>
-      <ClassHeader title={classData.title} code={classData.code} teacher={classData.teacherName}/>
+      <PageContainer title={classData.title} description={classData.title}>
+        <Container sx={{ mt: 0 }}>
+          <ClassHeader title={classData.title} code={classData.code} teacher={classData.teacherName}/>
 
-      <Box sx={{ width: '100%', typography: 'body1' }}>
-        <TabContext value={activeTab}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleChange} aria-label="Class Detail">
-              <Tab label="Assignments" value="0" />
-              <Tab label="Students" value="1" />
-            </TabList>
+          <Box sx={{ width: '100%', typography: 'body1' }}>
+            <TabContext value={activeTab}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <TabList onChange={handleChange} aria-label="Class Detail">
+                  <Tab label="Assignments" value="0" />
+                  <Tab label="Students" value="1" />
+                </TabList>
+              </Box>
+              <TabPanel value="0">
+                <Box>
+                  {/* Render your Practice content here */}
+                  <AssignmentList classId={classId}/>
+                </Box>
+
+              </TabPanel>
+              <TabPanel value="1">
+                <Box>
+                  <StudentsList classId={classId} />
+                </Box>
+              </TabPanel>
+            </TabContext>
           </Box>
-          <TabPanel value="0">
-            <Box>
-              {/* Render your Practice content here */}
-              <AssignmentList classId={classId}/>
-            </Box>
-
-          </TabPanel>
-          <TabPanel value="1">
-            <Box>
-              <StudentsList classId={classId} />
-            </Box>
-          </TabPanel>
-        </TabContext>
-      </Box>
+        </Container>
+      </PageContainer>
     </>
   );
 }

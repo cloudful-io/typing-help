@@ -5,13 +5,10 @@ import Image from "next/image";
 import Link from 'next/link';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
-
 import DrawerItems from './DrawerItems';
-import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 
 export default function AppDrawer() {
   const [open, setOpen] = React.useState(false);
-  const { user } = useSupabaseAuth();
   
   const toggleDrawer = (state: boolean) => () => {
     setOpen(state);
@@ -41,9 +38,6 @@ export default function AppDrawer() {
           <Box
             sx={{ width: 400, overflowY: "auto", overflowX: "hidden"}}
             role="presentation"
-            
-            //onClick={toggleDrawer(false)}
-            //onKeyDown={toggleDrawer(false)}
           >
             <Box
               sx={{

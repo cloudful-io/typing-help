@@ -1,4 +1,6 @@
 'use client'
+import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
+import { Container } from "@mui/material";
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Box, Grid, Typography, Paper, TextField, ToggleButtonGroup, ToggleButton, Button } from "@mui/material";
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
@@ -196,108 +198,111 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
 };
 
   return (
-    
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
-      {id && classId > 0 &&
-        <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 1 }}>
-          <Typography
-            component={Link}
-            href={`/class/${classId}`}
-            color="primary"
-            sx={{
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              "&:hover": { textDecoration: "underline" },
-              fontWeight: 500,
-            }}
-          >
-            ← Back to Assignment List
-          </Typography>
-        </Box>
-      }
-      <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
-      {/* Top row: Accuracy, WPM, Timer/Controls */}
-      <Grid container spacing={2} alignItems="stretch">
-        <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
-          <AccuracyCard correct={correctChars} total={totalChars} />
-        </Grid>
-        <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
-          <WPMCard wpm={wpm} wordsTyped={wordsTyped} language={language} />
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }} sx={{ flex: 1 }}>
-          <TimerControlCard
-            presetTimes={[30, 60, 120, 240]}
-            onStart={(duration) => {
-              setSessionState("running");
-              resetTypingState();
-              textboxRef.current?.focus();
-            }}
-            onPause={() => {
-              setSessionState("paused")
-            }}
-            onResume={() => {
-              setSessionState("running");
-              textboxRef.current?.focus();
-            }}
-            onReset={() => {
-              resetTypingState();
-              setSessionState("ended");
-            }}
-            onSessionEnd={(elapsedSeconds) => {
-              setSessionState("ended");
-              computeResults(elapsedSeconds);
-              setShowTimeUpModal(true);
-            }}
-          />
-        </Grid>
-      </Grid>
+    <PageContainer title="Practice Mode" description="Typing Help: Practice Mode">
+      <Container sx={{ mt: 0 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
+          {id && classId > 0 &&
+            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 1 }}>
+              <Typography
+                component={Link}
+                href={`/class/${classId}`}
+                color="primary"
+                sx={{
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  "&:hover": { textDecoration: "underline" },
+                  fontWeight: 500,
+                }}
+              >
+                ← Back to Assignment List
+              </Typography>
+            </Box>
+          }
+          <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
+          {/* Top row: Accuracy, WPM, Timer/Controls */}
+          <Grid container spacing={2} alignItems="stretch">
+            <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
+              <AccuracyCard correct={correctChars} total={totalChars} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }} sx={{ display: "flex", flex: 1 }}>
+              <WPMCard wpm={wpm} wordsTyped={wordsTyped} language={language} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }} sx={{ flex: 1 }}>
+              <TimerControlCard
+                presetTimes={[30, 60, 120, 240]}
+                onStart={(duration) => {
+                  setSessionState("running");
+                  resetTypingState();
+                  textboxRef.current?.focus();
+                }}
+                onPause={() => {
+                  setSessionState("paused")
+                }}
+                onResume={() => {
+                  setSessionState("running");
+                  textboxRef.current?.focus();
+                }}
+                onReset={() => {
+                  resetTypingState();
+                  setSessionState("ended");
+                }}
+                onSessionEnd={(elapsedSeconds) => {
+                  setSessionState("ended");
+                  computeResults(elapsedSeconds);
+                  setShowTimeUpModal(true);
+                }}
+              />
+            </Grid>
+          </Grid>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* Show Language selector and Load New Sentence button only if id is not specified */}
-        {!id &&
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            <Button variant="outlined" size="small" disabled={sessionActive} onClick={handleNewSentence}>
-              Load New Sentence
-            </Button>
-            <ToggleButtonGroup
-              value={language}
-              size="small"
-              disabled={sessionActive}
-              exclusive
-              onChange={handleLanguageChange}
-              aria-label="language selector"
-            >
-              <ToggleButton value="en-US" aria-label="English">
-                English
-              </ToggleButton>
-              <ToggleButton value="zh-Hant" aria-label="Chinese">
-                中文
-              </ToggleButton>
-            </ToggleButtonGroup>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {/* Show Language selector and Load New Sentence button only if id is not specified */}
+            {!id &&
+              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                <Button variant="outlined" size="small" disabled={sessionActive} onClick={handleNewSentence}>
+                  Load New Sentence
+                </Button>
+                <ToggleButtonGroup
+                  value={language}
+                  size="small"
+                  disabled={sessionActive}
+                  exclusive
+                  onChange={handleLanguageChange}
+                  aria-label="language selector"
+                >
+                  <ToggleButton value="en-US" aria-label="English">
+                    English
+                  </ToggleButton>
+                  <ToggleButton value="zh-Hant" aria-label="Chinese">
+                    中文
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+            }
+            <Paper sx={{ p: 2, minHeight: "100px" }}>
+              <Typography component="div" sx={{ fontSize: "1.1rem", wordWrap: "break-word" }}>
+                {targetText ? renderPracticeText() : "Loading practice text..."}
+              </Typography>
+            </Paper>
+            <TextField
+              inputRef={textboxRef}
+              value={typedText}
+              onChange={handleTextFieldChange}
+              onCompositionStart={handleCompositionStart}
+              onCompositionEnd={handleCompositionEnd}
+              onPaste={handlePaste}
+              multiline
+              fullWidth
+              minRows={5}
+              variant="outlined"
+              placeholder="Click on the Start button to start typing..."
+              sx={{ fontSize: "1.1rem" }}
+            />
           </Box>
-        }
-        <Paper sx={{ p: 2, minHeight: "100px" }}>
-          <Typography component="div" sx={{ fontSize: "1.1rem", wordWrap: "break-word" }}>
-            {targetText ? renderPracticeText() : "Loading practice text..."}
-          </Typography>
-        </Paper>
-        <TextField
-          inputRef={textboxRef}
-          value={typedText}
-          onChange={handleTextFieldChange}
-          onCompositionStart={handleCompositionStart}
-          onCompositionEnd={handleCompositionEnd}
-          onPaste={handlePaste}
-          multiline
-          fullWidth
-          minRows={5}
-          variant="outlined"
-          placeholder="Click on the Start button to start typing..."
-          sx={{ fontSize: "1.1rem" }}
-        />
-      </Box>
-    </Box>
+        </Box>
+      </Container>
+    </PageContainer>
   );
 };
 
