@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useMode } from "@/contexts/ModeContext";
 import { Box, ToggleButton, ToggleButtonGroup, Link, Stack, Typography} from "@mui/material";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import SchoolIcon from "@mui/icons-material/School";
@@ -8,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 
 export default function Footer() {
-  const [mode, setMode] = useState("practice");
+  const { mode, setMode } = useMode();
   const { user } = useSupabaseAuth();
   const router = useRouter();
 
