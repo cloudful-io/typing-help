@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Box, ToggleButton, ToggleButtonGroup, Link, Stack, } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup, Link, Stack, Typography} from "@mui/material";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import SchoolIcon from "@mui/icons-material/School";
 import PsychologyIcon from "@mui/icons-material/Psychology";

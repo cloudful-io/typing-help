@@ -1,6 +1,6 @@
 "use client";
 import * as React from 'react';
-import { Drawer, IconButton, Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Drawer, IconButton, Box, Typography } from '@mui/material';
 import Image from "next/image";
 import Link from 'next/link';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
@@ -36,13 +36,14 @@ export default function AppDrawer() {
         <Drawer 
           anchor="left" 
           open={open} 
-          onClose={toggleDrawer(false)}  
+          onClose={toggleDrawer(false)}
         >
           <Box
             sx={{ width: 400, overflowY: "auto", overflowX: "hidden"}}
             role="presentation"
-            onClick={toggleDrawer(false)}
-            onKeyDown={toggleDrawer(false)}
+            
+            //onClick={toggleDrawer(false)}
+            //onKeyDown={toggleDrawer(false)}
           >
             <Box
               sx={{
