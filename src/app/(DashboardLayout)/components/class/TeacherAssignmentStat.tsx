@@ -53,7 +53,7 @@ export default function TeacherAssignmentStat({ textId }: TeacherAssignmentStatP
         <TableBody>
         {sessions.map((s) => (
             <TableRow key={s.id}>
-            <TableCell>{s.display_name}</TableCell><TableCell>{s.wpm}</TableCell><TableCell>{s.total_chars! > 0 ? Math.round((s.correct_chars! / s.total_chars!) * 100) : 0}%</TableCell><TableCell>{new Date(s.created_at).toLocaleDateString()}</TableCell>
+            <TableCell>{s.display_name}</TableCell><TableCell>{s.wpm}</TableCell><TableCell>{s.total_chars > 0 ? Math.round((s.correct_chars / s.total_chars) * 100) : 0}%</TableCell><TableCell>{new Date(s.created_at).toLocaleDateString()}</TableCell>
             </TableRow>
         ))}
         </TableBody>

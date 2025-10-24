@@ -55,7 +55,7 @@ const StatsPage: React.FC = () => {
       id: idx + 1,
       date: new Date(s.created_at).toLocaleString(), // show datetime
       wpm: s.wpm,
-      accuracy: s.total_chars! > 0 ? Math.round((s.correct_chars! / s.total_chars!) * 100) : 0,
+      accuracy: s.total_chars > 0 ? Math.round((s.correct_chars / s.total_chars) * 100) : 0,
     }));
   }, [sessions]);
 
@@ -64,12 +64,12 @@ const StatsPage: React.FC = () => {
     if (sessions.length === 0)
       return { avgWPM: null, avgWordsTyped: 0, bestWPM: null, bestWordsTyped: 0, totalSessions: 0, totalChars: 0, correctChars: 0 };
 
-    const totalWPM = sessions.reduce((sum, s) => sum + s.wpm!, 0);
-    const bestSession = sessions.reduce((best, s) => s.wpm! > best.wpm! ? s : best, sessions[0]);
+    const totalWPM = sessions.reduce((sum, s) => sum + s.wpm, 0);
+    const bestSession = sessions.reduce((best, s) => s.wpm > best.wpm! ? s : best, sessions[0]);
     const lastPractice = new Date(Math.max(...sessions.map((s) => new Date(s.created_at).getTime())));
-    const avgWordsTyped = sessions.reduce((sum, s) => sum + s.words_typed!, 0) / sessions.length;
-    const totalChars = sessions.reduce((sum, s) => sum + s.total_chars!, 0);
-    const correctChars = sessions.reduce((sum, s) => sum + s.correct_chars!, 0);
+    const avgWordsTyped = sessions.reduce((sum, s) => sum + s.words_typed, 0) / sessions.length;
+    const totalChars = sessions.reduce((sum, s) => sum + s.total_chars, 0);
+    const correctChars = sessions.reduce((sum, s) => sum + s.correct_chars, 0);
 
     return {
       avgWPM: totalWPM / sessions.length,

@@ -13,11 +13,11 @@ export interface PracticeSession {
   user_id: string;
   created_at: string;
   language: string;
-  wpm: number | null;
-  correct_chars: number | null;
-  total_chars: number | null;
-  words_typed: number | null;
-  duration: number | null; 
+  wpm: number;
+  correct_chars: number;
+  total_chars: number;
+  words_typed: number;
+  duration: number; 
   text_id: number | null;
   character_stats: Record<string, any>;
 }

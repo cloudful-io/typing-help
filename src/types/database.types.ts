@@ -8,7 +8,7 @@ export type Database = {
       roles: {Row: { id: string; name: string; description: string | null }}
       user_roles: {Row: { user_id: string; role_id: string }}
       PracticeTexts: {Row: {id: number; owner_teacher_id: number | null; class_id: number | null; student_id: number | null; language: string; grade_level: number | null; duration_seconds: number; is_public: boolean | null; content: string; assigned_at: string | null; created_at: string}}
-      practice_sessions :{Row: {id: string; user_id: string; created_at: string; language: string; wpm: number | null; correct_chars: number | null; total_chars: number | null; words_typed: number | null; duration: number | null; text_id: number | null; character_stats: Record<string, any>}}
+      practice_sessions :{Row: {id: string; user_id: string; created_at: string; language: string; wpm: number; correct_chars: number; total_chars: number; words_typed: number; duration: number; text_id: number | null; character_stats: Record<string, any>}}
     }
   }
 }

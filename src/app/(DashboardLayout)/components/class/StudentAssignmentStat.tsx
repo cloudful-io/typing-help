@@ -51,12 +51,12 @@ export default function StudentAssignmentStat({ textId }: AssignmentStatProps) {
 
   // --- Calculate stats ---
   const totalSessions = sessions.length;
-  const totalChars = sessions.reduce((sum, s) => sum + s.total_chars!, 0);
-  const correctChars = sessions.reduce((sum, s) => sum + s.correct_chars!, 0);
+  const totalChars = sessions.reduce((sum, s) => sum + s.total_chars, 0);
+  const correctChars = sessions.reduce((sum, s) => sum + s.correct_chars, 0);
 
   const avgAccuracy = Math.round(correctChars / totalChars * 100);
   const avgWpm =
-    sessions.reduce((sum, s) => sum + s.wpm!, 0) / totalSessions;
+    sessions.reduce((sum, s) => sum + s.wpm, 0) / totalSessions;
 
   return (
     <>
