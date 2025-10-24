@@ -10,7 +10,6 @@ import {
   ListItemButton,
   ListItemText,
   Typography,
-  Divider,
   Box,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -114,6 +113,16 @@ export default function DrawerItems() {
                 </List>
               </AccordionDetails>
             </Accordion>
+          )}
+          {classes.length == 0 && (
+            <Typography 
+              sx={{display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              You do not have any classes assigned yet.
+            </Typography>
           )}
 
           {isTeacher && (

@@ -6,7 +6,6 @@ import Link from 'next/link';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import ModeToggle from '../header/ModeToggle';
 import DrawerItems from './DrawerItems';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 
@@ -29,7 +28,7 @@ export default function AppDrawer() {
           aria-label="menu"
           onClick={toggleDrawer(true)}
           sx={{ mr: 2 }}
-            >
+        >
           <MenuIcon />
         </IconButton>
 
@@ -37,18 +36,13 @@ export default function AppDrawer() {
         <Drawer 
           anchor="left" 
           open={open} 
-          onClose={toggleDrawer(false)}
-          ModalProps={{
-            keepMounted: false, // ensures it’s removed from DOM when closed
-          }}
-          
+          onClose={toggleDrawer(false)}  
         >
           <Box
             sx={{ width: 400, overflowY: "auto", overflowX: "hidden"}}
             role="presentation"
-            
-            //onClick={toggleDrawer(false)}
-            //onKeyDown={toggleDrawer(false)}
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
           >
             <Box
               sx={{
@@ -76,8 +70,8 @@ export default function AppDrawer() {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  textDecoration: "none", // remove underline
-                  color: "inherit",       // inherit text color
+                  textDecoration: "none", 
+                  color: "inherit",       
                 }}
               >
                 <Image src="/images/logos/logo.png" width={48} height={48} alt="Typing Help"/>
@@ -92,17 +86,6 @@ export default function AppDrawer() {
                     Typing Help
                 </Typography>
               </Box>
-            </Box>
-            <Box 
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',   
-                alignItems: 'center',
-                mt: 2,
-                mb: 2,
-              }}
-            >
-              <ModeToggle/>
             </Box>
             <DrawerItems/>
           </Box>
