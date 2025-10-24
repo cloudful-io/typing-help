@@ -42,7 +42,7 @@ const DashboardCard = ({
               justifyContent="space-between"
               alignItems={"center"}
               mb={1}
-              sx={{ p: 2 }}
+              sx={{ p: { xs: 2, sm: 3 } }}
             >
               <Box>
                 {title ? <Typography variant="h5">{title}</Typography> : ""}
