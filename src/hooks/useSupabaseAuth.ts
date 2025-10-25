@@ -1,37 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
-import { useSearchParams } from "next/navigation";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
 import { useMode } from "@/contexts/ModeContext";
-
-type Provider =
-  | 'azure'
-  | 'bitbucket'
-  | 'discord'
-  | 'facebook'
-  | 'github'
-  | 'gitlab'
-  | 'google'
-  | 'linkedin'
-  | 'slack'
-  | 'spotify'
-  | 'twitch'
-  | 'twitter'
-  | 'workos';
-
   
 export function useSupabaseAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  //const supabase = createClient();
-  const router = useRouter();
-  const { setRoles } = useUserRoles(); // <-- access context
-  const { setMode } = useMode();
 
-  const searchParams = useSearchParams();
-  const next = searchParams.get("next");
+  const router = useRouter();
+  const { setRoles } = useUserRoles(); 
+  const { setMode } = useMode();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -52,16 +32,6 @@ export function useSupabaseAuth() {
     return () => listener.subscription.unsubscribe();
   }, [setRoles]);
 
-  const signInWithProvider = (provider: Provider) =>
-    supabase.auth.signInWithOAuth({
-      provider,
-        options: { 
-          redirectTo: `${window.location.origin}/auth/callback${
-            next ? `?next=${encodeURIComponent(next)}` : ""
-          }`,
-        }
-    });
-
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) console.error("Sign out failed:", error.message);
@@ -72,5 +42,5 @@ export function useSupabaseAuth() {
     router.push('/');
   };
 
-  return { user, loading, signInWithProvider, signOut };
+  return { user, loading, signOut };
 }

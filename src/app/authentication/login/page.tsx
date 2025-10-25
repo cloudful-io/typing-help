@@ -1,10 +1,9 @@
 "use client";
 
-import { Grid, Box, Card, Stack, Typography } from "@mui/material";
-// components
+import { Grid, Box, Card, Typography } from "@mui/material";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
-import AuthLogin from "../auth/AuthLogin";
+import {AuthLogin} from "supabase-auth-lib";
 
 const Login2 = () => {
   return (
@@ -48,6 +47,7 @@ const Login2 = () => {
                 <Logo />
               </Box>
               <AuthLogin
+                providers={(process.env.NEXT_PUBLIC_SUPABASE_PROVIDERS ?? "").split(",")}
                 subtext={
                   <Typography
                     variant="h3"
