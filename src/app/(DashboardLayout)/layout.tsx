@@ -50,7 +50,7 @@ export default function RootLayout({
           sx={{
             paddingTop: "20px",
             maxWidth: "1200px",
-            paddingBottom: "20px"
+            paddingBottom: "40px"
           }}
         >
           {/* ------------------------------------------- */}
