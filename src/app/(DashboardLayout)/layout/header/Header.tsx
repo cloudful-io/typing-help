@@ -3,6 +3,7 @@ import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button, Typography } from '@mui/material';
 import Image from "next/image";
 import PropTypes from 'prop-types';
+
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import LoginButton from '@mui/icons-material/Login'
@@ -10,9 +11,10 @@ import AppDrawer from '../sidebar/AppDrawer';
 // components
 import Profile from './Profile';
 import { IconDeviceDesktopAnalytics } from '@tabler/icons-react';
+import { useMode } from '@/contexts/ModeContext';
 
 const Header = () => {
-
+  const { setMode } = useMode();
   const { user, loading, signOut } = useSupabaseAuth();
 
   const handleSignOut = async () => {

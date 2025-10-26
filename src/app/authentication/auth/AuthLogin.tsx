@@ -52,7 +52,7 @@ const providerIcons: Record<string, React.ReactNode> = {
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const providers = (process.env.NEXT_PUBLIC_SUPABASE_PROVIDERS ?? "").split(",");
-  const { signInWithProvider } = useSupabaseAuth();
+  //const { signInWithProvider } = useSupabaseAuth();
   
 
   if (!providers) {
@@ -86,7 +86,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               key={provider}
               variant="outlined"
               startIcon={providerIcons[provider] || null}
-              onClick={() => signInWithProvider(provider)}
+              //onClick={() => signInWithProvider(provider)}
             >
               Sign in with {provider}
             </Button>
