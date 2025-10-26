@@ -11,7 +11,7 @@ export default function BlogPage() {
   return (
     <PageContainer title="Product Updates" description="Typing Help: Product Updates">
       <Container sx={{ mt: 0 }}>
-      <BlogList posts={posts} />
+      <BlogList posts={posts} blogRootUrl='/blog' title='Product Updates' />
       </Container>
     </PageContainer>
   );

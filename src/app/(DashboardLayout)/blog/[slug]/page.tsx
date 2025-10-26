@@ -15,7 +15,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   return (
     <PageContainer title={frontmatter.title} description={frontmatter.excerpt}>
       <Container sx={{ mt: 0 }}>
-        <BlogPost frontmatter={frontmatter} content={content} />
+        <BlogPost frontmatter={frontmatter} content={content} blogRootUrl='/blog' title='Product Updates' />
       </Container>
     </PageContainer>
  )
