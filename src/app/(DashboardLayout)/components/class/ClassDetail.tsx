@@ -39,14 +39,12 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
       if (!user) return;
 
       // Check if user is a member first
-      // WY: const member = await isMember(user.id, classId);
       const member = await TypingClassService.isMember(user.id, classId);
       setIsUserMember(member);
 
       if (!member) return; // don't fetch class if not a member
 
       // Fetch the class
-      // WY: const data = await getTypingClassById(classId);
       const data = await TypingClassService.getTypingClassById(classId);
       setClassData(data);
 

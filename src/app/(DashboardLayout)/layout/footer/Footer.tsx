@@ -36,18 +36,16 @@ export default function Footer() {
     >
       <Stack 
         direction="column"
-        alignItems="center" // Center horizontally within the footer
-        width="100%" // Ensure it spans the full width
-        spacing={1} // Add a small vertical space between the mode toggles and links
+        alignItems="center" 
+        width="100%" 
+        spacing={1} 
       >
       {user && (
         <ToggleButtonGroup
           value={mode}
           exclusive
           onChange={(_, newMode) => {
-            if (newMode) 
-              setMode(newMode);
-                
+            if (!newMode || newMode === mode) return;    
             router.push(`/?m=${encodeURIComponent(newMode)}`);
           }}
           size="small"

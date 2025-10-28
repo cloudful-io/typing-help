@@ -1,5 +1,4 @@
 "use client";
-import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button, Typography } from '@mui/material';
 import Image from "next/image";
 import PropTypes from 'prop-types';
@@ -8,18 +7,11 @@ import Link from 'next/link';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import LoginButton from '@mui/icons-material/Login'
 import AppDrawer from '../sidebar/AppDrawer';
-// components
 import Profile from './Profile';
 import { IconDeviceDesktopAnalytics } from '@tabler/icons-react';
-import { useMode } from '@/contexts/ModeContext';
 
 const Header = () => {
-  const { setMode } = useMode();
-  const { user, loading, signOut } = useSupabaseAuth();
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
+  const { user, loading } = useSupabaseAuth();
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
@@ -47,8 +39,8 @@ const Header = () => {
           sx={{
             display: "flex",
             alignItems: "center",
-            textDecoration: "none", // remove underline
-            color: "inherit",       // inherit text color
+            textDecoration: "none", 
+            color: "inherit",       
           }}
         >
           <Image src="/images/logos/logo.png" width={48} height={48} alt="Typing Help"/>
@@ -94,7 +86,7 @@ const Header = () => {
 
           {user && (
             <>
-            <Profile user={user} signOut={handleSignOut} />
+            <Profile user={user} />
             </>
           )}
         </Stack>

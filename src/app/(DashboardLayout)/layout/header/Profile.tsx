@@ -4,22 +4,23 @@ import {
   Avatar,
   Box,
   Menu,
-  Button,
   IconButton,
   MenuItem,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { IconListCheck, IconMail, IconUser, IconDeviceDesktopAnalytics } from "@tabler/icons-react";
+import { IconMail, IconDeviceDesktopAnalytics } from "@tabler/icons-react";
 import { User } from "@supabase/supabase-js";
+import { useRouter } from 'next/navigation';
+import {AuthLogout} from "supabase-auth-lib";
 
 type ProfileProps = {
   user: User;
-  signOut: () => Promise<void>; 
 };
 
-const Profile: React.FC<ProfileProps> = ({ user, signOut }) => {
+const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const router = useRouter();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -27,7 +28,7 @@ const Profile: React.FC<ProfileProps> = ({ user, signOut }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const flag = false;
   return (
     <Box>
       <IconButton
@@ -72,16 +73,12 @@ const Profile: React.FC<ProfileProps> = ({ user, signOut }) => {
           <ListItemText>My Stats</ListItemText>
         </MenuItem>
         <Box mt={1} py={1} px={2}>
-          <Button
-            variant="outlined"
-            color="primary"
-            fullWidth
-            onClick={async () => {
-              await signOut();
+          <AuthLogout
+            onSignOutSuccess={() => {
+              router.push("/authentication/logout");
             }}
-          >
-            Logout
-          </Button>
+            onSignOutError={(err) => alert(`Logout failed: ${err.message}`)}
+          />
         </Box>
       </Menu>
     </Box>
