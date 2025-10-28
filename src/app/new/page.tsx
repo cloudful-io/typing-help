@@ -8,6 +8,7 @@ import { useUserRoles } from "@/contexts/UserRolesContext";
 import UserService from "@/services/user-service";
 import UserRoleService from "@/services/user-role-service";
 import UserProfileService from "@/services/user-profile-service";
+import Loading from "@/app/loading";
 
 import {
   Box,
@@ -112,14 +113,26 @@ export default function OnboardingPage() {
     if (user != null) {
       setDisplayName(user.user_metadata?.full_name);
     }
-  }, [user]);
+    const checkOnboardingStatus = async () => {
+    if (!user) return; // Wait until user is available (can also be null if not logged in)
+
+    try {
+      const existingUser = await UserService.getUserById(user.id);
+
+      if (existingUser?.onboarding_complete) {
+        
+        router.replace("/");
+      }
+    } catch (err) {
+      console.error("Failed to check onboarding status:", err);
+    }
+  };
+
+  checkOnboardingStatus();
+  }, [user, router]);
   
   if (user === undefined) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
-    );
+    return <Loading/>;
   }
 
   return (

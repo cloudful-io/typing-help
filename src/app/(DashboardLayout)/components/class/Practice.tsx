@@ -3,6 +3,7 @@ import PageContainer from '@/app/(DashboardLayout)/components/container/PageCont
 import { Container } from "@mui/material";
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Box, Grid, Typography, Paper, TextField, ToggleButtonGroup, ToggleButton, Button } from "@mui/material";
+import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard';
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
 import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
@@ -261,7 +262,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
             {/* Show Language selector and Load New Sentence button only if id is not specified */}
             {!id &&
               <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                <Button variant="outlined" size="small" disabled={sessionActive} onClick={handleNewSentence}>
+                <Button variant="outlined" size="small" disabled={sessionActive} onClick={handleNewSentence} startIcon={<ShuffleIcon/>}>
                   Load New Sentence
                 </Button>
                 <ToggleButtonGroup
