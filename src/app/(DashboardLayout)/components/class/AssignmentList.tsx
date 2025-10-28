@@ -11,6 +11,7 @@ import AddAssignment from './AddAssignment';
 import StudentAssignmentStat from './StudentAssignmentStat';
 import TeacherAssignmentStat from './TeacherAssignmentStat';
 import NextLink from 'next/link';
+import Loading from '@/app/loading';
 
 interface AssignmentListProps {
   classId: string;
@@ -102,9 +103,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
   
   if (loading)
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" p={2}>
-        <CircularProgress />
-      </Box>
+      <Loading/>
     );
     
   return (

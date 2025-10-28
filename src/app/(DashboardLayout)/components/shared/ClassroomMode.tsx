@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import TypingClassService from "@/services/typing-class-service";
+import Loading from "@/app/loading";
 
 interface TypingClass {
   id: number;
@@ -48,7 +49,7 @@ export default function ClassroomMode() {
   }, [user, roles, router]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading/>;
   }
 
   if (!hasClass) {

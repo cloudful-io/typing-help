@@ -43,6 +43,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
   const [assignedAt, setAssignedAt] = React.useState<Dayjs | null>(dayjs());
   const [language, setLanguage] = React.useState('en-US');
   const [duration, setDuration] = React.useState<number>(60);
+  const canSave = content && assignedAt;
 
   const [loading, setLoading] = useState(false);
   const [contentError, setContentError] = useState<string | null>(null);
@@ -196,7 +197,6 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
                   exclusive
                   onChange={(e, value) => value && setDuration(value)}
                   aria-label="duration selection"
-                  //sx={{ display: 'flex', justifyContent: 'space-around' }}
                 >
                   <ToggleButton value={30}>30s</ToggleButton>
                   <ToggleButton value={60}>60s</ToggleButton>
@@ -208,7 +208,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
           </Box>
             <DialogActions>
               <Button onClick={handleCancel}>Cancel</Button>
-              <Button type="submit" variant="contained" disabled={loading} onClick={handleSubmit}>
+              <Button type="submit" variant="contained" disabled={!canSave || loading} onClick={handleSubmit}>
                 {loading ? <CircularProgress size={24} /> : 'Add Assignment'}
               </Button>
             </DialogActions>

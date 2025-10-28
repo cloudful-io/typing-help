@@ -4,13 +4,13 @@ import { useMode } from "@/contexts/ModeContext";
 import { useEffect, useState } from "react"; 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from "next/navigation";
-import PracticeMode from "./PracticeMode";
 import Practice from "../class/Practice";
 import ClassroomMode from "./ClassroomMode";
 import GameMode from "./GameMode";
 import { User } from '@supabase/supabase-js';
 import UserService from "@/services/user-service";
 import { Box, CircularProgress } from "@mui/material";
+import Loading from "@/app/loading";
 
 interface ModeContentProps {
   user: User;
@@ -61,19 +61,7 @@ export default function ModeContent({ user }: ModeContentProps) {
   }, [searchParams, setMode]);
 
   if (loading) {
-    // Centered spinner
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "60vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <Loading/>;
   }
   return (
     <>

@@ -29,6 +29,9 @@ const CreateTypingClass: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const canSave = title;
+
+
   const isTeacher = roles.includes('teacher');
   if (!isTeacher) {
     router.push("/");
@@ -88,7 +91,7 @@ const CreateTypingClass: React.FC = () => {
 
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={loading}>
+            <Button type="submit" variant="contained" disabled={!canSave || loading}>
               {loading ? <CircularProgress size={24} /> : 'Create'}
             </Button>
           </DialogActions>

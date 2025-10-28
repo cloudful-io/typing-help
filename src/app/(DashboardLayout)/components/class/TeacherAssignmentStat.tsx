@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Box, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, Typography } from "@mui/material";
 import {PracticeSessionService} from "@/services/practice-session-service";
 import { Database } from "@/types/database.types";
+import Loading from "@/app/loading";
 
 interface TeacherAssignmentStatProps {
   textId: string;
@@ -34,7 +35,7 @@ export default function TeacherAssignmentStat({ textId }: TeacherAssignmentStatP
     fetchSessions();
   }, [textId]);
 
-  if (loading) return <CircularProgress size={20} />;
+  if (loading) return <Loading/>;
 
   if (sessions.length === 0)
     return <Typography variant="body2" sx={{mt:2}}>No students have completed this assignment yet.</Typography>;

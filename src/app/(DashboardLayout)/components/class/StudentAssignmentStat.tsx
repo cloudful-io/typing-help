@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Box, Typography, Chip, CircularProgress } from '@mui/material';
+import { Box, Chip, CircularProgress } from '@mui/material';
 import { PracticeSessionService } from '@/services/practice-session-service';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { Database } from "@/types/database.types";
- 
+import Loading from '@/app/loading';
+
 interface AssignmentStatProps {
   textId: string;
 }
@@ -36,11 +37,7 @@ export default function StudentAssignmentStat({ textId }: AssignmentStatProps) {
   }, [textId, user?.id]);
 
   if (loading) {
-    return (
-      <Box display="flex" alignItems="center" justifyContent="center" py={2}>
-        <CircularProgress size={20} />
-      </Box>
-    );
+    return <Loading/>;
   }
 
   if (!sessions.length) {

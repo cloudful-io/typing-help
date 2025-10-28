@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import TypingClassService from "@/services/typing-class-service";
 
-import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
+import { Typography, List, ListItem, ListItemText } from '@mui/material';
+import Loading from '@/app/loading';
 
 interface StudentsListProps {
   classId: string;
@@ -22,7 +23,7 @@ export default function StudentsList({ classId }: StudentsListProps) {
     fetchStudents();
   }, [classId]);
 
-  if (loading) return <Typography>Loading students...</Typography>;
+  if (loading) return <Loading/>;
   if (students.length === 0) return <Typography>No students in this class.</Typography>;
 
   return (
