@@ -51,13 +51,17 @@ export default function ModeContent({ user }: ModeContentProps) {
 
   useEffect(() => {
     const m = searchParams.get("m"); 
+    if (user === null) {
+      setMode("practice");
+      return;
+    }
     if (m) {
       const mode = m.toLowerCase();
       if (mode === "practice" || mode === "classroom" || mode === "game") {
         setMode(mode);
       }
     } 
-  }, [searchParams, setMode]);
+  }, [searchParams, user, setMode]);
 
   if (loading) {
     return <Loading/>;
