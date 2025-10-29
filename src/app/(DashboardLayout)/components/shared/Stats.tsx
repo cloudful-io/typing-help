@@ -20,6 +20,7 @@ import WPMCard from "./WPMCard";
 import { usePracticeSessions, PracticeSession } from "@/hooks/usePracticeSessions";
 import { getLanguageName } from "@/utils/language";
 import DeleteIcon from '@mui/icons-material/Delete';
+import Loading from "@/app/loading";
 
 const StatsPage: React.FC = () => {
   const { getPracticeSessions, clearPracticeSessions } = usePracticeSessions();
@@ -111,7 +112,7 @@ const StatsPage: React.FC = () => {
   ], []);
 
   if (loading) {
-    return <Box sx={{ p: 3 }}>Loading sessions...</Box>;
+    return <Loading/>;
   }
 
   const handleClearSessions = () => {

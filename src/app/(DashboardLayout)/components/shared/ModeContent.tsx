@@ -9,7 +9,6 @@ import ClassroomMode from "./ClassroomMode";
 import GameMode from "./GameMode";
 import { User } from '@supabase/supabase-js';
 import UserService from "@/services/user-service";
-import { Box, CircularProgress } from "@mui/material";
 import Loading from "@/app/loading";
 
 interface ModeContentProps {
