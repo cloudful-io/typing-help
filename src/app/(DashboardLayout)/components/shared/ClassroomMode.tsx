@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import TypingClassService from "@/services/typing-class-service";
+import { Box, Typography, Button } from "@mui/material";
 import Loading from "@/app/loading";
+import JoinTypingClass from "@/app/(DashboardLayout)/components/class/JoinTypingClass";
+import CreateTypingClass from "@/app/(DashboardLayout)/components/class/CreateTypingClass";
+import { IconSchool } from "@tabler/icons-react";
 
 interface TypingClass {
   id: number;
@@ -21,6 +25,9 @@ export default function ClassroomMode() {
   const [loading, setLoading] = useState(true);
   const [hasClass, setHasClass] = useState(false);
 
+  const isTeacher = roles.includes("teacher");
+  const isStudent = roles.includes("student");
+
   useEffect(() => {
     if (!user) {
       setLoading(false);
@@ -29,9 +36,9 @@ export default function ClassroomMode() {
 
     async function checkClasses() {
       let data: TypingClass[] = [];
-      if (roles.includes("teacher")) {
+      if (isTeacher) {
         data = await TypingClassService.getTypingClassesForTeacher(user!.id);
-      } else if (roles.includes("student")) {
+      } else if (isStudent) {
         data = await TypingClassService.getTypingClassesForStudent(user!.id);
       }
 
@@ -53,7 +60,38 @@ export default function ClassroomMode() {
   }
 
   if (!hasClass) {
-    return <>Classroom Available Soon!</>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "calc(100vh - 170px)",
+          textAlign: "center",
+          px: 2,
+        }}
+      >
+        <IconSchool size={64} style={{ marginBottom: 16 }} />
+        <Typography variant="h5" gutterBottom>
+          {isTeacher
+            ? "You haven’t created any classes yet."
+            : "You haven’t joined any classes yet."}
+        </Typography>
+
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          {isTeacher
+            ? "Start by creating a new class to invite your students."
+            : "Join your class by entering a class code provided by your teacher."}
+        </Typography>
+
+        {isTeacher ? (
+          <CreateTypingClass/>
+        ) : (
+          <JoinTypingClass/>
+        )}
+      </Box>
+    );
   }
 
   return null; // redirect will happen if hasClass
