@@ -30,11 +30,11 @@ const JoinTypingClass: React.FC = () => {
 
   const canSave = classCode;
 
-  const isStudent = roles.includes('student');
+  /*const isStudent = roles.includes('student');
   if (!isStudent) {
     router.push("/");
     return null;
-  }
+  }*/
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

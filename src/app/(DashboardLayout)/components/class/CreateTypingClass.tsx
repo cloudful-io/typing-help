@@ -32,11 +32,11 @@ const CreateTypingClass: React.FC = () => {
   const canSave = title;
 
 
-  const isTeacher = roles.includes('teacher');
+  /*const isTeacher = roles.includes('teacher');
   if (!isTeacher) {
     router.push("/");
     return null;
-  }
+  }*/
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
