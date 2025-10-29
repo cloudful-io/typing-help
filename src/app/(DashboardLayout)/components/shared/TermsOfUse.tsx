@@ -2,7 +2,6 @@ import { Typography, Stack, List, ListItem } from "@mui/material";
 
 export default function TermsOfUse() {
   return (
-    <>
       <Stack spacing={2}>
         <Typography variant="body1">
           Welcome to Typing Help (“we,” “our,” “us”). These Terms of Use (“Terms”)
@@ -162,6 +161,5 @@ export default function TermsOfUse() {
           , unless otherwise required by law.
         </Typography>
       </Stack>
-    </>
   );
 }

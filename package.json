@@ -25,7 +25,7 @@
     "@tabler/icons-react": "^3.35.0",
     "@types/node": "^24.9.1",
     "apexcharts": "5.3.5",
-    "cloudful-blog": "^1.4.2",
+    "cloudful-blog": "^1.4.3",
     "dayjs": "^1.11.18",
     "eslint": "9.37.0",
     "eslint-config-next": "15.5.4",

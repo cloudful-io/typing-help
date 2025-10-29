@@ -2,7 +2,6 @@ import { Typography, Stack, List, ListItem } from "@mui/material";
 
 export default function PrivacyPolicy() {
   return (
-    <>
       <Stack spacing={2}>
         <Typography variant="body1">
           This Privacy Policy explains how{" "}
@@ -195,6 +194,5 @@ export default function PrivacyPolicy() {
           revised policy.
         </Typography>
       </Stack>
-    </>
   );
 }
