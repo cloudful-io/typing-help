@@ -82,7 +82,7 @@ export default function AppDrawer() {
                 </Typography>
               </Box>
             </Box>
-            <DrawerItems/>
+            <DrawerItems onItemClick={toggleDrawer(false)}/>
           </Box>
         </Drawer>
       </Box>

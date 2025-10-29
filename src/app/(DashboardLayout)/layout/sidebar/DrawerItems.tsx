@@ -25,7 +25,7 @@ interface TypingClass {
   code: string;
 }
 
-export default function DrawerItems() {
+export default function DrawerItems({ onItemClick }: { onItemClick?: () => void }) {
   const { user } = useSupabaseAuth();
   const { roles } = useUserRoles();
   const { mode } = useMode();
@@ -98,7 +98,10 @@ export default function DrawerItems() {
                     <ListItemButton
                       key={cls.id}
                       selected={selectedClass === cls.id}
-                      onClick={() => handleClassClick(cls.id)}
+                      onClick={() => {
+                        onItemClick && onItemClick();
+                        handleClassClick(cls.id);
+                      }}
                       sx={{
                         borderRadius: 1,
                         mx: 1,
