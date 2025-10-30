@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import { Typography, Box } from "@mui/material";
 import { getWPMColor, isLanguageCharacterBased } from "@/utils/typing";
+import { useTheme } from "@mui/material/styles";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -26,7 +27,8 @@ const WPMCard: React.FC<WPMCardProps> = ({
 }) => {
   // Decide if this language should be CPM-based
   const isCharacterBased = isLanguageCharacterBased(language);
-
+  const theme = useTheme();
+  
   const label = isCharacterBased ? "CPM" : "WPM";
 
   // dynamic color based on performance
@@ -44,12 +46,13 @@ const WPMCard: React.FC<WPMCardProps> = ({
         hollow: { size: "60%" },
         track: { background: "#eee" },
         dataLabels: {
-          name: { show: true, text: label, offsetY: -10 },
+          name: { show: true, text: label, offsetY: -10,  },
           value: {
             show: true,
             fontSize: "22px",
             fontWeight: 600,
             formatter: (val: number) => `${val}`,
+            color: theme.palette.text.secondary
           },
         },
       },

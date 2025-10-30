@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import { useMemo } from "react";
 import { getAccuracyColor, calculateAccuracy } from '@/utils/typing';
+import {useTheme} from '@mui/material';
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -20,6 +21,7 @@ const AccuracyCard: React.FC<AccuracyCardProps> = ({ title = "Accuracy", correct
   const safeTotal = Math.max(0, total);
   const accuracy = calculateAccuracy(safeCorrect, safeTotal);
   const color = useMemo(() => getAccuracyColor(accuracy, safeTotal), [accuracy, safeTotal]);
+  const theme = useTheme();
 
   const chartOptions: ApexOptions = useMemo(() => ({
     chart: {
@@ -39,6 +41,7 @@ const AccuracyCard: React.FC<AccuracyCardProps> = ({ title = "Accuracy", correct
             fontSize: "18px",
             fontWeight: 600,
             formatter: (val: number) => `${val}%`,
+            color: theme.palette.text.secondary
           },
         },
       },

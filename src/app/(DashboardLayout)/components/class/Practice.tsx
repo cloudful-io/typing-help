@@ -12,6 +12,7 @@ import { computeTypingResults, countWords } from "@/utils/typing";
 import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
 import { PracticeTextService } from '@/services/practice-text-service';
 import Link from "next/link";
+import { useTheme } from "@mui/material/styles";
 
 interface PracticeProps {
   id?: string;
@@ -40,6 +41,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const [isComposing, setIsComposing] = useState(false);
 
   const textboxRef = useRef<HTMLInputElement>(null);
+  const theme = useTheme();
 
   const resetTypingState = useCallback(() => {
     setTypedText("");
@@ -164,14 +166,14 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
 
   return targetText.split("").map((char, idx) => {
     const typedChar = typedText[idx];
-    let color: string = "black";
+    let color: string = theme.palette.text.primary;
 
     // Only evaluate correctness if not composing
     if (!isComposing && typedChar != null) {
-      color = typedChar === char ? "green" : "red";
+      color = typedChar === char ? theme.palette.success.main : theme.palette.error.main;
     }
     else if (isComposing && committedTextLength > 0 && typedChar != null && idx < committedTextLength) {
-      color = typedChar === char ? "green" : "red";
+      color = typedChar === char ? theme.palette.success.main : theme.palette.error.main;
     }
 
     // Underline/bold only the next character

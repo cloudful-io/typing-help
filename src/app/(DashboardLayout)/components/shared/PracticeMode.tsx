@@ -9,6 +9,7 @@ import TimeUpModal from '@/app/(DashboardLayout)/components/shared/TimeUpModal'
 import { computeTypingResults, countWords } from "@/utils/typing";
 import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
 import { PracticeTextService } from '@/services/practice-text-service';
+import { useTheme } from "@mui/material/styles";
 
 const PracticeMode: React.FC = () => {
   type SessionState = "idle" | "running" | "paused" | "ended";
@@ -33,6 +34,7 @@ const PracticeMode: React.FC = () => {
   const [isComposing, setIsComposing] = useState(false);
 
   const textboxRef = useRef<HTMLInputElement>(null);
+  const theme = useTheme();
 
   const resetTypingState = useCallback(() => {
     setTypedText("");
@@ -177,7 +179,7 @@ const PracticeMode: React.FC = () => {
 
   return targetText.split("").map((char, idx) => {
     const typedChar = typedText[idx];
-    let color: string = "black";
+    let color: string = theme.palette.text.primary;
 
     // Only evaluate correctness if not composing
     if (!isComposing && typedChar != null) {

@@ -27,7 +27,7 @@ export function getTimerControlColor(remainingTime: number, totalTime: number): 
     
     const progress = remainingTime / totalTime;
 
-    if (progress > 0.25) return "success.main";
+    if (progress > 0.25) return "info.main";
     else if (progress > 0.1) return "warning.main";
     else return "error.main";
 }

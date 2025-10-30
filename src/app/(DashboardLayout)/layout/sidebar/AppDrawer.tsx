@@ -6,6 +6,7 @@ import Link from 'next/link';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
 import DrawerItems from './DrawerItems';
+import ThemeModeToggle from './ThemeModeToggle';
 
 export default function AppDrawer() {
   const [open, setOpen] = React.useState(false);
@@ -43,44 +44,48 @@ export default function AppDrawer() {
               sx={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
                 px: 2,
                 py: 1,
                 borderBottom: 1, 
                 borderColor: 'divider'
               }}
             >
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={toggleDrawer(false)}
-                sx={{ mr: 2 }}
-                  >
-                <MenuOpenIcon />
-              </IconButton>
-              <Box
-                component={Link}
-                href="/"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  textDecoration: "none", 
-                  color: "inherit",       
-                }}
-              >
-                <Image src="/images/logos/logo.png" width={48} height={48} alt="Typing Help"/>
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    ml: 1, 
-                    fontWeight: 800, 
-                    letterSpacing: "0.5px", 
-                    display: "block"
-                  }}>
-                    Typing Help
-                </Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={toggleDrawer(false)}
+                  sx={{ mr: 2 }}
+                    >
+                  <MenuOpenIcon />
+                </IconButton>
+                <Box
+                  component={Link}
+                  href="/"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    textDecoration: "none", 
+                    color: "inherit",       
+                  }}
+                >
+                  <Image src="/images/logos/logo.png" width={48} height={48} alt="Typing Help"/>
+                  <Typography 
+                    variant="h5" 
+                    sx={{ 
+                      ml: 1, 
+                      fontWeight: 800, 
+                      letterSpacing: "0.5px", 
+                      display: "block"
+                    }}>
+                      Typing Help
+                  </Typography>
+                </Box>
               </Box>
+              <ThemeModeToggle/>
             </Box>
             <DrawerItems onItemClick={toggleDrawer(false)}/>
           </Box>
