@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
-import { Box, Grid, Paper, Typography, Button, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { Box, Grid, Paper, Typography, Button, ToggleButtonGroup, ToggleButton, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { GridColDef } from "@mui/x-data-grid"; 
 import {
@@ -33,6 +33,7 @@ const StatsPage: React.FC = () => {
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [metric, setMetric] = useState<"wpm" | "accuracy">("wpm"); // toggle state
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
   const loadSessions = async () => {
@@ -115,9 +116,18 @@ const StatsPage: React.FC = () => {
     return <Loading/>;
   }
 
-  const handleClearSessions = () => {
+  const handleClearClick = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmClear = () => {
     clearPracticeSessions();
     setSessions([]);
+    setConfirmOpen(false);
+  };
+
+  const handleCancelClear = () => {
+    setConfirmOpen(false);
   };
 
   return (
@@ -181,14 +191,16 @@ const StatsPage: React.FC = () => {
           <Typography variant="h6" color="text.primary">
             All Sessions
           </Typography>
+          {sessions.length > 0 && (
           <Button
             variant="contained"
             color="error"
-            onClick={handleClearSessions}
+            onClick={handleClearClick}
             startIcon={<DeleteIcon />}
           >
             Clear All
           </Button>
+          )}
         </Box>
         <DataGrid
           rows={sessions}
@@ -198,6 +210,19 @@ const StatsPage: React.FC = () => {
           disableRowSelectionOnClick
         />
       </Paper>
+      {/* 🔒 Confirmation Dialog */}
+      <Dialog open={confirmOpen} onClose={handleCancelClear}>
+        <DialogTitle>Confirm Clear All</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete all practice sessions? This action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelClear}>Cancel</Button>
+          <Button onClick={handleConfirmClear} color="error" variant="contained">
+            Clear All
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
