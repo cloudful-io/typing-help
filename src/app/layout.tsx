@@ -1,7 +1,7 @@
 import "./global.css";
 import { UserRolesProvider } from "@/contexts/UserRolesContext";
-import Providers from "./providers"; // <- client wrapper
-import { getUserRolesByName } from "@/lib/userRole"
+import Providers from "./providers"; 
+import { UserRoleService } from "supabase-auth-lib";
 import { createClient } from '@/utils/supabase/server'
 
 export default async function RootLayout({
@@ -15,9 +15,9 @@ export default async function RootLayout({
 
   const user = data.user;
   let roles: string[] = [];
-
+  const userRoleService = new UserRoleService(supabase);
   if (user) {
-    roles = await getUserRolesByName(user.id); // returns array of role names
+    roles = await userRoleService.getUserRoles(user.id);
   }
 
   return (

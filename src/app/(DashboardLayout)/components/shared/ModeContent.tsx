@@ -10,7 +10,6 @@ import GameMode from "./GameMode";
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/utils/supabase/client';
 import { UserService } from 'supabase-auth-lib';
-//import UserService from "@/services/user-service";
 import Loading from "@/app/loading";
 
 interface ModeContentProps {

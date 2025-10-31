@@ -8,8 +8,7 @@ import { useUserRoles } from "@/contexts/UserRolesContext";
 import { supabase } from '@/utils/supabase/client';
 import { UserService } from 'supabase-auth-lib';
 import { UserProfileService } from 'supabase-auth-lib';
-import UserRoleService from "@/services/user-role-service";
-//import UserProfileService from "@/services/user-profile-service";
+import { UserRoleService } from 'supabase-auth-lib';
 import Loading from "@/app/loading";
 
 import {
@@ -100,7 +99,8 @@ export default function OnboardingPage() {
         id: user.id,
         display_name: displayName,
       });
-      await UserRoleService.addUserRoleByName({ userId: user.id, roleName: selectedRole });
+      const userRoleService = new UserRoleService(supabase);
+      await userRoleService.addUserRoleByName({ userId: user.id, roleName: selectedRole });
 
       setRoles([selectedRole]);
       setMode("classroom");
