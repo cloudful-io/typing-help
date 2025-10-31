@@ -9,11 +9,10 @@ import {
   sleep,
 } from "@/utils/supabase/helper";
 import { Database } from "@/types/database.types";
+import { UserProfileService } from 'supabase-auth-lib';
 
 type TypingClassRow = Database["public"]["Tables"]["typing_classes"]["Row"];
-type UserProfileRow = Database["public"]["Tables"]["user_profiles"]["Row"];
 type StudentClassRow = Database["public"]["Tables"]["student_classes"]["Row"];
-
 
 const DEFAULT_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz23456789";
 
@@ -188,13 +187,11 @@ export const TypingClassService = {
 
       const studentIds = studentClassRows.map((r) => r.student_id);
 
-      //console.log(studentIds);
       // Step 2: get user details for those student_ids
-      const users = await select<UserProfileRow>(
-        supabase.from("user_profiles").select("id, display_name").in("id", studentIds)
-      );
+      const userProfileService = new UserProfileService(supabase);
+      const userProfiles = await userProfileService.getProfilesByIds(studentIds);
 
-      return users;
+      return userProfiles;
     } catch (error) {
       console.error("getStudentsForClass failed:", error);
       return [];

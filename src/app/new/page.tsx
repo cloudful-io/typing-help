@@ -7,8 +7,9 @@ import { useMode } from "@/contexts/ModeContext";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { supabase } from '@/utils/supabase/client';
 import { UserService } from 'supabase-auth-lib';
+import { UserProfileService } from 'supabase-auth-lib';
 import UserRoleService from "@/services/user-role-service";
-import UserProfileService from "@/services/user-profile-service";
+//import UserProfileService from "@/services/user-profile-service";
 import Loading from "@/app/loading";
 
 import {
@@ -94,7 +95,8 @@ export default function OnboardingPage() {
 
       if (!userObject?.id) throw new Error("Failed to get user ID from database");
 
-      await UserProfileService.getOrCreateOrUpdate({
+      const userProfileService = new UserProfileService(supabase);
+      await userProfileService.getOrCreateOrUpdate({
         id: user.id,
         display_name: displayName,
       });
