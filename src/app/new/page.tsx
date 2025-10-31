@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useMode } from "@/contexts/ModeContext";
 import { useUserRoles } from "@/contexts/UserRolesContext";
-import UserService from "@/services/user-service";
+import { supabase } from '@/utils/supabase/client';
+import { UserService } from 'supabase-auth-lib';
 import UserRoleService from "@/services/user-role-service";
 import UserProfileService from "@/services/user-profile-service";
 import Loading from "@/app/loading";
@@ -84,7 +85,8 @@ export default function OnboardingPage() {
 
     setIsSaving(true);
     try {
-      const userObject = await UserService.getOrCreateOrUpdate({
+      const userService = new UserService(supabase);
+      const userObject = await userService.getOrCreateOrUpdate({
         id: user.id,
         email: user.email!,
         onboardingComplete: true,
@@ -117,7 +119,8 @@ export default function OnboardingPage() {
     if (!user) return; // Wait until user is available (can also be null if not logged in)
 
     try {
-      const existingUser = await UserService.getUserById(user.id);
+      const userService = new UserService(supabase);
+      const existingUser = await userService.getUserById(user.id);
 
       if (existingUser?.onboarding_complete) {
         

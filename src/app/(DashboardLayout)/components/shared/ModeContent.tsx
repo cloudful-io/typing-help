@@ -8,7 +8,9 @@ import Practice from "../class/Practice";
 import ClassroomMode from "./ClassroomMode";
 import GameMode from "./GameMode";
 import { User } from '@supabase/supabase-js';
-import UserService from "@/services/user-service";
+import { supabase } from '@/utils/supabase/client';
+import { UserService } from 'supabase-auth-lib';
+//import UserService from "@/services/user-service";
 import Loading from "@/app/loading";
 
 interface ModeContentProps {
@@ -26,7 +28,8 @@ export default function ModeContent({ user }: ModeContentProps) {
     async function checkOnboarding() {
       try {
         // Create or update user in DB
-        const userObject = await UserService.getOrCreateOrUpdate({
+        const userService = new UserService(supabase);
+        const userObject = await userService.getOrCreateOrUpdate({
           id: user.id,
           email: user.email!,
         });
