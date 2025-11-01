@@ -189,7 +189,7 @@ export const TypingClassService = {
 
       // Step 2: get user details for those student_ids
       const userProfileService = new UserProfileService(supabase);
-      const userProfiles = await userProfileService.getProfilesByIds(studentIds);
+      const userProfiles = await userProfileService.getByIds(studentIds);
 
       return userProfiles;
     } catch (error) {

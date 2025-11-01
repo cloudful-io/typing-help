@@ -17,7 +17,7 @@ export default async function RootLayout({
   let roles: string[] = [];
   const userRoleService = new UserRoleService(supabase);
   if (user) {
-    roles = await userRoleService.getUserRoles(user.id);
+    roles = await userRoleService.getByUserId(user.id);
   }
 
   return (

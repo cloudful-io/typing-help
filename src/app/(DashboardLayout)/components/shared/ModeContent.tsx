@@ -28,6 +28,7 @@ export default function ModeContent({ user }: ModeContentProps) {
       try {
         // Create or update user in DB
         const userService = new UserService(supabase);
+        
         const userObject = await userService.getOrCreateOrUpdate({
           id: user.id,
           email: user.email!,

@@ -100,7 +100,7 @@ export default function OnboardingPage() {
         display_name: displayName,
       });
       const userRoleService = new UserRoleService(supabase);
-      await userRoleService.addUserRoleByName({ userId: user.id, roleName: selectedRole });
+      await userRoleService.addByName({ userId: user.id, roleName: selectedRole });
 
       setRoles([selectedRole]);
       setMode("classroom");
@@ -122,7 +122,7 @@ export default function OnboardingPage() {
 
     try {
       const userService = new UserService(supabase);
-      const existingUser = await userService.getUserById(user.id);
+      const existingUser = await userService.getById(user.id);
 
       if (existingUser?.onboarding_complete) {
         
