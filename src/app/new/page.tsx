@@ -10,28 +10,8 @@ import { UserService } from 'supabase-auth-lib';
 import { UserProfileService } from 'supabase-auth-lib';
 import { UserRoleService } from 'supabase-auth-lib';
 import Loading from "@/app/loading";
-
-import {
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormGroup,
-  FormControlLabel,
-  Link,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-  CircularProgress,
-  TextField,
-  Snackbar,
-  Alert
-} from "@mui/material";
+import {OnboardingAgreementStep} from "supabase-auth-lib";
+import { Box, Button, Paper, Step, StepLabel, Stepper, Typography, CircularProgress, TextField, Snackbar, Alert } from "@mui/material";
 import Image from "next/image";
 import TermsOfUse from "@/app/(DashboardLayout)/components/shared/TermsOfUse";
 import PrivacyPolicy from "@/app/(DashboardLayout)/components/shared/PrivacyPolicy";
@@ -46,12 +26,6 @@ export default function OnboardingPage() {
   
   const [isSaving, setIsSaving] = useState(false);
 
-  // Step 1: Agreements
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [agreePrivacy, setAgreePrivacy] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
-  const [showPrivacy, setShowPrivacy] = useState(false);
-
   // Step 2: Profile
   const [displayName, setDisplayName] = useState("");
   const [selectedRole, setSelectedRole] = useState<"teacher" | "student" | null>(null);
@@ -59,7 +33,6 @@ export default function OnboardingPage() {
   // Step navigation
   const [activeStep, setActiveStep] = useState(0);
 
-  const canContinueStep1 = agreeTerms && agreePrivacy;
   const canContinueStep2 = selectedRole && displayName;
 
   const handleNext = () => setActiveStep((prev) => prev + 1);
@@ -105,8 +78,8 @@ export default function OnboardingPage() {
       setRoles([selectedRole]);
       setMode("classroom");
 
-        // Redirect user to Classroom mode
-        setTimeout(() => router.push("/?m=classroom"), 0);
+      // Redirect user to Classroom mode
+      setTimeout(() => router.push("/?m=classroom"), 0);
     } catch (error) {
         setErrorMsg("Failed to save profile. Please try again.");
     } finally {
@@ -122,12 +95,12 @@ export default function OnboardingPage() {
 
     try {
       const userService = new UserService(supabase);
-      const existingUser = await userService.getById(user.id);
-
-      if (existingUser?.onboarding_complete) {
-        
+      const isOnboarded = await userService.isOnboarded(user.id);
+      
+      if (isOnboarded) {
         router.replace("/");
       }
+      
     } catch (err) {
       console.error("Failed to check onboarding status:", err);
     }
@@ -143,7 +116,6 @@ export default function OnboardingPage() {
   return (
     <Box
       display="flex"
-      //flexDirection="column"
       alignItems="center"
       justifyContent="center"
       minHeight="100vh"
@@ -164,59 +136,12 @@ export default function OnboardingPage() {
         {/* Step Content */}
         {activeStep === 0 && (
           <>
-            <Typography variant="h5" gutterBottom>
-              Welcome to Typing.Help
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Before continuing, please review and accept the following:
-            </Typography>
-
-            <FormGroup>
-                {/* Terms of Use */}
-                <FormControlLabel
-                control={
-                    <Checkbox
-                    checked={agreeTerms}
-                    onChange={(e) => setAgreeTerms(e.target.checked)}
-                    />
-                }
-                label={
-                    <span>
-                    I agree to the{" "}
-                    <Link component="button" onClick={() => setShowTerms(true)}>
-                        Terms of Use
-                    </Link>
-                    </span>
-                }
-                />
-                {/* Privacy Policy */}
-                <FormControlLabel
-                control={
-                    <Checkbox
-                        checked={agreePrivacy}
-                        onChange={(e) => setAgreePrivacy(e.target.checked)}
-                    />
-                }
-                label={
-                    <span>
-                    I agree to the{" "}
-                    <Link component="button" onClick={() => setShowPrivacy(true)}>
-                        Privacy Policy
-                    </Link>
-                    </span>
-                }
-                />
-            </FormGroup>
-            <Box mt={3} display="flex" justifyContent="flex-end" gap={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!canContinueStep1}
-                onClick={handleNext}
-              >
-                Next
-              </Button>
-            </Box>
+            <OnboardingAgreementStep
+              title="Typing Help"
+              onContinue={handleNext}
+              TermsComponent={TermsOfUse}
+              PrivacyComponent={PrivacyPolicy}
+            />
           </>
         )}
 
@@ -304,59 +229,6 @@ export default function OnboardingPage() {
           </>
         )}
       </Paper>
-
-      {/* Terms Dialog */}
-      <Dialog
-        open={showTerms}
-        onClose={() => setShowTerms(false)}
-        scroll="paper"
-        maxWidth="sm"
-        aria-labelledby="terms-title"
-        fullWidth
-      >
-        <DialogTitle id="terms-title">Terms of Use</DialogTitle>
-        <DialogContent dividers>
-          <TermsOfUse/>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowTerms(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-            setAgreeTerms(true); // auto-check the box
-            setShowTerms(false);
-            }}
-          >
-            Accept
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Privacy Dialog */}
-      <Dialog
-        open={showPrivacy}
-        onClose={() => setShowPrivacy(false)}
-        maxWidth="sm"
-        aria-labelledby="privacy-title"
-        fullWidth
-      >
-        <DialogTitle id="privacy-title">Privacy Policy</DialogTitle>
-        <DialogContent dividers>
-          <PrivacyPolicy/>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowPrivacy(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-            setAgreePrivacy(true); // auto-check the box
-            setShowPrivacy(false);
-            }}
-          >
-            Accept
-          </Button>
-        </DialogActions>
-      </Dialog>
       <Snackbar
         open={!!errorMsg}
         autoHideDuration={4000}
