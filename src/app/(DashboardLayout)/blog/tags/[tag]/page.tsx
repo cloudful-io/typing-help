@@ -10,7 +10,7 @@ export default async function BlogTagPage(props: { params: Promise<{ tag: string
   )
   
   return (
-    <PageContainer title="Product Updates" description="Typing Help: Product Updates">
+    <PageContainer title={`Product Updates - ${tag}`} description={`Typing Help: Product Updates - ${tag}`}>
       <Container sx={{ mt: 0 }}>
       <BlogTagList posts={posts} blogRootUrl='/blog' title='Product Updates' tag={tag} showFullContent/>
       </Container>
