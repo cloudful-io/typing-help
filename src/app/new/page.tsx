@@ -68,10 +68,8 @@ export default function OnboardingPage() {
       if (!userObject?.id) throw new Error("Failed to get user ID from database");
 
       const userProfileService = new UserProfileService(supabase);
-      await userProfileService.getOrCreateOrUpdate({
-        id: user.id,
-        display_name: displayName,
-      });
+      await userProfileService.updateDisplayName(user.id, displayName);
+
       const userRoleService = new UserRoleService(supabase);
       await userRoleService.addByName({ userId: user.id, roleName: selectedRole });
 

@@ -9,7 +9,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { IconMail, IconDeviceDesktopAnalytics } from "@tabler/icons-react";
+import { IconUser, IconDeviceDesktopAnalytics } from "@tabler/icons-react";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from 'next/navigation';
 import {AuthLogout} from "supabase-auth-lib";
@@ -60,11 +60,11 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
           "& .MuiMenu-paper": { width: "200px" },
         }}
       >
-        <MenuItem>
+        <MenuItem component={Link} href="/profile" onClick={handleClose}>
           <ListItemIcon>
-            <IconMail width={20} />
+            <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Account</ListItemText>
+          <ListItemText>My Profile</ListItemText>
         </MenuItem>
         <MenuItem component={Link} href="/stats" onClick={handleClose}>
           <ListItemIcon>
