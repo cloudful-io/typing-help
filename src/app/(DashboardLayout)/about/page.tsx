@@ -2,8 +2,6 @@
 import { Box, Button, Grid, Typography, Card, CardContent, Avatar, Stack } from "@mui/material";
 import {useTheme} from '@mui/material';
 
-  
-
 const features = [
   {
     title: "Gamified Practice",
@@ -58,28 +56,28 @@ export default function AboutPage() {
         }}
       >
         <Box sx={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: 600 }}>
-          <Typography variant="h3" gutterBottom>
-            Type Faster. Learn Smarter. Compete Globally.
+          <Typography variant="h1" gutterBottom>
+            Learning Through Practice, Classes, and Fun.
           </Typography>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h4" gutterBottom>
             Master your typing skills through fun, interactive exercises. Track your progress, challenge friends, and reach your personal best.
           </Typography>
           <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            <Button variant="contained" size="large" color="primary">Start Practicing</Button>
-            <Button variant="outlined" size="large" >See a Demo</Button>
+            <Button variant="contained" size="large" color="primary" href="/practice">Start Practicing</Button>
+            {/*<Button variant="outlined" size="large" >See a Demo</Button>*/}
           </Stack>
         </Box>
       </Box>
 
       {/* Features Section */}
-      <Box sx={{ py: 6, px: 2, bgcolor: "grey.50" }}>
+      <Box sx={{ py: 6, px: 2,  }}>
         <Typography variant="h4" align="center" gutterBottom>
-          Why Choose Our App
+          Why Use Typing Help
         </Typography>
         <Grid container spacing={4} sx={{ mt: 3 }}>
           {features.map((feature) => (
-            <Grid key={feature.title} sx={{xs:12, sm:6, md:3}}>
-              <Card sx={{ height: "100%", textAlign: "center", p: 2 }}>
+            <Grid key={feature.title} size={{xs:12, sm:6, lg:3}}>
+              <Card sx={{ width: "100%", height: "100%", textAlign: "center", p: 2 }}>
                 <Avatar sx={{ mx: "auto", mb: 2 }}>{feature.title[0]}</Avatar>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>{feature.title}</Typography>

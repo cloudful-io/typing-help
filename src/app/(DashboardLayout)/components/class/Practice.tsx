@@ -13,12 +13,14 @@ import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSes
 import { PracticeTextService } from '@/services/practice-text-service';
 import Link from "next/link";
 import { useTheme } from "@mui/material/styles";
+import { useMode } from '@/contexts/ModeContext';
 
 interface PracticeProps {
   id?: string;
 }
 
 const Practice: React.FC<PracticeProps> = ({ id }) => {
+  const { setMode } = useMode();
 
   type SessionState = "idle" | "running" | "paused" | "ended";
   const [sessionState, setSessionState] = useState<SessionState>("idle");
@@ -90,6 +92,10 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   useEffect(() => {
     fetchPracticeText();
   }, [fetchPracticeText]);
+
+  useEffect(() => {
+    setMode("practice");
+  }, [setMode]);
 
   const handleNewSentence = () => {
     fetchPracticeText();
