@@ -39,7 +39,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const [correctChars, setCorrectChars] = useState<number>(0);
   const [totalChars, setTotalChars] = useState<number>(0);
 
-  const [language, setLanguage] = useState("zh-Hant");
+  const [language, setLanguage] = useState("en-US");
   const [isComposing, setIsComposing] = useState(false);
 
   const textboxRef = useRef<HTMLInputElement>(null);
