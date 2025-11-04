@@ -8,7 +8,7 @@ export default async function Dashboard() {
   const { data, error } = await supabase.auth.getUser()
 
   return (
-    <PageContainer title="Practice" description="This page allows you to practice your typing skills with various texts and track your performance.">
+    <PageContainer title="Typing Help" description="Typing Help is a learning platform to help people of all ages to improve their typing skills, through practices, games, and managed virtual learning.">
       <Container sx={{ mt: 0 }}>
         <HomeContent user={data.user!} />
       </Container>
