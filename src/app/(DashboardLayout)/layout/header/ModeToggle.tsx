@@ -41,7 +41,7 @@ export default function ModeToggle() {
         <KeyboardIcon sx={{ mr: 1 }} />
         Practice
       </ToggleButton>
-      <ToggleButton value="classroom" sx={commonStyles} aria-label="Classroom Mode">
+      <ToggleButton value="class" sx={commonStyles} aria-label="Classroom Mode">
         <SchoolIcon sx={{ mr: 1 }} />
         Classroom
       </ToggleButton>

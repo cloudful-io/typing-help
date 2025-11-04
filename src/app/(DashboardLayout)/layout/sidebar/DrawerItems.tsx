@@ -36,7 +36,7 @@ export default function DrawerItems({ onItemClick }: { onItemClick?: () => void 
   const [selectedClass, setSelectedClass] = useState<number | "">("");
   const [expanded, setExpanded] = useState<boolean>(true);
 
-  const isClassroomMode = mode === "classroom";
+  const isClassroomMode = mode === "class";
   const isTeacher = roles.includes("teacher");
   const isStudent = roles.includes("student");
 

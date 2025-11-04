@@ -27,7 +27,7 @@ export default function ActionButton() {
   const [selectedClass, setSelectedClass] = useState<number | "">("");
 
   const isPracticeMode = (mode === "practice");
-  const isClassroomMode = (mode === "classroom");
+  const isClassroomMode = (mode === "class");
   const isGameMode = (mode === "game");
 
   const isTeacher = roles.includes('teacher');
