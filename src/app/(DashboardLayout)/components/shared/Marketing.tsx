@@ -29,7 +29,7 @@ const features = [
   },
 ];
 
-export default function AboutPage() {
+export default function Marketing() {
   const theme = useTheme();
   return (
     <Box sx={{ width: "100%", overflowX: "hidden" }}>

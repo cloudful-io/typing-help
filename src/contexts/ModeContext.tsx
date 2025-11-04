@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
-type Mode = "practice" | "classroom" | "game";
+type Mode = "practice" | "class" | "game";
 
 interface ModeContextValue {
   mode: Mode;

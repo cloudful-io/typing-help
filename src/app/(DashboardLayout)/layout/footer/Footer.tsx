@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useMode } from "@/contexts/ModeContext";
 import { Box, ToggleButton, ToggleButtonGroup, Link, Stack, Typography} from "@mui/material";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
@@ -9,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 
 export default function Footer() {
-  const { mode, setMode } = useMode();
+  const { mode } = useMode();
   const { user } = useSupabaseAuth();
   const router = useRouter();
 
@@ -46,7 +45,7 @@ export default function Footer() {
           exclusive
           onChange={(_, newMode) => {
             if (!newMode || newMode === mode) return;    
-            router.push(`/?m=${encodeURIComponent(newMode)}`);
+            router.push(`/${encodeURIComponent(newMode)}`);
           }}
           size="small"
           color="primary"
@@ -54,7 +53,7 @@ export default function Footer() {
           <ToggleButton value="practice">
             <PsychologyIcon sx={{ mr: 0.5 }} aria-label="Practice Mode"/> Practice Mode
           </ToggleButton>
-          <ToggleButton value="classroom">
+          <ToggleButton value="class">
             <SchoolIcon sx={{ mr: 0.5 }} aria-label="Classroom Mode"/> Classroom Mode
           </ToggleButton>
           <ToggleButton value="game">

@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import TypingClassService from "@/services/typing-class-service";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Loading from "@/app/loading";
 import JoinTypingClass from "@/app/(DashboardLayout)/components/class/JoinTypingClass";
 import CreateTypingClass from "@/app/(DashboardLayout)/components/class/CreateTypingClass";
 import { IconSchool } from "@tabler/icons-react";
+import { useMode } from '@/contexts/ModeContext';
 
 interface TypingClass {
   id: number;
@@ -21,6 +22,7 @@ export default function ClassroomMode() {
   const router = useRouter();
   const { user } = useSupabaseAuth();
   const { roles } = useUserRoles();
+  const { setMode } = useMode();
 
   const [loading, setLoading] = useState(true);
   const [hasClass, setHasClass] = useState(false);
@@ -54,6 +56,10 @@ export default function ClassroomMode() {
 
     checkClasses();
   }, [user, roles, router]);
+
+  useEffect(() => {
+    setMode("class");
+  }, [setMode]);
 
   if (loading) {
     return <Loading/>;

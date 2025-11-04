@@ -44,7 +44,7 @@ export default function OnboardingPage() {
     // Anonymous users
     if (!user) {
         // Redirect user to practice mode
-        router.push("/?m=practice");
+        router.push("/practice");
         return;
     }
     else if (!displayName) {
@@ -74,10 +74,10 @@ export default function OnboardingPage() {
       await userRoleService.addByName({ userId: user.id, roleName: selectedRole });
 
       setRoles([selectedRole]);
-      setMode("classroom");
+      setMode("class");
 
       // Redirect user to Classroom mode
-      setTimeout(() => router.push("/?m=classroom"), 0);
+      setTimeout(() => router.push("/class"), 0);
     } catch (error) {
         setErrorMsg("Failed to save profile. Please try again.");
     } finally {

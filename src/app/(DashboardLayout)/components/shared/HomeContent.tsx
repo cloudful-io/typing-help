@@ -1,25 +1,22 @@
 "use client";
 
-import { useMode } from "@/contexts/ModeContext";
 import { useEffect, useState } from "react"; 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from "next/navigation";
-import Practice from "../class/Practice";
 import ClassroomMode from "./ClassroomMode";
-import GameMode from "./GameMode";
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/utils/supabase/client';
 import { UserService } from 'supabase-auth-lib';
 import Loading from "@/app/loading";
+import Marketing from "./Marketing";
 
-interface ModeContentProps {
+interface HomeContentProps {
   user: User;
 }
 
-export default function ModeContent({ user }: ModeContentProps) {
+export default function HomeContent({ user }: HomeContentProps) {
 
   const searchParams = useSearchParams();
-  const { mode, setMode } = useMode();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -52,34 +49,13 @@ export default function ModeContent({ user }: ModeContentProps) {
     }
   }, [user, router]);
 
-  useEffect(() => {
-    const m = searchParams.get("m"); 
-    if (user === null) {
-      setMode("practice");
-      return;
-    }
-    if (m) {
-      const mode = m.toLowerCase();
-      if (mode === "practice" || mode === "classroom" || mode === "game") {
-        setMode(mode);
-      }
-    } 
-  }, [searchParams, user, setMode]);
-
   if (loading) {
     return <Loading/>;
   }
+  if (user) {
+    return <ClassroomMode/>;
+  }
   return (
-    <>
-      {mode === "practice" && 
-        <Practice/>
-      }
-      {mode === "classroom" && 
-        <ClassroomMode/>
-      }
-      {mode === "game" && 
-       <GameMode/>
-      }
-    </>
+    <Marketing/>
   );
 }

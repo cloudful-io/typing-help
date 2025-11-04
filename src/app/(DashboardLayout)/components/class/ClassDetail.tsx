@@ -53,7 +53,7 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
       setActiveClass(data);
 
       // Set mode to classroom
-      setMode('classroom');
+      setMode('class');
     }
 
     initClass();

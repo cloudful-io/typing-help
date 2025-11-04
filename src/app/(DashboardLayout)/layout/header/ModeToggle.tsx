@@ -33,7 +33,7 @@ export default function ModeToggle() {
         if (newMode) 
           setMode(newMode);
             
-        router.push(`/?m=${encodeURIComponent(newMode)}`);
+        router.push(`/${encodeURIComponent(newMode)}`);
       }}
       size="small"
     >

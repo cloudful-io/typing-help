@@ -1,5 +1,5 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
-import ModeContent from '@/app/(DashboardLayout)/components/shared/ModeContent';
+import HomeContent from '@/app/(DashboardLayout)/components/shared/HomeContent';
 import { Container } from "@mui/material";
 import { createClient } from '@/utils/supabase/server'
 
@@ -10,7 +10,7 @@ export default async function Dashboard() {
   return (
     <PageContainer title="Practice" description="This page allows you to practice your typing skills with various texts and track your performance.">
       <Container sx={{ mt: 0 }}>
-        <ModeContent user={data.user!} />
+        <HomeContent user={data.user!} />
       </Container>
     </PageContainer>
   );
