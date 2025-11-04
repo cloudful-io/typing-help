@@ -10,22 +10,22 @@ const features = [
   {
     title: "Classroom Management",
     description: "Monitor students' progress and tailor to their specific needs.",
-    icon: <SchoolOutlinedIcon color="action" sx={{ fontSize: 60 }}/>,
+    icon: <SchoolOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
   },
   {
     title: "Competitive Practice",
     description: "Level up your typing skills with engaging mini-games.",
-    icon: <SportsEsportsOutlinedIcon color="action" sx={{ fontSize: 60 }}/>,
+    icon: <SportsEsportsOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
   },
   {
     title: "Progress Tracking",
     description: "Monitor your speed, accuracy, and improvements over time.",
-    icon: <AutoGraphOutlinedIcon color="action" sx={{ fontSize: 60 }}/>,
+    icon: <AutoGraphOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
   },
   {
     title: "Gaming Leaderboard",
     description: "Compete with friends and see where you rank.",
-    icon: <LeaderboardOutlinedIcon color="action" sx={{ fontSize: 60 }}/>,
+    icon: <LeaderboardOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
   },
 ];
 

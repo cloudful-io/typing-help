@@ -18,7 +18,7 @@ export const baselightTheme = createTheme({
       dark: "#7432F2",
     },
     secondary: {
-      main: "#49BEFF",
+      main: "#3A99D9",
       light: "#E8F7FF",
       dark: "#23afdb",
     },
@@ -109,7 +109,7 @@ export const basedarkTheme = createTheme({
       dark: "#7432F2",
     },
     secondary: {
-      main: "#5AC8FA",
+      main: "#5C92D2",
       light: "#6ED4FF",
       dark: "#007AFF",
     },
