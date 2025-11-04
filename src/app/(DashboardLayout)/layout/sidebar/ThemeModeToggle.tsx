@@ -9,7 +9,7 @@ export default function ThemeModeToggle() {
 
   return (
     <Tooltip title={`Switch to ${themeMode === "light" ? "dark" : "light"} mode`}>
-      <IconButton color="inherit" onClick={toggleThemeMode}>
+      <IconButton color="primary" onClick={toggleThemeMode}>
         {themeMode === "light" ? <DarkMode /> : <LightMode />}
       </IconButton>
     </Tooltip>
