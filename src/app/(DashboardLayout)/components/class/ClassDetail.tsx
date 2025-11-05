@@ -14,13 +14,7 @@ import StudentsList from './StudentList';
 import AssignmentList from './AssignmentList';
 import TypingClassService from "@/services/typing-class-service";
 import Loading from '@/app/loading';
-
-interface TypingClass {
-  id: number;
-  title: string;
-  code: string;
-  teacher_name: string;
-}
+import { TypingClassWithTeacher } from '@/services/typing-class-service';
 
 interface ClassDetailProps {
   classId: string;
@@ -31,7 +25,7 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
   const { setActiveClass } = useClassContext();
   const { user } = useSupabaseAuth();
 
-  const [classData, setClassData] = useState<TypingClass | null>(null);
+  const [classData, setClassData] = useState<TypingClassWithTeacher | null>(null);
   const [isUserMember, setIsUserMember] = useState<boolean | null>(null); 
   const [activeTab, setActiveTab] = useState("0"); // 0 = Practice, 1 = Students
 

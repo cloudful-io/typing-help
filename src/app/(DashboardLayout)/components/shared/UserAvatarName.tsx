@@ -13,7 +13,7 @@ interface UserAvatarNameProps {
 export default function UserAvatarName({
   displayName,
   avatarUrl,
-  size = 24,
+  size = 36,
   direction = "row",
   showName = true,
 }: UserAvatarNameProps) {

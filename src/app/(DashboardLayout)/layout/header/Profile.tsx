@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Avatar,
@@ -13,14 +13,38 @@ import { IconUser, IconDeviceDesktopAnalytics } from "@tabler/icons-react";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from 'next/navigation';
 import {AuthLogout} from "supabase-auth-lib";
-
+import userProfileService from "@/services/user-profile-service";
 type ProfileProps = {
   user: User;
 };
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [displayName, setDisplayName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
   const router = useRouter();
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        if (user) {
+          const profile = await userProfileService.getById(user.id);
+          if (profile) {
+            setDisplayName(profile.display_name);
+            setAvatarUrl(profile.avatar_url || undefined);
+          } 
+          else {
+            setDisplayName(user.user_metadata?.full_name);
+            setAvatarUrl(user.user_metadata?.avatar_url || undefined);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+      }
+    };
+    loadProfile();
+  }, [user]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,12 +62,12 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
         onClick={handleClick}
       >
         <Avatar
-          src={user.user_metadata?.avatar_url || undefined} // provider image if available
+          src={avatarUrl || undefined} // provider image if available
           alt={user.email || "User"}
           sx={{ width: 35, height: 35 }}
         >
           {/* fallback initials if no image */}
-          {!user.user_metadata?.avatar_url && user.email
+          {!avatarUrl && user.email
             ? user.email.charAt(0).toUpperCase()
             : null}
         </Avatar>

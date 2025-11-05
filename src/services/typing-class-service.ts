@@ -1,5 +1,3 @@
-// typing-class-service.ts
-
 import { supabase } from "@/utils/supabase/client";
 import {
   wrapError,
@@ -9,12 +7,18 @@ import {
   sleep,
 } from "@/utils/supabase/helper";
 import { Database } from "@/types/database.types";
-import { UserProfileService } from 'supabase-auth-lib';
 
 type TypingClassRow = Database["public"]["Tables"]["typing_classes"]["Row"];
 type StudentClassRow = Database["public"]["Tables"]["student_classes"]["Row"];
-type TypingClassWithTeacher = TypingClassRow & {
+export type TypingClassWithTeacher = TypingClassRow & {
   teacher_name: string;
+  teacher_avatar_url: string | null;
+  teacher_bio: string | null;
+};
+export type StudentClassWithStudent = StudentClassRow & {
+  student_name: string;
+  student_avatar_url: string | null;
+  student_bio: string | null;
 };
 
 const DEFAULT_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz23456789";
@@ -115,7 +119,7 @@ export const TypingClassService = {
   },
 
 
-  async getTypingClassesForStudent(studentId: string) {
+  async getTypingClassesForStudent(studentId: string): Promise<TypingClassWithTeacher[]> {
     try {
       const rows = await select<TypingClassWithTeacher>(
         supabase
@@ -180,40 +184,17 @@ export const TypingClassService = {
 
   async getStudentsForClass(classId: string) {
     try {
-      // Step 1: get all student_ids for the given class
-      const studentClassRows = await select<{ student_id: string }>(
-        supabase.from("student_classes").select("student_id").eq("class_id", classId)
+      const rows = await select<StudentClassWithStudent>(
+        supabase
+          .from("student_classes_with_profile")
+          .select("*")
+          .eq("class_id", classId)
+          .order("student_name")
       );
 
-      if (!studentClassRows.length) return [];
-
-      const studentIds = studentClassRows.map((r) => r.student_id);
-
-      // Step 2: get user details for those student_ids
-      const { data: studentsData, error: studentsError } = await supabase
-        .from("auth.users")
-        .select("id, email, raw_user_meta_data")
-        .in("id", studentIds);
-
-      if (studentsError || !studentsData) {
-        console.error("getStudentsForClass failed:", studentsError);
-        return [];
-      }
-
-      // Step 3: Normalize the output (for consistent structure)
-      const students = studentsData.map((s) => ({
-        id: s.id,
-        email: s.email,
-        display_name:
-          s.raw_user_meta_data?.full_name ||
-          s.raw_user_meta_data?.name ||
-          s.email ||
-          "Unknown",
-      }));
-
-      return students;
-    } catch (error) {
-      console.error("getStudentsForClass failed:", error);
+      return rows;
+    } catch (err) {
+      console.error("Error fetching students for class:", err);
       return [];
     }
   },

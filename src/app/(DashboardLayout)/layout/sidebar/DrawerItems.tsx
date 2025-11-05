@@ -18,12 +18,7 @@ import CreateTypingClass from "@/app/(DashboardLayout)/components/class/CreateTy
 import JoinTypingClass from "@/app/(DashboardLayout)/components/class/JoinTypingClass";
 import { useRouter, useParams } from "next/navigation";
 import TypingClassService from "@/services/typing-class-service";
-
-interface TypingClass {
-  id: number;
-  title: string;
-  code: string;
-}
+import { TypingClassWithTeacher } from "@/services/typing-class-service";
 
 export default function DrawerItems({ onItemClick }: { onItemClick?: () => void }) {
   const { user } = useSupabaseAuth();
@@ -32,7 +27,7 @@ export default function DrawerItems({ onItemClick }: { onItemClick?: () => void 
   const router = useRouter();
   const params = useParams();
 
-  const [classes, setClasses] = useState<TypingClass[]>([]);
+  const [classes, setClasses] = useState<TypingClassWithTeacher[]>([]);
   const [selectedClass, setSelectedClass] = useState<number | "">("");
   const [expanded, setExpanded] = useState<boolean>(true);
 
@@ -44,7 +39,7 @@ export default function DrawerItems({ onItemClick }: { onItemClick?: () => void 
   useEffect(() => {
     if (!user) return;
     async function fetchClasses() {
-      let data: TypingClass[] = [];
+      let data: TypingClassWithTeacher[] = [];
       if (isTeacher) {
         data = await TypingClassService.getTypingClassesForTeacher(user!.id);
       } else if (isStudent) {
