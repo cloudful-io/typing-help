@@ -19,7 +19,7 @@ interface TypingClass {
   id: number;
   title: string;
   code: string;
-  teacherName: string;
+  teacher_name: string;
 }
 
 interface ClassDetailProps {
@@ -71,7 +71,7 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
     <>
       <PageContainer title={classData.title} description={classData.title}>
         <Container sx={{ mt: 0 }}>
-          <ClassHeader title={classData.title} code={classData.code} teacher={classData.teacherName}/>
+          <ClassHeader title={classData.title} code={classData.code} teacher={classData.teacher_name}/>
 
           <Box sx={{ width: '100%', typography: 'body1' }}>
             <TabContext value={activeTab}>

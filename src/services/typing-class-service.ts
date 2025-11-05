@@ -98,25 +98,20 @@ export const TypingClassService = {
   },
 
   async getTypingClassById(classId: string) {
-    const { data: classData, error: classError } = await supabase
-      .from('typing_classes')
-      .select('*')
-      .eq('id', classId)
-      .single();
+    try {
+      const row = await selectMaybeSingle<TypingClassWithTeacher>(
+        supabase
+          .from("typing_classes_with_teacher")
+          .select("*")
+          .eq("id", classId)
+          .order("title")
+      );
 
-    if (!classData) return null;
-
-    // Get teacher name
-    const { data: teacherData } = await supabase
-      .from('user_profiles') 
-      .select('display_name')
-      .eq('id', classData.teacher_id)
-      .single();
-
-    return {
-      ...classData,
-      teacherName: teacherData?.display_name || 'Unknown',
-    };
+      return row;
+    } catch (err) {
+      console.error("Error fetching typing classes for teacher:", err);
+      return null;
+    }
   },
 
 
@@ -195,10 +190,28 @@ export const TypingClassService = {
       const studentIds = studentClassRows.map((r) => r.student_id);
 
       // Step 2: get user details for those student_ids
-      const userProfileService = new UserProfileService(supabase);
-      const userProfiles = await userProfileService.getByIds(studentIds);
+      const { data: studentsData, error: studentsError } = await supabase
+        .from("auth.users")
+        .select("id, email, raw_user_meta_data")
+        .in("id", studentIds);
 
-      return userProfiles;
+      if (studentsError || !studentsData) {
+        console.error("getStudentsForClass failed:", studentsError);
+        return [];
+      }
+
+      // Step 3: Normalize the output (for consistent structure)
+      const students = studentsData.map((s) => ({
+        id: s.id,
+        email: s.email,
+        display_name:
+          s.raw_user_meta_data?.full_name ||
+          s.raw_user_meta_data?.name ||
+          s.email ||
+          "Unknown",
+      }));
+
+      return students;
     } catch (error) {
       console.error("getStudentsForClass failed:", error);
       return [];

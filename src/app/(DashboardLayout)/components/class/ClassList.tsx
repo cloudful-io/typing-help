@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUserRoles } from "@/contexts/UserRolesContext";
-import { useMode } from "@/contexts/ModeContext";
 import {
   Box,
   Card,
@@ -30,7 +29,6 @@ interface TypingClass {
 export default function ClassList() {
   const { user } = useSupabaseAuth();
   const { roles } = useUserRoles();
-  const { mode } = useMode();
   const router = useRouter();
   const params = useParams();
   const theme = useTheme();
@@ -101,13 +99,11 @@ export default function ClassList() {
                   <CardHeader
                       title={
                           <Typography
-                          variant="h6"
-                          sx={{
-                              color: theme.palette.getContrastText(
-                              theme.palette.secondary.main
-                              ),
-                          }}
-                          >
+                            variant="h6"
+                            sx={{
+                                color: theme.palette.getContrastText(theme.palette.secondary.main),
+                            }}
+                            >
                           {cls.title}
                           </Typography>
                       }
