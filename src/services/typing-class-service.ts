@@ -122,45 +122,33 @@ export const TypingClassService = {
 
   async getTypingClassesForStudent(studentId: string) {
     try {
-      const rows = await select<any>(
+      const rows = await select<TypingClassWithTeacher>(
         supabase
           .from("student_classes")
-          .select("typing_classes(*)")
+          .select("typing_classes_with_teacher(*)")
           .eq("student_id", studentId)
-          .order("typing_classes(title)")
       );
 
-      return rows.map((r: any) => r.typing_classes) as TypingClassRow[];
-    } catch {
+      return rows
+        .map((r: any) => r.typing_classes_with_teacher)
+        .sort((a, b) => a.title.localeCompare(b.title));
+    } catch (err) {
+      console.error("Error fetching typing classes for student:", err);
       return [];
     }
   },
 
   async getTypingClassesForTeacher(teacherId: string): Promise<TypingClassWithTeacher[]> {
     try {
-      const { data, error } = await supabase
-        .from("typing_classes")
-        .select(`
-          id,
-          title,
-          code,
-          teacher_id,
-          teacher:auth.users (
-            email,
-            raw_user_meta_data
-          )
-        `)
-        .eq("teacher_id", teacherId)
-        .order("title");
+      const rows = await select<TypingClassWithTeacher>(
+        supabase
+          .from("typing_classes_with_teacher")
+          .select("*")
+          .eq("teacher_id", teacherId)
+          .order("title")
+      );
 
-      if (error) throw error;
-      if (!data) return [];
-
-      return data.map((cls: any) => ({
-        ...cls,
-        teacher_name:
-          cls.teacher?.raw_user_meta_data?.name || cls.teacher?.email || "Unknown",
-      }));
+      return rows;
     } catch (err) {
       console.error("Error fetching typing classes for teacher:", err);
       return [];

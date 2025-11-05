@@ -49,7 +49,7 @@ export default function ClassList() {
       if (isTeacher) {
         data = await TypingClassService.getTypingClassesForTeacher(user!.id);
       } else if (isStudent) {
-        //data = await TypingClassService.getTypingClassesForStudent(user!.id);
+        data = await TypingClassService.getTypingClassesForStudent(user!.id);
       }
       setClasses(data);
     }
@@ -75,62 +75,69 @@ export default function ClassList() {
         <Grid container spacing={2}>
         {classes.map((cls) => (
             <Grid key={cls.id} size={{xs:12, sm: 6, md: 4}} >
-            <Card
-                  variant="outlined"
-                  sx={{
-                    height: "150px",
-                    borderColor:
-                      selectedClass === cls.id ? "primary.main" : "divider",
-                    boxShadow: selectedClass === cls.id ? 4 : 1,
-                    transition: "all 0.2s ease-in-out",
-                    "&:hover": {
-                      boxShadow: 6,
-                      transform: "translateY(-4px)",
-                    },
-                  }}
-                >
-                  <CardActionArea onClick={() => handleClassClick(cls.id)}>
-                    <CardHeader
-                        title={
-                            <Typography
-                            variant="h6"
-                            sx={{
-                                fontWeight: 600,
-                                color: theme.palette.getContrastText(
-                                theme.palette.secondary.main
-                                ),
-                            }}
-                            >
-                            {cls.title}
-                            </Typography>
-                        }
-                        subheader={
-                            <Typography
-                            variant="body2"
-                            sx={{
-                                color: theme.palette.getContrastText(
-                                theme.palette.secondary.main
-                                ),
-                                opacity: 0.85,
-                            }}
-                            >
-                            {cls.teacher_name ? `Teacher: ${cls.teacher_name}` : ""}
-                            </Typography>
-                        }
-                        sx={{
-                            backgroundColor: "secondary.main",
-                            py: 1.5,
-                            px: 2,
-                        }}
-                        />
+              <Card
+                variant="outlined"
+                sx={{
+                  height: "150px",
+                  borderColor:
+                    selectedClass === cls.id ? "primary.main" : "divider",
+                  boxShadow: selectedClass === cls.id ? 4 : 1,
+                  transition: "all 0.2s ease-in-out",
+                  "&:hover": {
+                    boxShadow: 6,
+                    transform: "translateY(-4px)",
+                  },
+                }}
+              >
+                <CardActionArea 
+                  sx={{ 
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "flex-start",
+                    alignItems: "stretch",
+                  }} 
+                  onClick={() => handleClassClick(cls.id)}>
+                  <CardHeader
+                      title={
+                          <Typography
+                          variant="h6"
+                          sx={{
+                              color: theme.palette.getContrastText(
+                              theme.palette.secondary.main
+                              ),
+                          }}
+                          >
+                          {cls.title}
+                          </Typography>
+                      }
+                      subheader={
+                          <Typography
+                          variant="body1"
+                          sx={{
+                              color: theme.palette.getContrastText(
+                              theme.palette.secondary.main
+                              ),
+                              opacity: 0.85,
+                          }}
+                          >
+                          {cls.teacher_name ? `Teacher: ${cls.teacher_name}` : ""}
+                          </Typography>
+                      }
+                      sx={{
+                          backgroundColor: "secondary.main",                          
+                          py: 1.5,
+                          px: 2,
+                      }}
+                      />
 
-                    <CardContent sx={{ pt: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Code: {cls.code}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
+                  <CardContent sx={{ pt: 1 }}>
+                    <Typography variant="body1" color="text.secondary">
+                      Class Code: {cls.code}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
             </Grid>
         ))}
         </Grid>
