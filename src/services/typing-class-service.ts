@@ -13,6 +13,9 @@ import { UserProfileService } from 'supabase-auth-lib';
 
 type TypingClassRow = Database["public"]["Tables"]["typing_classes"]["Row"];
 type StudentClassRow = Database["public"]["Tables"]["student_classes"]["Row"];
+type TypingClassWithTeacher = TypingClassRow & {
+  teacher_name: string;
+};
 
 const DEFAULT_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz23456789";
 
@@ -117,20 +120,6 @@ export const TypingClassService = {
   },
 
 
-  async getTypingClassesForTeacher(teacherId: string) {
-    try {
-      return await select<TypingClassRow>(
-        supabase
-        .from("typing_classes")
-        .select("*")
-        .eq("teacher_id", teacherId)
-        .order("title")
-      );
-    } catch {
-      return [];
-    }
-  },
-
   async getTypingClassesForStudent(studentId: string) {
     try {
       const rows = await select<any>(
@@ -147,6 +136,36 @@ export const TypingClassService = {
     }
   },
 
+  async getTypingClassesForTeacher(teacherId: string): Promise<TypingClassWithTeacher[]> {
+    try {
+      const { data, error } = await supabase
+        .from("typing_classes")
+        .select(`
+          id,
+          title,
+          code,
+          teacher_id,
+          teacher:auth.users (
+            email,
+            raw_user_meta_data
+          )
+        `)
+        .eq("teacher_id", teacherId)
+        .order("title");
+
+      if (error) throw error;
+      if (!data) return [];
+
+      return data.map((cls: any) => ({
+        ...cls,
+        teacher_name:
+          cls.teacher?.raw_user_meta_data?.name || cls.teacher?.email || "Unknown",
+      }));
+    } catch (err) {
+      console.error("Error fetching typing classes for teacher:", err);
+      return [];
+    }
+  },
   async joinTypingClass(studentId: string, classId: number) {
 
     return await insertSingle<StudentClassRow>(
