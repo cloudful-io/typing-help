@@ -10,10 +10,11 @@ import {
   ListItemText,
 } from "@mui/material";
 import { IconUser, IconDeviceDesktopAnalytics } from "@tabler/icons-react";
+import { supabase } from '@/utils/supabase/client';
 import { User } from "@supabase/supabase-js";
 import { useRouter } from 'next/navigation';
 import {AuthLogout} from "supabase-auth-lib";
-import userProfileService from "@/services/user-profile-service";
+import {UserProfileService} from "supabase-auth-lib"
 type ProfileProps = {
   user: User;
 };
@@ -28,6 +29,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     const loadProfile = async () => {
       try {
         if (user) {
+          const userProfileService = new UserProfileService(supabase);
           const profile = await userProfileService.getById(user.id);
           if (profile) {
             setDisplayName(profile.display_name);
