@@ -1,14 +1,16 @@
 'use client';
 
 import { Box, Typography, Chip } from '@mui/material';
+import UserAvatarName from '../shared/UserAvatarName';
 
 interface ClassHeaderProps {
   title: string;
   code: string;
-  teacher?: string;
+  teacher_name?: string;
+  teacher_avatar_url?: string | null;
 }
 
-export default function ClassHeader({ title, code, teacher }: ClassHeaderProps) {
+export default function ClassHeader({ title, code, teacher_name, teacher_avatar_url }: ClassHeaderProps) {
   return (
     <Box
       display="flex"
@@ -23,9 +25,13 @@ export default function ClassHeader({ title, code, teacher }: ClassHeaderProps) 
         <Typography variant="h2" sx={{ fontWeight: 700 }}>
           {title}
         </Typography>
-        {teacher && (
+        {teacher_name && (
           <Typography variant="subtitle1" color="text.secondary">
-            Teacher: {teacher}
+            <UserAvatarName
+              displayName={teacher_name || "Unknown Teacher"}
+              avatarUrl={teacher_avatar_url || null}
+              size={36}
+            />
           </Typography>
         )}
       </Box>
