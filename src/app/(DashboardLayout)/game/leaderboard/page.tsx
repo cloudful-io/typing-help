@@ -1,23 +1,17 @@
-// app/leaderboard/page.tsx
 "use client";
-import { useEffect, useState } from "react";
-import { LeaderboardService } from "@/services/leaderboard-service"
-import { Box, Typography } from "@mui/material";
+import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
+import { Container } from "@mui/material";
+import Leaderboard from "../../components/game/Leaderboard";
+import { Typography, Divider } from "@mui/material";
 
 export default function LeaderboardPage() {
-  const [rows, setRows] = useState<any[]>([]);
-  useEffect(() => {
-    LeaderboardService.getLeaderboard().then(setRows);
-  }, []);
-
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" mb={2}>🏆 Global Leaderboard</Typography>
-      {rows.map((r, i) => (
-        <Typography key={i}>
-          {i + 1}. {r.user_id} — {r.score}
-        </Typography>
-      ))}
-    </Box>
+    <PageContainer title="Leaderboard" description="Typing Help: Leaderboard">
+      <Container sx={{ mt: 0 }}>
+        <Typography variant="h2" sx={{mb:2}}>🏆 Global Leaderboard</Typography>
+        <Divider sx={{ my: 2 }} />
+        <Leaderboard />
+      </Container>
+    </PageContainer>
   );
 }

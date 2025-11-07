@@ -25,22 +25,18 @@ export const LeaderboardService = {
     if (error) console.error("Leaderboard submit error:", error);
   },
   
-  async getLeaderboard(gameId?: string) {
-    const query = supabase
-        .from("leaderboard_results")
-        .select("user_id, game_id, score, created_at")
-        .order("score", { ascending: false })
-        .limit(50);
+  async getLeaderboard() {
+    const { data, error } = await supabase
+    .from("leaderboard_total_score")
+    .select("*")
+    .limit(50);
 
-    if (gameId) query.eq("game_id", gameId);
-
-    const { data, error } = await query;
-    if (error) {
-        console.error(error);
-        return [];
-    }
-    return data;
-  },
+  if (error) {
+    console.error(error);
+    return [];
+  }
+  return data;
+  }
 };
 
 export default LeaderboardService;
