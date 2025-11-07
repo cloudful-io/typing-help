@@ -1,17 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { LeaderboardService } from "@/services/leaderboard-service";
-import {
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import UserAvatarName from "../shared/UserAvatarName";
 
 interface LeaderboardEntry {

@@ -1,17 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUserRoles } from "@/contexts/UserRolesContext";
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardContent,
-  CardActionArea,
-  Divider,
-  Typography,
-  Grid,
-  useTheme,
-} from "@mui/material";
+import { Box, Card, CardHeader, CardContent, CardActionArea, Typography, Grid, useTheme } from "@mui/material";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import CreateTypingClass from "@/app/(DashboardLayout)/components/class/CreateTypingClass";
 import JoinTypingClass from "@/app/(DashboardLayout)/components/class/JoinTypingClass";
@@ -19,6 +9,7 @@ import { useRouter, useParams } from "next/navigation";
 import TypingClassService from "@/services/typing-class-service";
 import { IconSchool } from "@tabler/icons-react";
 import { TypingClassWithTeacher } from "@/services/typing-class-service";
+import Loading from "@/app/loading";
 
 export default function ClassList() {
   const { user } = useSupabaseAuth();
@@ -29,6 +20,7 @@ export default function ClassList() {
 
   const [classes, setClasses] = useState<TypingClassWithTeacher[]>([]);
   const [selectedClass, setSelectedClass] = useState<number | "">("");
+  const [loading, setLoading] = useState(true);
 
   const isTeacher = roles.includes("teacher");
   const isStudent = roles.includes("student");
@@ -37,13 +29,20 @@ export default function ClassList() {
   useEffect(() => {
     if (!user) return;
     async function fetchClasses() {
-      let data: TypingClassWithTeacher[] = [];
-      if (isTeacher) {
-        data = await TypingClassService.getTypingClassesForTeacher(user!.id);
-      } else if (isStudent) {
-        data = await TypingClassService.getTypingClassesForStudent(user!.id);
+      setLoading(true);
+
+      try {
+        let data: TypingClassWithTeacher[] = [];
+        if (isTeacher) {
+          data = await TypingClassService.getTypingClassesForTeacher(user!.id);
+        } else if (isStudent) {
+          data = await TypingClassService.getTypingClassesForStudent(user!.id);
+        }
+        setClasses(data);
       }
-      setClasses(data);
+      finally {
+        setLoading(false);
+      }
     }
     fetchClasses();
 
@@ -60,6 +59,9 @@ export default function ClassList() {
     router.push(`/class/${classId}`);
   };
 
+  if (loading) {
+    return (<Loading />);
+  }
   return (
     <>
       {classes.length > 0 ? (
@@ -132,29 +134,29 @@ export default function ClassList() {
         ))}
         </Grid>
         <Box
-        sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mt: 3,
-            mb: 2,
-        }}
-        > 
+          sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 3,
+              mb: 2,
+          }}
+          > 
         {isTeacher ? <CreateTypingClass /> : <JoinTypingClass />}
         </Box>
       </>
       ) : (
         <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "calc(100vh - 170px)",
-          textAlign: "center",
-          px: 2,
-        }}
-      >
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "calc(100vh - 170px)",
+            textAlign: "center",
+            px: 2,
+          }}
+        >
         <IconSchool size={64} style={{ marginBottom: 16 }} />
         <Typography variant="h5" gutterBottom>
           {isTeacher

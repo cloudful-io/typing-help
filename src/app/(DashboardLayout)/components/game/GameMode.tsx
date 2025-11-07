@@ -17,7 +17,7 @@ export default function GameMode() {
       {games.map((g) => (
         <Box key={g.id} mb={2}>
           <Typography variant="h4" sx={{mb:1}}>{g.name}</Typography>
-          <Typography variant="body2">{g.description}</Typography>
+          <Typography variant="body1">{g.description}</Typography>
           <Link href={`/game/${g.id}`}>
             <Button variant="contained" sx={{ mt: 1 }}>Play</Button>
           </Link>
