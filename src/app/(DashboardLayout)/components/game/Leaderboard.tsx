@@ -4,7 +4,6 @@ import { LeaderboardService } from "@/services/leaderboard-service";
 import {
   Box,
   Typography,
-  Divider,
   Table,
   TableBody,
   TableCell,
@@ -31,7 +30,6 @@ export default function Leaderboard() {
 
   return (
     <Box sx={{ p: 4 }}>
-      
       <TableContainer component={Paper} sx={{ width: "100%" }}>
         <Table>
           <TableHead>

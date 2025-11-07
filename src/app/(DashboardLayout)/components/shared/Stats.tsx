@@ -132,8 +132,6 @@ const StatsPage: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 2 }}>
-      <Typography variant="h3">Typing Practice Stats</Typography>
-
       {/* Summary Cards */}
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 3 }}>

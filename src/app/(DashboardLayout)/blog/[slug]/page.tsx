@@ -13,8 +13,8 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   const { frontmatter, content } = getPostBySlug(path.join(process.cwd(), "/public/blog"), slug);
 
   return (
-    <PageContainer title={frontmatter.title} description={frontmatter.excerpt}>
-      <Container sx={{ mt: 0 }}>
+    <PageContainer title="Product Updates" description={frontmatter.excerpt} showTitle>
+      <Container>
         <BlogPost frontmatter={frontmatter} content={content} blogRootUrl='/blog' title='Product Updates' />
       </Container>
     </PageContainer>

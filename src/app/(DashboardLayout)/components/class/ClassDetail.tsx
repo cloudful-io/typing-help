@@ -64,7 +64,7 @@ export default function ClassDetail({ classId }: ClassDetailProps) {
   return (
     <>
       <PageContainer title={classData.title} description={classData.title}>
-        <Container sx={{ mt: 0 }}>
+        <Container>
           <ClassHeader title={classData.title} code={classData.code} teacher_name={classData.teacher_name} teacher_avatar_url={classData.teacher_avatar_url}/>
 
           <Box sx={{ width: '100%', typography: 'body1' }}>

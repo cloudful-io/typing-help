@@ -64,8 +64,6 @@ export default function ClassList() {
     <>
       {classes.length > 0 ? (
       <>
-        <Typography variant="h2" sx={{mb:2}}>My Classes</Typography>
-        <Divider sx={{ my: 2 }} />
         <Grid container spacing={2}>  
         {classes.map((cls) => (
             <Grid key={cls.id} size={{xs:12, sm: 6, md: 4}} >
