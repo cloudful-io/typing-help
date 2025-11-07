@@ -72,7 +72,7 @@ export default function Marketing() {
           </Typography>
           <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
             <Button variant="contained" size="large" color="primary" href="/practice">Start Practicing</Button>
-            {/*<Button variant="outlined" size="large" >See a Demo</Button>*/}
+            <Button variant="outlined" size="large" href="/game">Play a Game</Button>
           </Stack>
         </Box>
       </Box>

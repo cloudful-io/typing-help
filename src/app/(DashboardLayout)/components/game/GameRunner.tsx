@@ -21,7 +21,10 @@ export function GameRunner({
   const handleFinish = async (result: GameResult) => {
     setFinished(true);
     setLastResult(result);
-    await LeaderboardService.submitScore(user!.id, game.id, result);
+
+    if (user) {
+      await LeaderboardService.submitScore(user.id, game.id, result);
+    }
   };
 
   const handlePlayAgain = () => {

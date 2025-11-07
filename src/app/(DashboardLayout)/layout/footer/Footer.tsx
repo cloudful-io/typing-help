@@ -39,28 +39,29 @@ export default function Footer() {
         width="100%" 
         spacing={1} 
       >
-      {user && (
-        <ToggleButtonGroup
-          value={mode}
-          exclusive
-          onChange={(_, newMode) => {
-            if (!newMode || newMode === mode) return;    
-            router.push(`/${encodeURIComponent(newMode)}`);
-          }}
-          size="small"
-          color="primary"
-        >
-          <ToggleButton value="practice">
-            <PsychologyIcon sx={{ mr: 0.5 }} aria-label="Practice Mode"/> Practice Mode
-          </ToggleButton>
+      
+      <ToggleButtonGroup
+        value={mode}
+        exclusive
+        onChange={(_, newMode) => {
+          if (!newMode || newMode === mode) return;    
+          router.push(`/${encodeURIComponent(newMode)}`);
+        }}
+        size="small"
+        color="primary"
+      >
+        <ToggleButton value="practice">
+          <PsychologyIcon sx={{ mr: 0.5 }} aria-label="Practice Mode"/> Practice Mode
+        </ToggleButton>
+        {user && (
           <ToggleButton value="class">
             <SchoolIcon sx={{ mr: 0.5 }} aria-label="Classroom Mode"/> Classroom Mode
           </ToggleButton>
-          <ToggleButton value="game">
-            <SportsEsportsIcon sx={{ mr: 0.5 }} aria-label="Game Mode"/> Game Mode
-          </ToggleButton>
-        </ToggleButtonGroup>
-      )}
+        )}
+        <ToggleButton value="game">
+          <SportsEsportsIcon sx={{ mr: 0.5 }} aria-label="Game Mode"/> Game Mode
+        </ToggleButton>
+      </ToggleButtonGroup>
       
         <Stack
           direction="row"
