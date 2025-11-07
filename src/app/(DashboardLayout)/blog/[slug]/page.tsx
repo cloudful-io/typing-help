@@ -1,5 +1,4 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
-import { Container } from "@mui/material";
 import path from "path";
 import { getAllPosts, getPostBySlug, BlogPost } from "cloudful-blog"
 
@@ -14,9 +13,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
   return (
     <PageContainer title="Product Updates" description={frontmatter.excerpt} showTitle>
-      <Container>
-        <BlogPost frontmatter={frontmatter} content={content} blogRootUrl='/blog' title='Product Updates' />
-      </Container>
+      <BlogPost frontmatter={frontmatter} content={content} blogRootUrl='/blog' title='Product Updates' />
     </PageContainer>
  )
 }

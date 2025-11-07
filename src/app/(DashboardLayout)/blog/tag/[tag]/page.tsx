@@ -1,5 +1,4 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
-import { Container } from "@mui/material";
 import { getPostsByTag, BlogTagList } from "cloudful-blog"
 import path from "path";
 
@@ -11,9 +10,7 @@ export default async function BlogTagPage(props: { params: Promise<{ tag: string
   
   return (
     <PageContainer title="Product Updates" description={`Typing Help: Product Updates - ${tag}`} showTitle>
-      <Container>
       <BlogTagList posts={posts} blogRootUrl='/blog' title='Product Updates' tag={tag} showFullContent/>
-      </Container>
     </PageContainer>
   );
 }

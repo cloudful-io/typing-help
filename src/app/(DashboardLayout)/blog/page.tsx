@@ -1,5 +1,4 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
-import { Container } from "@mui/material";
 import { getAllPosts, BlogList } from "cloudful-blog"
 import path from "path";
 
@@ -10,9 +9,7 @@ export default function BlogPage() {
   
   return (
     <PageContainer title="Product Updates" description="Typing Help: Product Updates" showTitle>
-      <Container>
       <BlogList posts={posts} blogRootUrl='/blog' title='Product Updates' showFullContent/>
-      </Container>
     </PageContainer>
   );
 }
