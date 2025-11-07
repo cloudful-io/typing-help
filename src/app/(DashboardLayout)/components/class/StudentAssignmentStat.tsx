@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Box, Chip, CircularProgress } from '@mui/material';
+import { Box, Chip } from '@mui/material';
 import { PracticeSessionService } from '@/services/practice-session-service';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { Database } from "@/types/database.types";

@@ -1,6 +1,6 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import { Container } from "@mui/material";
-import ClassroomMode from "@/app/(DashboardLayout)/components/shared/ClassroomMode"
+import ClassroomMode from "@/app/(DashboardLayout)/components/class/ClassroomMode"
 export default async function ClassPage() {
      
   return (

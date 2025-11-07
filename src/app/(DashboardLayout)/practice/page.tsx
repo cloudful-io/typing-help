@@ -1,6 +1,6 @@
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import { Container } from "@mui/material";
-import Practice from '../components/class/Practice';
+import Practice from '../components/practice/Practice';
 
 export default async function PracticePage() {
   return (

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"; 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from "next/navigation";
-import ClassroomMode from "./ClassroomMode";
+import ClassroomMode from "@/app/(DashboardLayout)/components/class/ClassroomMode"
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/utils/supabase/client';
 import { UserService } from 'supabase-auth-lib';
