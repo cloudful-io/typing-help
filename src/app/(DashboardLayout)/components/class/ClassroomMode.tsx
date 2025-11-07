@@ -13,7 +13,7 @@ export default function ClassroomMode() {
   }, [setMode]);
 
   return (
-    <PageContainer title="My Classes" description="This page provides teachers and students a way to create or join a class." showTitle>
+    <PageContainer title="🏫 My Classes" description="This page provides teachers and students a way to create or join a class." showTitle>
         <ClassList/>
     </PageContainer>
   );

@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import type { GameResult } from "@/types/game";
+import { WordBankService } from "@/services/word-service";
 
 // Props type
 interface WordRainProps {
@@ -35,12 +36,8 @@ type FloatingScore = {
   y: number;
 };
 
-const WORDS = [
-  "apple", "banana", "grape", "orange", "kiwi", "lemon", "melon",
-  "one", "two", "three", "four", "five", "six"
-];
-
 export const WordRain: React.FC<WordRainProps> = ({ onFinish }) => {
+  const [wordPool, setWordPool] = useState<string[]>([]);
   const [words, setWords] = useState<FallingWord[]>([]);
   const [input, setInput] = useState("");
   const [score, setScore] = useState(0);
@@ -54,6 +51,17 @@ export const WordRain: React.FC<WordRainProps> = ({ onFinish }) => {
   const theme = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+  if (!gameStarted) return;
+
+  async function fetchWords() {
+    const words = await WordBankService.getWords("en-US"); 
+    setWordPool(words);
+  }
+
+  fetchWords();
+}, [gameStarted]);
+
   // Focus input when game starts
   useEffect(() => {
     if (gameStarted && inputRef.current) {
@@ -64,11 +72,12 @@ export const WordRain: React.FC<WordRainProps> = ({ onFinish }) => {
   // Spawn words
   useEffect(() => {
     if (gameOver || !gameStarted) return;
+    if (wordPool.length === 0) return;
 
     const interval = setInterval(() => {
       const newWord: FallingWord = {
         id: Date.now() + Math.floor(Math.random() * 1000),
-        text: WORDS[Math.floor(Math.random() * WORDS.length)],
+        text: wordPool[Math.floor(Math.random() * wordPool.length)],
         y: 0,
         // Increase speed slightly as score increases
         speed: 0.4 + Math.random() * 1 + score / 200,
@@ -78,7 +87,7 @@ export const WordRain: React.FC<WordRainProps> = ({ onFinish }) => {
     }, 1200);
 
     return () => clearInterval(interval);
-  }, [gameOver, gameStarted, score]);
+  }, [gameOver, gameStarted, score, wordPool]);
 
   // Animate falling words
   useEffect(() => {

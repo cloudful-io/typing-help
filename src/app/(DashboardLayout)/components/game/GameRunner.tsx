@@ -46,9 +46,17 @@ export function GameRunner({
             variant="contained"
             color="primary"
             onClick={handlePlayAgain}
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, mx: 2 }}
           >
             Play Again
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            href="/game/leaderboard"
+            sx={{ mt: 2, mx: 2 }}
+          >
+            Show Leaderboard
           </Button>
         </Box>
       </PageContainer>
