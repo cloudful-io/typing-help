@@ -3,7 +3,7 @@ import { Grid, Box, Card, Typography, Stack } from "@mui/material";
 import Link from "next/link";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
-import AuthRegister from "../auth/AuthRegister";
+import {AuthRegister} from "supabase-auth-lib"
 
 const Register2 = () => (
   <PageContainer title="Register" description="this is Register page">
@@ -48,41 +48,16 @@ const Register2 = () => (
             <AuthRegister
               subtext={
                 <Typography
-                  variant="subtitle1"
-                  textAlign="center"
-                  color="textSecondary"
-                  mb={1}
-                >
-                  Typing Help
-                </Typography>
-              }
-              subtitle={
-                <Stack
-                  direction="row"
-                  justifyContent="center"
-                  spacing={1}
-                  mt={3}
-                >
-                  <Typography
+                    variant="h3"
+                    textAlign="center"
                     color="textSecondary"
-                    variant="h6"
-                    fontWeight="400"
-                  >
-                    Already have an Account?
-                  </Typography>
-                  <Typography
-                    component={Link}
-                    href="/authentication/login"
                     fontWeight="500"
-                    sx={{
-                      textDecoration: "none",
-                      color: "primary.main",
-                    }}
+                    mb={1}
                   >
-                    Sign In
+                    Typing Help
                   </Typography>
-                </Stack>
               }
+              loginUrl="/authentication/login"
             />
           </Card>
         </Grid>
