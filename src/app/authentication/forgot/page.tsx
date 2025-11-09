@@ -26,7 +26,12 @@ const Forgot2 = () => (
         container
         spacing={0}
         justifyContent="center"
-        sx={{ height: "100vh" }}
+        sx={{
+          height: {
+            xs: "90vh", // mobile
+            md: "100vh", // medium and larger screens
+          },
+        }}
       >
         <Grid
           display="flex"
