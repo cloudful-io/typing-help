@@ -3,10 +3,10 @@ import { Grid, Box, Card, Typography, Stack } from "@mui/material";
 import Link from "next/link";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
-import {AuthRegister} from "supabase-auth-lib"
+import {AuthResetPassword} from "supabase-auth-lib"
 
-const Register2 = () => (
-  <PageContainer title="Register" description="Typing Help: Register page">
+const Reset2 = () => (
+  <PageContainer title="Reset Password" description="Typing Help: Reset Password page">
     <Box
       sx={{
         position: "relative",
@@ -45,7 +45,7 @@ const Register2 = () => (
             <Box display="flex" alignItems="center" justifyContent="center">
               <Logo />
             </Box>
-            <AuthRegister
+            <AuthResetPassword
               subtext={
                 <Typography
                     variant="h3"
@@ -57,7 +57,6 @@ const Register2 = () => (
                     Typing Help
                   </Typography>
               }
-              loginUrl="/authentication/login"
             />
           </Card>
         </Grid>
@@ -66,4 +65,4 @@ const Register2 = () => (
   </PageContainer>
 );
 
-export default Register2;
+export default Reset2;

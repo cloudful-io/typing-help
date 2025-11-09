@@ -59,6 +59,7 @@ const Login2 = () => {
                     Typing Help
                   </Typography>
                 }
+                registrationUrl="/authentication/register"
               />
             </Card>
           </Grid>
