@@ -9,8 +9,6 @@ const STORAGE_KEY = "typingAppSessions";
 export const PracticeSessionService = {
     
   async save(session: PracticeSessionRow, userId?: string) {
-    console.log("in save");
-    console.log(userId);
     if (userId) {
       // Authenticated → save to Supabase
       return await insertSingle<PracticeSessionRow>(
