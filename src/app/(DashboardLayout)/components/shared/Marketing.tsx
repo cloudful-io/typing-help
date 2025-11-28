@@ -1,95 +1,170 @@
-"use client"
-import { Box, Button, Grid, Typography, Card, CardContent, Avatar, Stack } from "@mui/material";
-import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined';
-import AutoGraphOutlinedIcon from '@mui/icons-material/AutoGraphOutlined';
-import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined';
-import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
-import {useTheme} from '@mui/material';
+"use client";
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  useTheme,
+} from "@mui/material";
+import { IconKeyboard } from '@tabler/icons-react';
+import SportsEsportsOutlinedIcon from "@mui/icons-material/SportsEsportsOutlined";
+import AutoGraphOutlinedIcon from "@mui/icons-material/AutoGraphOutlined";
+import LeaderboardOutlinedIcon from "@mui/icons-material/LeaderboardOutlined";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import TypingTest from "./TypingTest";
 
 const features = [
   {
     title: "Classroom Management",
     description: "Monitor students' progress and tailor to their specific needs.",
-    icon: <SchoolOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
+    icon: <SchoolOutlinedIcon color="secondary" sx={{ fontSize: 60 }} />,
   },
   {
     title: "Competitive Practice",
     description: "Level up your typing skills with engaging mini-games.",
-    icon: <SportsEsportsOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
+    icon: <SportsEsportsOutlinedIcon color="secondary" sx={{ fontSize: 60 }} />,
   },
   {
     title: "Progress Tracking",
     description: "Monitor your speed, accuracy, and improvements over time.",
-    icon: <AutoGraphOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
+    icon: <AutoGraphOutlinedIcon color="secondary" sx={{ fontSize: 60 }} />,
   },
   {
     title: "Gaming Leaderboard",
     description: "Compete with friends and see where you rank.",
-    icon: <LeaderboardOutlinedIcon color="secondary" sx={{ fontSize: 60 }}/>,
+    icon: <LeaderboardOutlinedIcon color="secondary" sx={{ fontSize: 60 }} />,
   },
 ];
 
 export default function Marketing() {
   const theme = useTheme();
+
   return (
-    <Box sx={{ width: "100%", overflowX: "hidden" }}>
-      
-      {/* Hero Section with Background Image */}
-      <Box
-        sx={{
-          width: "100%",
-          py: 12,
-          px: 2,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundImage: 'url("/images/background/hero.jpg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          position: "relative",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            bgcolor:
-                theme.palette.mode === "dark"
-                ? "rgba(0,0,0,0.6)" // darker overlay for dark mode
-                : "rgba(255,255,255,0.5)", // lighter overlay for light mode
-            zIndex: 1,
-          },
-        }}
-      >
-        <Box sx={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: 600 }}>
-          <Typography variant="h1" gutterBottom>
-            Learning Through Practice, Classes, and Fun.
-          </Typography>
-          <Typography variant="h4" gutterBottom>
-            Improve your typing skills through fun, interactive exercises. Track your progress, challenge friends, and reach your personal best.
-          </Typography>
-          <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            <Button variant="contained" size="large" color="primary" href="/practice">Start Practicing</Button>
-            <Button variant="outlined" size="large" href="/game">Play a Game</Button>
-          </Stack>
-        </Box>
-      </Box>
+    <Box
+      sx={{
+        minHeight: "calc(100vh - 160px)",
+        display: "flex",
+        flexDirection: "column",
+        px: { xs: 2, sm: 4, md: 8 },
+        py: { xs: 4, md: 6 },
+      }}
+    >
+      {/* Hero Section */}
+      <Grid container spacing={4} alignItems="center">
+        {/* Left Column */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Box>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <IconKeyboard
+                  color={theme.palette.secondary.main}
+                  width="20"
+                  height="20"
+                  style={{ marginRight: 8 }}
+                />
+              <Typography
+                variant="body1"
+                sx={{ color: theme.palette.text.secondary }}
+              >
+                Learn Typing the Modern Way — Interactive, Engaging, Effective.
+              </Typography>
+            </Box>
+            <Typography
+              variant="h2"
+              component="h1"
+              sx={{
+                fontWeight: 700,
+                lineHeight: 1.2,
+                fontSize: { xs: "2rem", sm: "3rem", md: "4rem" },
+                mb: 1,
+              }}
+            >
+              Practice.
+            </Typography>
+
+            <Typography
+              variant="h2"
+              component="h1"
+              sx={{
+                fontWeight: 700,
+                lineHeight: 1.2,
+                fontSize: { xs: "2rem", sm: "3rem", md: "4rem" },
+                mb: 1,
+              }}
+            >
+              Learn.
+            </Typography>
+
+            <Typography
+              variant="h2"
+              component="h1"
+              color="primary"
+              sx={{
+                fontWeight: 700,
+                lineHeight: 1.2,
+                fontSize: { xs: "2rem", sm: "3rem", md: "4rem" },
+                mb: 3,
+              }}
+            >
+              Have Fun.
+            </Typography>
+
+            <Typography
+              variant="body1"
+              sx={{
+                mb: 3,
+                lineHeight: 1.2,
+                fontSize: { xs: "1rem", sm: "1.125rem", md: "1.25rem" },
+                color: theme.palette.text.secondary,
+              }}
+            >
+              Typing Help combines structured learning, fun mini-games, 
+              progress tracking, and a competitive leaderboard to help you master typing in the most engaging way possible.
+            </Typography>
+
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Button variant="contained" color="primary" size="large" href="/practice">
+                Start Practicing
+              </Button>
+              <Button variant="outlined" size="large" href="/game">
+                Play a Game
+              </Button>
+            </Box>
+          </Box>
+        </Grid>
+
+        {/* Right Column - Media */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TypingTest />
+        </Grid>
+      </Grid>
 
       {/* Features Section */}
-      <Box sx={{ py: 6, px: 2,  }}>
+      <Box sx={{ py: 8 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Why Use Typing Help
         </Typography>
-        <Grid container spacing={4} sx={{ mt: 3 }}>
+
+        <Grid container spacing={4} sx={{ mt: 2 }}>
           {features.map((feature) => (
-            <Grid key={feature.title} size={{xs:12, sm:6, lg:3}}>
-              <Card sx={{ width: "100%", height: "100%", textAlign: "center", p: 2 }}>
+            <Grid key={feature.title} size={{ xs: 12, sm: 6, md: 3 }}>
+              <Card
+                sx={{
+                  textAlign: "center",
+                  p: 3,
+                  height: "100%",
+                  borderRadius: 3,
+                }}
+              >
                 {feature.icon}
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>{feature.title}</Typography>
-                  <Typography variant="body2">{feature.description}</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    {feature.title}
+                  </Typography>
+                  <Typography variant="body2">
+                    {feature.description}
+                  </Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -98,4 +173,4 @@ export default function Marketing() {
       </Box>
     </Box>
   );
-};
+}
