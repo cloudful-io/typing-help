@@ -1,3 +1,9 @@
 *{
      font-family: 'Roboto', 'Plus Jakarta Sans', Helvetica, Arial, sans-serif !important;
 }
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
