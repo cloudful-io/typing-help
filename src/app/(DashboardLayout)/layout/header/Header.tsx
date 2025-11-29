@@ -9,6 +9,7 @@ import LoginButton from '@mui/icons-material/Login'
 import AppDrawer from '../sidebar/AppDrawer';
 import Profile from './Profile';
 import { IconDeviceDesktopAnalytics } from '@tabler/icons-react';
+import ThemeModeToggle from '../sidebar/ThemeModeToggle';
 
 const Header = () => {
   const { user, loading } = useSupabaseAuth();
@@ -84,11 +85,8 @@ const Header = () => {
             </Button>
           )}
 
-          {user && (
-            <>
-            <Profile user={user} />
-            </>
-          )}
+          {user && (<Profile user={user}/>)}
+          <ThemeModeToggle/>
         </Stack>
       </ToolbarStyled>
     </AppBarStyled>

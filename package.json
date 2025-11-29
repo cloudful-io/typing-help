@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@types/lodash": "4.17.20",
-    "@types/react-syntax-highlighter": "^15.5.13"
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "baseline-browser-mapping": "^2.8.32"
   }
 }

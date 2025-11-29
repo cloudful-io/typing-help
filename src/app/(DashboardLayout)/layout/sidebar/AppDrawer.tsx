@@ -6,7 +6,6 @@ import Link from 'next/link';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
 import DrawerItems from './DrawerItems';
-import ThemeModeToggle from './ThemeModeToggle';
 
 export default function AppDrawer() {
   const [open, setOpen] = React.useState(false);
@@ -85,7 +84,6 @@ export default function AppDrawer() {
                   </Typography>
                 </Box>
               </Box>
-              <ThemeModeToggle/>
             </Box>
             <DrawerItems onItemClick={toggleDrawer(false)}/>
           </Box>
