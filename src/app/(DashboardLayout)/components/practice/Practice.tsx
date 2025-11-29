@@ -12,6 +12,7 @@ import { PracticeTextService } from '@/services/practice-text-service';
 import Link from "next/link";
 import { useTheme } from "@mui/material/styles";
 import { useMode } from '@/contexts/ModeContext';
+import { AppStatsService } from "@/services/app-stats-service";
 
 interface PracticeProps {
   id?: string;
@@ -257,6 +258,10 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
               setSessionState("ended");
               computeResults(elapsedSeconds);
               setShowTimeUpModal(true);
+              if (typedText.length > 0) { 
+                AppStatsService.incrementCharacterCount(typedText.length)
+                  .catch((err) => console.error("Failed to increment character count:", err));
+              }
             }}
           />
         </Grid>

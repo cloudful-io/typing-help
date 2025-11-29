@@ -14,6 +14,7 @@ import AutoGraphOutlinedIcon from "@mui/icons-material/AutoGraphOutlined";
 import LeaderboardOutlinedIcon from "@mui/icons-material/LeaderboardOutlined";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import TypingTest from "./TypingTest";
+import AppStatsCounter from "./AppStats";
 
 const features = [
   {
@@ -169,8 +170,12 @@ export default function Marketing() {
               </Card>
             </Grid>
           ))}
+
         </Grid>
       </Box>
+      <Grid size={{xs: 12}}>
+        <AppStatsCounter />
+      </Grid>
     </Box>
   );
 }
