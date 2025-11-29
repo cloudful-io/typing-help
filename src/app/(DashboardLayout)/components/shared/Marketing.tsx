@@ -68,7 +68,7 @@ export default function Marketing() {
                 variant="body1"
                 sx={{ color: theme.palette.text.secondary }}
               >
-                Learn Typing the Modern Way — Interactive, Engaging, Effective.
+                Learn Typing the Modern and Engaging Way.
               </Typography>
             </Box>
             <Typography
