@@ -9,7 +9,7 @@ import LoginButton from '@mui/icons-material/Login'
 import AppDrawer from '../sidebar/AppDrawer';
 import Profile from './Profile';
 import { IconDeviceDesktopAnalytics } from '@tabler/icons-react';
-import ThemeModeToggle from '../sidebar/ThemeModeToggle';
+import ThemeModeToggle from './ThemeModeToggle';
 
 const Header = () => {
   const { user, loading } = useSupabaseAuth();
@@ -21,7 +21,7 @@ const Header = () => {
     backdropFilter: 'blur(4px)',
     [theme.breakpoints.up('lg')]: {
       minHeight: '70px',
-    },
+    },  
   }));
   const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
     width: '100%',
