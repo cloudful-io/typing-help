@@ -23,6 +23,7 @@ const pulse = keyframes`
 
 interface TimerControlsCardProps {
   presetTimes?: number[];
+  initialSelectedTime?: number;
   onStart?: (duration: number) => void;
   onPause?: () => void;
   onResume?: () => void;
@@ -33,6 +34,7 @@ interface TimerControlsCardProps {
 
 const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
   presetTimes = [30, 60, 120, 240],
+  initialSelectedTime,
   onStart,
   onPause,
   onResume,
@@ -40,7 +42,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
   onDurationChange,
   onSessionEnd,
 }) => {
-  const [selectedTime, setSelectedTime] = useState<number>(presetTimes[1] ?? 60);
+  const [selectedTime, setSelectedTime] = useState<number>(initialSelectedTime ?? presetTimes[1] ?? 60);
   const [timer, setTimer] = useState<number>(selectedTime);
   const [running, setRunning] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -56,6 +58,13 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
     }
   }, [presetTimes, onDurationChange, selectedTime]);
 
+  useEffect(() => {
+    if (initialSelectedTime != null) {
+      setSelectedTime(initialSelectedTime);
+      setTimer(initialSelectedTime);
+    }
+  }, [initialSelectedTime]);
+  
   // Update timer when selectedTime changes
   useEffect(() => {
     setTimer(selectedTime);

@@ -32,6 +32,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const [classId, setClassId] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");
+  const [initialSelectedTime, setInitialSelectedTime] = useState<number | undefined>(undefined);
   const [committedTextLength, setCommittedTextLength] = useState(0);
 
   const [wpm, setWPM] = useState<number | null>(null);
@@ -79,6 +80,11 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
       setTextId(data.id);
       setTargetText(data.content);
       setLanguage(data.language);
+      setInitialSelectedTime(
+        data.duration_seconds && data.duration_seconds > 0
+          ? data.duration_seconds
+          : undefined
+      );
 
       resetTypingState();
     } catch (err) {
@@ -238,6 +244,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
         <Grid size={{ xs: 12, lg: 6 }}>
           <TimerControlCard
             presetTimes={[30, 60, 120, 240]}
+            initialSelectedTime={initialSelectedTime}
             onStart={(duration) => {
               setSessionState("running");
               resetTypingState();
