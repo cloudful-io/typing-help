@@ -59,6 +59,7 @@ export const PracticeTextService = {
     content,
     language,
     duration_seconds,
+    label,
     assigned_at,
   }: {
     owner_teacher_id: string | null;
@@ -66,6 +67,7 @@ export const PracticeTextService = {
     content: string;
     language: string;
     duration_seconds: number;
+    label: string | null;
     assigned_at: string;
   }) {
     try {
@@ -78,6 +80,7 @@ export const PracticeTextService = {
             content,
             language,
             duration_seconds,
+            label: label?.trim() ? label.trim() : null,
             is_public: false,
             assigned_at,
           }]

@@ -33,6 +33,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const [typedText, setTypedText] = useState("");
   const [targetText, setTargetText] = useState<string>("");
   const [initialSelectedTime, setInitialSelectedTime] = useState<number | undefined>(undefined);
+  const [assignmentLabel, setAssignmentLabel] = useState<string | null>(null);
   const [committedTextLength, setCommittedTextLength] = useState(0);
 
   const [wpm, setWPM] = useState<number | null>(null);
@@ -80,6 +81,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
       setTextId(data.id);
       setTargetText(data.content);
       setLanguage(data.language);
+      setAssignmentLabel(data.label ?? null);
       setInitialSelectedTime(
         data.duration_seconds && data.duration_seconds > 0
           ? data.duration_seconds
@@ -233,7 +235,11 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
         </Box>
       }
       <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
-
+      {assignmentLabel && (
+        <Typography variant="h5" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
+          {assignmentLabel}
+        </Typography>
+      )}
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 3 }}>
           <AccuracyCard correct={correctChars} total={totalChars} />

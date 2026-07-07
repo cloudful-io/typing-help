@@ -41,6 +41,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = React.useState('');
   const [assignedAt, setAssignedAt] = React.useState<Dayjs | null>(dayjs());
+  const [label, setLabel] = React.useState('');
   const [language, setLanguage] = React.useState('en-US');
   const [duration, setDuration] = React.useState<number>(60);
   const canSave = content && assignedAt;
@@ -101,6 +102,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
         content,
         language,
         duration_seconds: duration,
+        label: label?.trim() ? label.trim() : null,
         assigned_at: assignedAt!.toISOString(),
       });
       // Close dialog first for smoother experience
@@ -150,6 +152,14 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
                 error={!!contentError}
                 helperText={contentError}
                 
+              />
+              { /* Label */ }
+              <TextField
+                label="Assignment Label"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                fullWidth
+                helperText="Optional short label for this assignment"
               />
 
               {/* Assigned At Date */}
