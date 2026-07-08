@@ -249,7 +249,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }}>
           <TimerControlCard
-            presetTimes={[30, 60, 120, 240]}
+            presetTimes={[30, 60, 120, 180, 240, 300]}
             initialSelectedTime={initialSelectedTime}
             onStart={(duration) => {
               setSessionState("running");

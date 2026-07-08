@@ -211,7 +211,9 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
                   <ToggleButton value={30}>30s</ToggleButton>
                   <ToggleButton value={60}>60s</ToggleButton>
                   <ToggleButton value={120}>120s</ToggleButton>
+                  <ToggleButton value={180}>180s</ToggleButton>
                   <ToggleButton value={240}>240s</ToggleButton>
+                  <ToggleButton value={300}>300s</ToggleButton>
                 </ToggleButtonGroup>
               </Box>
             </DialogContent>
