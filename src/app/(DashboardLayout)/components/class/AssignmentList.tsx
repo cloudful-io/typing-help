@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import PracticeTextService from "@/services/practice-text-service";
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, CircularProgress, Button, Snackbar, Alert, Link as MuiLink} from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Chip, Button, Snackbar, Alert, Link as MuiLink} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
@@ -129,9 +129,13 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                   Assignment #{index + 1}
                 </Typography>
                 {assignment.label && (
-                  <Typography variant="subtitle1" sx={{ fontWeight: 500, mr: 3 }}>
-                    {assignment.label}
-                  </Typography>
+                  <Chip
+                    label={assignment.label}
+                    color="info"
+                    variant="filled"
+                    size="small"
+                    sx={{ mr: 2, fontWeight: 600 }}
+                  />
                 )}
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                   Assigned: {' '}
