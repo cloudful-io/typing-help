@@ -35,6 +35,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
   const [initialSelectedTime, setInitialSelectedTime] = useState<number | undefined>(undefined);
   const [assignmentLabel, setAssignmentLabel] = useState<string | null>(null);
   const [committedTextLength, setCommittedTextLength] = useState(0);
+  const [isUntimed, setIsUntimed] = useState(false);
 
   const [wpm, setWPM] = useState<number | null>(null);
   const [correctChars, setCorrectChars] = useState<number>(0);
@@ -83,10 +84,11 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
       setLanguage(data.language);
       setAssignmentLabel(data.label ?? null);
       setInitialSelectedTime(
-        data.duration_seconds && data.duration_seconds > 0
+          data.duration_seconds >= 0
           ? data.duration_seconds
           : undefined
       );
+      setIsUntimed(!data.duration_seconds || data.duration_seconds <= 0);
 
       resetTypingState();
     } catch (err) {
@@ -234,7 +236,7 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
           </Typography>
         </Box>
       }
-      <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
+      <TimeUpModal open={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} isUntimed={isUntimed} />
       {assignmentLabel && (
         <Typography variant="h5" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
           {assignmentLabel}
@@ -249,9 +251,10 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
         </Grid>
         <Grid size={{ xs: 12, lg: 6 }}>
           <TimerControlCard
-            presetTimes={[30, 60, 120, 180, 240, 300]}
+            presetTimes={[0, 30, 60, 120, 180, 240, 300]}
             initialSelectedTime={initialSelectedTime}
             onStart={(duration) => {
+              setIsUntimed(duration === 0);
               setSessionState("running");
               resetTypingState();
               textboxRef.current?.focus();

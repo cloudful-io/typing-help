@@ -205,9 +205,10 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
                   color="primary"
                   value={duration}
                   exclusive
-                  onChange={(e, value) => value && setDuration(value)}
+                  onChange={(e, value) => value >= 0 && setDuration(value)}
                   aria-label="duration selection"
                 >
+                  <ToggleButton value={0}>Untimed</ToggleButton>
                   <ToggleButton value={30}>30s</ToggleButton>
                   <ToggleButton value={60}>60s</ToggleButton>
                   <ToggleButton value={120}>120s</ToggleButton>

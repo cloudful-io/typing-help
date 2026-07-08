@@ -1,6 +1,6 @@
 import { Modal, Box, Typography, Button } from "@mui/material";
 
-function TimeUpModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+function TimeUpModal({ open, onClose, isUntimed = false }: { open: boolean; onClose: () => void; isUntimed?: boolean }) {
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -18,7 +18,7 @@ function TimeUpModal({ open, onClose }: { open: boolean; onClose: () => void }) 
         }}
       >
         <Typography variant="h6" gutterBottom>
-          ⏰ Time’s up!
+          {isUntimed ? "🎉 Practice Complete!" : "⏰ Time’s up!"}
         </Typography>
         <Button variant="contained" onClick={onClose}>
           Close

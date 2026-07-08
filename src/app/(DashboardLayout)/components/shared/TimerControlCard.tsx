@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
@@ -12,7 +12,9 @@ import {
   CircularProgress,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
+import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
 import { getTimerControlColor } from "@/utils/typing";
 
 const pulse = keyframes`
@@ -44,10 +46,12 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
 }) => {
   const [selectedTime, setSelectedTime] = useState<number>(initialSelectedTime ?? presetTimes[1] ?? 60);
   const [timer, setTimer] = useState<number>(selectedTime);
+  const [elapsed, setElapsed] = useState<number>(0);
   const [running, setRunning] = useState(false);
   const [paused, setPaused] = useState(false);
 
   const intervalRef = useRef<number | null>(null);
+  const isUntimed = selectedTime === 0;
 
   // Keep selectedTime valid if presetTimes prop changes
   useEffect(() => {
@@ -67,12 +71,12 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
   
   // Update timer when selectedTime changes
   useEffect(() => {
-    setTimer(selectedTime);
-  }, [selectedTime]);
+    if (!isUntimed) setTimer(selectedTime);
+  }, [selectedTime, isUntimed]);
 
-  // Countdown effect
+  // Countdown effect (timed mode)
   useEffect(() => {
-    if (!running) return;
+    if (!running || isUntimed) return;
 
     if (timer <= 0) {
       setRunning(false);
@@ -86,7 +90,18 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
     return () => {
       if (intervalRef.current) clearTimeout(intervalRef.current);
     };
-  }, [running, timer, selectedTime]);
+  }, [running, timer, selectedTime, isUntimed]);
+
+  // Count-up effect (untimed mode)
+  useEffect(() => {
+    if (!running || !isUntimed) return;
+
+    intervalRef.current = window.setTimeout(() => setElapsed((e) => e + 1), 1000);
+
+    return () => {
+      if (intervalRef.current) clearTimeout(intervalRef.current);
+    };
+  }, [running, elapsed, isUntimed]);
 
   const handleTimeToggle = (_e: React.MouseEvent<HTMLElement>, newTime: number | string | null) => {
     if (newTime != null) {
@@ -98,7 +113,8 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
   };
 
   const handleStart = () => {
-    setTimer(selectedTime);
+    if (!isUntimed) setTimer(selectedTime);
+    setElapsed(0);
     setRunning(true);
     setPaused(false);
     onStart?.(selectedTime);
@@ -121,14 +137,23 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
     if (intervalRef.current) clearTimeout(intervalRef.current);
     setRunning(false);
     setPaused(false);
-    setTimer(selectedTime);
+    setElapsed(0);
+    if (!isUntimed) setTimer(selectedTime);
     onReset?.();
-  }
+  };
+
+  const handleStop = useCallback(() => {
+    if (intervalRef.current) clearTimeout(intervalRef.current);
+    setRunning(false);
+    setPaused(false);
+    setElapsed(0);
+    onSessionEnd?.(elapsed);
+  }, [elapsed, onSessionEnd]);
 
   const { progress, color } = useMemo(() => ({
-    progress: selectedTime > 0 ? (timer / selectedTime) * 100 : 0,
-    color: getTimerControlColor(timer, selectedTime),
-  }), [timer, selectedTime]);
+    progress: isUntimed ? 100 : (selectedTime > 0 ? (timer / selectedTime) * 100 : 0),
+    color: isUntimed ? "primary.main" : getTimerControlColor(timer, selectedTime),
+  }), [timer, selectedTime, isUntimed]);
 
 
   return (
@@ -159,13 +184,18 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
             sx={{ 
               transform: "translate(-50%, -50%)", 
               display: "flex", 
+              flexDirection: "column",
               alignItems: "center", 
               justifyContent: "center",
-              color: timer <= 5 ? "error.main" : "text.primary",
-              animation: timer > 0 && timer <= 5 ? `${pulse} 1s infinite` : "none", 
+              color: !isUntimed && timer <= 5 ? "error.main" : "text.primary",
+              animation: !isUntimed && timer > 0 && timer <= 5 ? `${pulse} 1s infinite` : "none", 
             }}
           >
-            {timer}s
+            {isUntimed ? (
+              `${elapsed}s`
+            ) : (
+              `${timer}s`
+            )}
           </Box>
         </Box>
 
@@ -173,7 +203,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
           <ToggleButtonGroup value={selectedTime} exclusive onChange={handleTimeToggle} disabled={running || paused} size="small">
             {presetTimes.map((t) => (
               <ToggleButton key={t} value={t}>
-                {t}s
+                {t === 0 ? "Untimed" : `${t}s`}
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
@@ -189,9 +219,15 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
             <Button variant="contained" color="warning" onClick={handlePause} startIcon={<PauseCircleOutlineIcon />}>
               Pause
             </Button>
-            <Button variant="contained" color="error" onClick={handleReset} startIcon={<RestartAltIcon />}>
-              Restart
-            </Button>
+            {isUntimed ? (
+              <Button variant="contained" color="error" onClick={handleStop} startIcon={<StopCircleOutlinedIcon />}>
+                Stop
+              </Button>
+            ) : (
+              <Button variant="contained" color="error" onClick={handleReset} startIcon={<RestartAltIcon />}>
+                Restart
+              </Button>
+            )}
             </>
           )}
 
@@ -200,8 +236,8 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
             <Button variant="contained" onClick={handleResume} startIcon={<PlayCircleOutlineIcon />}>
               Resume
             </Button>
-            <Button variant="contained" color="error" onClick={handleReset} startIcon={<RestartAltIcon />}>
-              Reset
+            <Button variant="contained" color="error" onClick={isUntimed ? handleStop : handleReset} startIcon={isUntimed ? <StopCircleOutlinedIcon /> : <RestartAltIcon />}>
+              {isUntimed ? "Stop" : "Reset"}
             </Button>
             </>
           )}
