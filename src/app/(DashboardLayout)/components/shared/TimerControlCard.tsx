@@ -35,7 +35,7 @@ interface TimerControlsCardProps {
 }
 
 const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
-  presetTimes = [30, 60, 120, 240],
+  presetTimes = [0,30, 60, 120, 180, 240, 300],
   initialSelectedTime,
   onStart,
   onPause,
@@ -152,7 +152,7 @@ const TimerControlsCard: React.FC<TimerControlsCardProps> = ({
 
   const { progress, color } = useMemo(() => ({
     progress: isUntimed ? 100 : (selectedTime > 0 ? (timer / selectedTime) * 100 : 0),
-    color: isUntimed ? "primary.main" : getTimerControlColor(timer, selectedTime),
+    color: isUntimed ? "info.main" : getTimerControlColor(timer, selectedTime),
   }), [timer, selectedTime, isUntimed]);
 
 
