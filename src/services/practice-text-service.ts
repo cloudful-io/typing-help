@@ -46,7 +46,7 @@ export const PracticeTextService = {
         .from("PracticeTexts")
         .select("*")
         .eq("class_id", class_id)
-        .order("assigned_at")
+        .order("assigned_at", { ascending: false })
       );
     } catch (err) {
       console.error("getPracticeTextByClass failed:", err);
@@ -60,6 +60,7 @@ export const PracticeTextService = {
     language,
     duration_seconds,
     label,
+    randomize_text,
     assigned_at,
   }: {
     owner_teacher_id: string | null;
@@ -68,6 +69,7 @@ export const PracticeTextService = {
     language: string;
     duration_seconds: number;
     label: string | null;
+    randomize_text: boolean;
     assigned_at: string;
   }) {
     try {
@@ -82,6 +84,7 @@ export const PracticeTextService = {
             duration_seconds,
             label: label?.trim() ? label.trim() : null,
             is_public: false,
+            randomize_text,
             assigned_at,
           }]
         );

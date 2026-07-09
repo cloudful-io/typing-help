@@ -59,3 +59,39 @@ export const countWords = (typedText: string, language: string): number => {
   }
   return typedText.trim().split(/\s+/).length;
 };
+
+const AVG_WPM = 80;     // English: conservative baseline words/min
+const AVG_CPM = 60;     // Chinese: conservative baseline Han chars/min
+
+export function expandPracticeText(
+  content: string,
+  durationSeconds: number,
+  language: string
+): string {
+  // Calculate target character budget based on language
+  const charsPerMinute = isLanguageCharacterBased(language)
+    ? AVG_CPM                  // Chinese: CPM maps directly to chars
+    : AVG_WPM * 5;             // English: words × avg chars/word
+
+  const targetChars = Math.round((durationSeconds / 60) * charsPerMinute);
+
+  const lines = content
+    .split("\n")
+    .map(l => l.trim())
+    .filter(Boolean);
+
+  if (lines.length === 0 || content.length >= targetChars) return content;
+
+  const shuffle = (arr: string[]) => [...arr].sort(() => Math.random() - 0.5);
+
+  const result: string[] = [...lines];
+  while (result.join("\n").length < targetChars) {
+    result.push(...shuffle(lines));
+  }
+
+  const joined = result.join(" ");
+  if (joined.length <= targetChars) return joined;
+
+  const cut = joined.lastIndexOf("\n", targetChars);
+  return joined.slice(0, cut > 0 ? cut : targetChars);
+}

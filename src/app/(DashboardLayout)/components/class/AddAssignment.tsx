@@ -9,8 +9,10 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   FormControl,
+  FormControlLabel,
   InputLabel,
   Select,
+  Switch,
   MenuItem,
   CircularProgress,
   Dialog,
@@ -42,6 +44,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
   const [content, setContent] = React.useState('');
   const [assignedAt, setAssignedAt] = React.useState<Dayjs | null>(dayjs());
   const [label, setLabel] = React.useState('');
+  const [randomizeText, setRandomizeText] = useState(false);
   const [language, setLanguage] = React.useState('en-US');
   const [duration, setDuration] = React.useState<number>(60);
   const canSave = content && assignedAt;
@@ -103,6 +106,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
         language,
         duration_seconds: duration,
         label: label?.trim() ? label.trim() : null,
+        randomize_text: randomizeText,
         assigned_at: assignedAt!.toISOString(),
       });
       // Close dialog first for smoother experience
@@ -150,8 +154,16 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
                 }}
                 fullWidth
                 error={!!contentError}
-                helperText={contentError}
-                
+                helperText={contentError ?? (randomizeText ? "Use a new line to separate each phrase." : undefined)}
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={randomizeText}
+                    onChange={(e) => setRandomizeText(e.target.checked)}
+                  />
+                }
+                label="Randomize and Expand Content"
               />
               { /* Label */ }
               <TextField
@@ -159,7 +171,6 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 fullWidth
-                helperText="Optional short label for this assignment"
               />
 
               {/* Assigned At Date */}
@@ -217,6 +228,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
                   <ToggleButton value={300}>300s</ToggleButton>
                 </ToggleButtonGroup>
               </Box>
+              
             </DialogContent>
           </Box>
             <DialogActions>

@@ -126,7 +126,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                 }}>
                 <KeyboardIcon color="action" sx={({mr:1})}/>
                 <Typography variant="subtitle1"  sx={({mr:3})}>
-                  Assignment #{index + 1}
+                  Assignment #{assignments.length - index}
                 </Typography>
                 {assignment.label && (
                   <Chip

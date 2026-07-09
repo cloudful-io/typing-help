@@ -6,7 +6,7 @@ import AccuracyCard from '@/app/(DashboardLayout)/components/shared/AccuracyCard
 import WPMCard from '@/app/(DashboardLayout)/components/shared/WPMCard';
 import TimerControlCard from '@/app/(DashboardLayout)/components/shared/TimerControlCard';
 import TimeUpModal from '@/app/(DashboardLayout)/components/shared/TimeUpModal'
-import { computeTypingResults, countWords } from "@/utils/typing";
+import { computeTypingResults, countWords, expandPracticeText } from "@/utils/typing";
 import { usePracticeSessions, buildCharacterStats } from "@/hooks/usePracticeSessions";
 import { PracticeTextService } from '@/services/practice-text-service';
 import Link from "next/link";
@@ -80,7 +80,12 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
         return;
       }
       setTextId(data.id);
-      setTargetText(data.content);
+      //setTargetText(data.content);
+      const finalContent =
+        data.randomize_text
+          ? expandPracticeText(data.content, data.duration_seconds > 0 ? data.duration_seconds : 240, data.language)
+          : data.content;
+      setTargetText(finalContent);
       setLanguage(data.language);
       setAssignmentLabel(data.label ?? null);
       setInitialSelectedTime(
