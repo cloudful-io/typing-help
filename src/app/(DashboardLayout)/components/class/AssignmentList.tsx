@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import PracticeTextService from "@/services/practice-text-service";
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Chip, Button, Snackbar, Alert, Link as MuiLink} from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Chip, Button, Snackbar, Alert, Link as MuiLink, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import AddAssignment from './AddAssignment';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AssignmentDialog from './AssignmentDialog';
 import StudentAssignmentStat from './StudentAssignmentStat';
 import TeacherAssignmentStat from './TeacherAssignmentStat';
 import NextLink from 'next/link';
@@ -16,6 +17,21 @@ import Loading from '@/app/loading';
 interface AssignmentListProps {
   classId: string;
 }
+
+const formatAssignmentDate = (dateStr: string | null | undefined): string => {
+  if (!dateStr) return 'N/A';
+  try {
+    const datePart = dateStr.split(/[T ]/)[0]; // "YYYY-MM-DD"
+    const parts = datePart.split('-');
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      return `${parseInt(month, 10)}/${parseInt(day, 10)}/${year}`;
+    }
+  } catch (e) {
+    console.error("Failed to parse date string", dateStr, e);
+  }
+  return 'N/A';
+};
 
 interface Assignment {
   id: number;
@@ -32,11 +48,67 @@ interface Assignment {
   created_at: string;
 }
 
-function TeacherAssignmentDetail({ assignment }: { assignment: any }) {
+function TeacherAssignmentDetail({ assignment, classId, onUpdated }: { assignment: any; classId: string; onUpdated: (success: boolean, message: string) => void }) {
   const [expanded, setExpanded] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    setDeleting(true);
+    try {
+      await PracticeTextService.deletePracticeText(assignment.id);
+      setConfirmOpen(false);
+      onUpdated(true, "Assignment deleted successfully!");
+    } catch (err: any) {
+      console.error(err);
+      onUpdated(false, err.message || "Failed to delete assignment.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
-    <Box sx={{ mt: 1 }}>
+    <Box sx={{ mt: 1, position: "relative" }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mb: 1 }}>
+        <AssignmentDialog classId={classId} assignment={assignment} onAdded={onUpdated} />
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          startIcon={<DeleteIcon />}
+          onClick={() => setConfirmOpen(true)}
+          disabled={deleting}
+        >
+          Delete
+        </Button>
+      </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={confirmOpen} onClose={() => !deleting && setConfirmOpen(false)}>
+        <DialogTitle>Delete Assignment?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            Are you sure you want to delete this assignment? 
+          </Typography>
+          <Typography variant="body2" color="error" sx={{ mt: 1, fontWeight: "bold" }}>
+            Warning: This will permanently delete all student practice session results associated with this assignment. This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmOpen(false)} disabled={deleting}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm} 
+            color="error" 
+            variant="contained" 
+            disabled={deleting}
+          >
+            {deleting ? <CircularProgress size={24} color="inherit" /> : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {!expanded ? (
         <>
           <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mt:2 }}>
@@ -109,7 +181,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
     
   return (
     <>
-      {isTeacher && <AddAssignment classId={classId} onAdded={handleAssignmentAdded}/>}
+      {isTeacher && <AssignmentDialog classId={classId} onAdded={handleAssignmentAdded}/>}
       {assignments.length === 0 &&
         <Typography>No assignments in this class.</Typography>
       }
@@ -139,9 +211,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                 )}
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                   Assigned: {' '}
-                    {assignment.assigned_at
-                      ? new Date(assignment.assigned_at).toLocaleDateString('en-US')
-                      : 'N/A'}
+                  {formatAssignmentDate(assignment.assigned_at)}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -158,7 +228,7 @@ export default function AssignmentList({ classId }: AssignmentListProps) {
                 }
                 {isTeacher && (
                   <>
-                    <TeacherAssignmentDetail assignment={assignment} />
+                    <TeacherAssignmentDetail assignment={assignment} classId={classId} onUpdated={handleAssignmentAdded} />
                   </>
                 )}
               </AccordionDetails>

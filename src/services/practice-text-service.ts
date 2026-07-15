@@ -95,6 +95,50 @@ export const PracticeTextService = {
       throw wrapError("addPracticeText failed", error);
     }
   },
+  async updatePracticeText(
+    id: number,
+    updates: {
+      content?: string;
+      language?: string;
+      duration_seconds?: number;
+      label?: string | null;
+      randomize_text?: boolean;
+      assigned_at?: string;
+    }
+  ) {
+    try {
+      console.log("Updating practice text with ID:", id, "Updates:", updates);
+      const { data, error } = await supabase
+        .from("PracticeTexts")
+        .update({
+          ...updates,
+          label: updates.label?.trim() ? updates.label.trim() : null,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as PracticeTextRow;
+    } catch (error) {
+      console.error("Failed to update practice text:", error);
+      throw wrapError("updatePracticeText failed", error);
+    }
+  },
+  async deletePracticeText(id: number) {
+    try {
+      const { data, error } = await supabase
+        .from("PracticeTexts")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error("Failed to delete practice text:", error);
+      throw wrapError("deletePracticeText failed", error);
+    }
+  },
 };
 
 export default PracticeTextService;

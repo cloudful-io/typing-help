@@ -24,29 +24,42 @@ import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useUserRoles } from "@/contexts/UserRolesContext";
 import { useRouter } from 'next/navigation';
 import AssignmentAddIcon from '@mui/icons-material/AssignmentAdd';
+import EditIcon from '@mui/icons-material/Edit';
 import PracticeTextService from "@/services/practice-text-service";
+import { Database } from '@/types/database.types';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
-interface AddAssignmentProps {
+type PracticeTextRow = Database["public"]["Tables"]["PracticeTexts"]["Row"];
+
+const parseAssignedAt = (dateStr: string | null | undefined): Dayjs | null => {
+  if (!dateStr) return dayjs();
+  const datePart = dateStr.split(/[T ]/)[0];
+  return dayjs(datePart);
+};
+
+interface AssignmentDialogProps {
   classId: string;
+  assignment?: PracticeTextRow;
   onAdded?: (success: boolean, message: string) => void;
 }
 
-const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
+const AssignmentDialog: React.FC<AssignmentDialogProps> = ({ classId, assignment, onAdded }) => {
   const { user } = useSupabaseAuth();
   const { roles } = useUserRoles();
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
-  const [content, setContent] = React.useState('');
-  const [assignedAt, setAssignedAt] = React.useState<Dayjs | null>(dayjs());
-  const [label, setLabel] = React.useState('');
-  const [randomizeText, setRandomizeText] = useState(false);
-  const [language, setLanguage] = React.useState('en-US');
-  const [duration, setDuration] = React.useState<number>(60);
+  const [content, setContent] = React.useState(assignment?.content || '');
+  const [assignedAt, setAssignedAt] = React.useState<Dayjs | null>(
+    parseAssignedAt(assignment?.assigned_at)
+  );
+  const [label, setLabel] = React.useState(assignment?.label || '');
+  const [randomizeText, setRandomizeText] = useState(assignment?.randomize_text || false);
+  const [language, setLanguage] = React.useState(assignment?.language || 'en-US');
+  const [duration, setDuration] = React.useState<number>(assignment?.duration_seconds ?? 60);
   const canSave = content && assignedAt;
 
   const [loading, setLoading] = useState(false);
@@ -59,12 +72,27 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
     return null;
   }
 
+  const handleOpen = () => {
+    setContent(assignment?.content || '');
+    setAssignedAt(parseAssignedAt(assignment?.assigned_at));
+    setLanguage(assignment?.language || 'en-US');
+    setDuration(assignment?.duration_seconds ?? 60);
+    setLabel(assignment?.label || '');
+    setRandomizeText(assignment?.randomize_text || false);
+    setContentError(null);
+    setAssignedAtError(null);
+    setLoading(false);
+    setOpen(true);
+  };
+
   const handleCancel = () => {
     // Reset all input fields
-    setContent('');
-    setAssignedAt(dayjs());
-    setLanguage('en-US');
-    setDuration(60);
+    setContent(assignment?.content || '');
+    setAssignedAt(parseAssignedAt(assignment?.assigned_at));
+    setLanguage(assignment?.language || 'en-US');
+    setDuration(assignment?.duration_seconds ?? 60);
+    setLabel(assignment?.label || '');
+    setRandomizeText(assignment?.randomize_text || false);
 
     // Reset error and loading states
     setContentError(null);
@@ -99,24 +127,37 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
     setLoading(true);   
     
     try {
-      const newAssignment = await PracticeTextService.addPracticeText({
-        owner_teacher_id: null,
-        class_id: Number(classId),
-        content,
-        language,
-        duration_seconds: duration,
-        label: label?.trim() ? label.trim() : null,
-        randomize_text: randomizeText,
-        assigned_at: assignedAt!.toISOString(),
-      });
+      if (assignment) {
+        // Edit mode
+        await PracticeTextService.updatePracticeText(assignment.id, {
+          content,
+          language,
+          duration_seconds: duration,
+          label: label?.trim() ? label.trim() : null,
+          randomize_text: randomizeText,
+          assigned_at: assignedAt!.toISOString(),
+        });
+      } else {
+        // Create mode
+        await PracticeTextService.addPracticeText({
+          owner_teacher_id: null,
+          class_id: Number(classId),
+          content,
+          language,
+          duration_seconds: duration,
+          label: label?.trim() ? label.trim() : null,
+          randomize_text: randomizeText,
+          assigned_at: assignedAt!.toISOString(),
+        });
+      }
       // Close dialog first for smoother experience
       setOpen(false);
 
-      onAdded?.(true, 'Assignment added successfully!');
+      onAdded?.(true, assignment ? 'Assignment updated successfully!' : 'Assignment added successfully!');
 
     } catch (err: any) {
       console.error(err);
-      onAdded?.(false, err.message || 'Failed to add assignment.');
+      onAdded?.(false, err.message || (assignment ? 'Failed to update assignment.' : 'Failed to add assignment.'));
     } finally {
       setLoading(false);
     }
@@ -125,19 +166,20 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
   return (
     <>
       {/* Button that opens dialog */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: assignment ? 0 : 2 }}>
         <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AssignmentAddIcon />}
-          onClick={() => setOpen(true)}
+          variant={assignment ? "outlined" : "contained"}
+          color={assignment ? "secondary" : "primary"}
+          size={assignment ? "small" : "medium"}
+          startIcon={assignment ? <EditIcon /> : <AssignmentAddIcon />}
+          onClick={handleOpen}
         >
-          Add Assignment
+          {assignment ? "Edit" : "Add Assignment"}
         </Button>
 
         {/* Dialog itself */}
-        <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
-          <DialogTitle>New Practice Assignment</DialogTitle>
+        <Dialog open={open} onClose={handleCancel} fullWidth maxWidth="sm">
+          <DialogTitle>{assignment ? "Edit Practice Assignment" : "New Practice Assignment"}</DialogTitle>
           <Box component="form" onSubmit={handleSubmit}>
             <DialogContent sx={{ display: 'flex', overflow: 'visible', flexDirection: 'column', gap: 2, mt: 1 }}>
               {/* Content Field */}
@@ -234,7 +276,7 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
             <DialogActions>
               <Button onClick={handleCancel}>Cancel</Button>
               <Button type="submit" variant="contained" disabled={!canSave || loading} onClick={handleSubmit}>
-                {loading ? <CircularProgress size={24} /> : 'Add Assignment'}
+                {loading ? <CircularProgress size={24} /> : (assignment ? 'Save Changes' : 'Add Assignment')}
               </Button>
             </DialogActions>
         </Dialog>
@@ -243,4 +285,4 @@ const AddAssignment: React.FC<AddAssignmentProps> = ({ classId, onAdded }) => {
   );
 };
 
-export default AddAssignment;
+export default AssignmentDialog;
