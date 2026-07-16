@@ -329,7 +329,21 @@ const Practice: React.FC<PracticeProps> = ({ id }) => {
           minRows={5}
           variant="outlined"
           placeholder="Click on the Start button to start typing..."
-          sx={{ fontSize: "1.1rem" }}
+          sx={{
+            '& .MuiInputBase-root': {
+              alignItems: 'flex-start',
+              padding: '16px 16px',
+              boxSizing: 'border-box',
+            },
+            '& .MuiInputBase-inputMultiline': {
+              fontSize: '1.1rem',
+              lineHeight: 1.6,
+              padding: 0,
+              boxSizing: 'border-box',
+              whiteSpace: 'pre-wrap',
+              overflowWrap: 'anywhere',
+            },
+          }}
         />
       </Box>
     </Box>
